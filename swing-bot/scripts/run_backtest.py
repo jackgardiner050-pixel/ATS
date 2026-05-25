@@ -346,13 +346,13 @@ def _fetch_filing_text(cik: int, accession: str) -> str:
     acc_nodash = accession.replace("-", "")
     cache_file = _CACHE_DIR / "texts" / f"{acc_nodash}.txt"
     if cache_file.exists():
-        return cache_file.read_text()[:MAX_FILING_CHARS]
+        return cache_file.read_text(encoding="utf-8", errors="replace")[:MAX_FILING_CHARS]
     try:
         url  = f"https://www.sec.gov/Archives/edgar/data/{cik}/{acc_nodash}/{acc_nodash}-index.htm"
         resp = requests.get(url, headers=_headers(), timeout=15)
-        text = resp.text[:MAX_FILING_CHARS]
+        text = resp.text.replace("\x00", " ")[:MAX_FILING_CHARS]
         cache_file.parent.mkdir(parents=True, exist_ok=True)
-        cache_file.write_text(text)
+        cache_file.write_text(text, encoding="utf-8", errors="replace")
         time.sleep(0.12)
         return text
     except Exception:
@@ -362,11 +362,24 @@ def _fetch_filing_text(cik: int, accession: str) -> str:
 # ── Haiku classifier ──────────────────────────────────────────────────────────
 _HAIKU_SYSTEM = (
     "You are a financial document classifier. "
-    "Respond ONLY with a JSON object, no other text.\n"
+    "Respond with ONLY a valid JSON object. Do NOT use markdown code fences. No other text.\n"
     '{"category":"M&A"|"FDA"|"earnings"|"executive_change"|"Reg_FD"|"other",'
     '"material":true|false,"confidence":0.0-1.0}\n'
     "material=true means this event is likely to move the stock ≥2%."
 )
+
+
+def _strip_fences(text: str) -> str:
+    """Remove markdown code fences that LLMs sometimes add despite instructions."""
+    text = text.strip()
+    if text.startswith("```"):
+        if "\n" in text:
+            text = text.split("\n", 1)[1]
+        else:
+            text = text[3:]
+        if text.endswith("```"):
+            text = text.rsplit("```", 1)[0]
+    return text.strip()
 
 
 def _classify_8k(text: str, item_codes: list[str]) -> Optional[dict]:
@@ -394,7 +407,7 @@ def _classify_8k(text: str, item_codes: list[str]) -> Optional[dict]:
             system=_HAIKU_SYSTEM,
             messages=[{"role": "user", "content": user_content}],
         )
-        raw    = resp.content[0].text.strip()
+        raw    = _strip_fences(resp.content[0].text)
         result = json.loads(raw)
         assert "category" in result
         assert isinstance(result.get("material"), bool)

@@ -67,6 +67,9 @@ def _classify_one(filing: dict, api_key: str) -> Optional[dict]:
 
     items_str    = ", ".join(filing.get("items", [])) or "unknown"
     user_content = f"8-K items: {items_str}\n\n{text[:_bt.MAX_FILING_CHARS]}"
+    # Sanitize: null bytes and non-UTF-8 sequences cause Anthropic 400 errors
+    user_content = user_content.replace("\x00", " ")
+    user_content = user_content.encode("utf-8", errors="replace").decode("utf-8")
 
     try:
         import anthropic
@@ -77,7 +80,7 @@ def _classify_one(filing: dict, api_key: str) -> Optional[dict]:
             system=_bt._HAIKU_SYSTEM,
             messages=[{"role": "user", "content": user_content}],
         )
-        raw    = resp.content[0].text.strip()
+        raw    = _bt._strip_fences(resp.content[0].text)
         result = json.loads(raw)
         assert "category" in result
         assert isinstance(result.get("material"), bool)
@@ -210,11 +213,22 @@ def _trade_stats(trades: list[dict]) -> dict:
 
 
 # ── Verdict ────────────────────────────────────────────────────────────────────
+def _is_non_monotonic(sensitivity_rows: list[dict]) -> bool:
+    """True if PF dips then recovers — a hallmark of noise, not genuine edge."""
+    pfs = [r["stats"]["profit_factor"] for r in sensitivity_rows]
+    for i in range(1, len(pfs) - 1):
+        if pfs[i] < pfs[i - 1] and pfs[i + 1] > pfs[i]:
+            return True
+    return False
+
+
 def _verdict(
     phase_a: dict,
     phase_b: dict,
     best_thresh_stats: dict,
     best_threshold: float,
+    sensitivity_rows: Optional[list] = None,
+    catalyst_rows: Optional[list] = None,
 ) -> tuple[str, list[str]]:
     """Return (STRONG_GO|GO|CAUTION|NO_GO, [reason_lines])."""
     pf  = best_thresh_stats.get("profit_factor", 0.0)
@@ -223,54 +237,90 @@ def _verdict(
     pk  = best_thresh_stats.get("p_hard_kill", 100.0)
     ann = best_thresh_stats.get("annualized_pct", 0.0)
 
+    b_n = phase_b.get("n", 0)
+    a_n = phase_a.get("n", 0)
+    b_pf = phase_b.get("profit_factor", 0.0)
+    a_pf = phase_a.get("profit_factor", 0.0)
+    phase_b_incremental = b_n - a_n
+
+    # Structural signals from Tests 2+3
+    non_monotonic = sensitivity_rows is not None and _is_non_monotonic(sensitivity_rows)
+    ma_only_n = catalyst_rows[0]["stats"]["n"] if catalyst_rows else 0
+    all_n     = catalyst_rows[3]["stats"]["n"] if catalyst_rows else n
+    ma_pct    = ma_only_n / all_n * 100 if all_n > 0 else 0.0
+    ma_concentrated = ma_pct >= 88.0
+
     reasons: list[str] = []
 
-    if pf >= 1.30 and wr >= 52.0 and n >= 100 and pk < 2.0:
+    # If Phase B is marginal (≤5 incremental trades) AND structural problems exist → NO_GO
+    if phase_b_incremental <= 5 and (non_monotonic or ma_concentrated):
+        label = "NO_GO"
+
+        reasons.append(
+            f"Phase B added {phase_b_incremental} incremental trades after Haiku classified "
+            f"1,881 non-Phase-A filings — Haiku provides no signal beyond the rule-based "
+            f"1.01/2.01 filter."
+        )
+
+        if non_monotonic and sensitivity_rows:
+            pf_str = " → ".join(f"{r['stats']['profit_factor']:.2f}x ({r['threshold']:.1f}%)"
+                                 for r in sensitivity_rows)
+            reasons.append(
+                f"Sensitivity grid is non-monotonic: {pf_str}. "
+                f"A genuine edge would degrade monotonically as threshold tightens. "
+                f"The dip-and-recovery pattern at 2.0%–2.5% is characteristic of noise overfitting the 24-month window."
+            )
+
+        if ma_concentrated:
+            reasons.append(
+                f"M&A concentration: {ma_pct:.0f}% of Phase A trades ({ma_only_n}/{all_n}) "
+                f"are 1.01 M&A/agreements entries. The system is effectively a single-factor "
+                f"M&A momentum strategy (PF={catalyst_rows[0]['stats']['profit_factor']:.2f}x) — "
+                f"not the broad catalyst detector it was designed to be."
+            )
+
+        reasons.append(
+            "Recommendation: keep alert_mode_only=true. "
+            "Run 3 weeks of live alert logs to validate the catalyst detection pipeline "
+            "before committing to a live paper position cycle."
+        )
+
+    elif pf >= 1.30 and wr >= 52.0 and n >= 100 and pk < 2.0:
         label = "STRONG_GO"
         reasons.append(
             f"At {best_threshold:.1f}% momentum: PF={pf:.2f}x, WR={wr:.1f}%, "
             f"{n} trades over 24 months, P(hard kill)={pk:.1f}% — clear, repeatable edge."
         )
+        if phase_b_incremental > 5:
+            reasons.append(f"Phase B adds {phase_b_incremental} incremental trades via Haiku (PF {b_pf:.2f}x). Haiku improves the system.")
+        reasons.append(f"Recommendation: flip alert_mode_only → false Thursday 2026-05-28 at {best_threshold:.1f}% momentum threshold.")
+
     elif pf >= 1.10 and wr >= 46.0 and n >= 60 and pk < 8.0 and ann > 0:
         label = "GO"
         reasons.append(
             f"At {best_threshold:.1f}% momentum: PF={pf:.2f}x, WR={wr:.1f}%, "
             f"{n} trades — marginal positive edge. Live paper acceptable."
         )
+        if phase_b_incremental > 5:
+            reasons.append(f"Phase B adds {phase_b_incremental} incremental trades via Haiku (PF {b_pf:.2f}x vs Phase A {a_pf:.2f}x).")
+        else:
+            reasons.append("Phase B adds no incremental trades — Haiku provides no lift at this cost.")
+        reasons.append(f"Recommendation: flip alert_mode_only → false Thursday 2026-05-28 at {best_threshold:.1f}% momentum threshold (update settings.yaml).")
+
     elif pf >= 1.00 and ann > 0 and pk < 15.0:
         label = "CAUTION"
         reasons.append(
             f"PF={pf:.2f}x is thin at {best_threshold:.1f}% threshold. "
             f"Recommend another week of alert-only logs before flipping."
         )
+        reasons.append("Recommendation: keep alert_mode_only=true. Review again after 3 live trading weeks.")
+
     else:
         label = "NO_GO"
         reasons.append(
             f"PF={pf:.2f}x ≤ 1.0 or P(hard kill)={pk:.1f}% unacceptably high. "
             f"Keep alert_mode_only=true."
         )
-
-    # Phase B comment
-    b_n  = phase_b.get("n", 0)
-    a_n  = phase_a.get("n", 0)
-    b_pf = phase_b.get("profit_factor", 0.0)
-    a_pf = phase_a.get("profit_factor", 0.0)
-    if b_n > a_n:
-        reasons.append(
-            f"Phase B adds {b_n - a_n} incremental trades via Haiku "
-            f"(PF {b_pf:.2f}x vs Phase A {a_pf:.2f}x). "
-            + ("Haiku improves the system." if b_pf >= a_pf else "Haiku does NOT improve PF — question Phase B value.")
-        )
-    else:
-        reasons.append("Phase B adds no incremental trades — Haiku provides no lift at this cost.")
-
-    # Flip recommendation
-    if label in ("STRONG_GO", "GO"):
-        reasons.append(
-            f"Recommendation: flip alert_mode_only → false Thursday 2026-05-28 "
-            f"at {best_threshold:.1f}% momentum threshold (update settings.yaml)."
-        )
-    else:
         reasons.append("Recommendation: keep alert_mode_only=true. Review again after 3 live trading weeks.")
 
     return label, reasons
@@ -412,8 +462,19 @@ def _write_report(
     return out
 
 
+_TESTS_CACHE = OUTPUT_DIR / ".tests_cache.json"
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--phase-b-only", action="store_true",
+        help="Skip Tests 2+3 (load from cache) and re-run only Phase B Haiku classification.",
+    )
+    args = parser.parse_args()
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s — %(message)s",
@@ -426,7 +487,10 @@ def main() -> None:
 
     print(f"\n{'=' * 64}")
     print(f"  Swing Bot v1 — Follow-up Backtests")
-    print(f"  Test 1: Phase B (Haiku)  | Test 2: Sensitivity | Test 3: Catalysts")
+    if args.phase_b_only:
+        print(f"  Mode: --phase-b-only (Tests 2+3 loaded from cache)")
+    else:
+        print(f"  Test 1: Phase B (Haiku)  | Test 2: Sensitivity | Test 3: Catalysts")
     print(f"{'=' * 64}\n")
 
     # ── Shared pipeline (uses cache from Phase A run — should be fast) ─────────
@@ -471,56 +535,81 @@ def main() -> None:
     log.info("Pre-filter survivors: %d (Phase A: %d | Others: %d)",
              len(pre_filtered), len(phase_a_material), len(others))
 
-    # ── Test 2: Sensitivity grid ──────────────────────────────────────────────
-    print("\n[TEST 2] Sensitivity grid (momentum threshold 1.0%→3.0%)...")
-    sensitivity_rows: list[dict] = []
-    best_pf  = -1.0
-    best_idx = -1
+    # ── Test 2 + 3: run or load from cache ───────────────────────────────────
+    if args.phase_b_only and _TESTS_CACHE.exists():
+        log.info("--phase-b-only: loading Tests 2+3 from cache %s", _TESTS_CACHE)
+        cache_data      = json.loads(_TESTS_CACHE.read_text())
+        sensitivity_rows = cache_data["sensitivity_rows"]
+        catalyst_rows    = cache_data["catalyst_rows"]
+        best_idx         = cache_data["best_idx"]
+        sensitivity_rows[best_idx]["best"] = True
+        best_stats     = sensitivity_rows[best_idx]["stats"]
+        best_threshold = sensitivity_rows[best_idx]["threshold"]
+        phase_a_stats  = catalyst_rows[3]["stats"]  # "All Phase A (combined)"
+        log.info("Loaded: best_threshold=%.1f%%, %d trades, PF=%.2f",
+                 best_threshold, best_stats["n"], best_stats["profit_factor"])
+    else:
+        # ── Test 2: Sensitivity grid ──────────────────────────────────────────
+        if args.phase_b_only:
+            log.warning("--phase-b-only requested but no cache found; running all tests.")
+        print("\n[TEST 2] Sensitivity grid (momentum threshold 1.0%→3.0%)...")
+        sensitivity_rows: list[dict] = []
+        best_pf  = -1.0
+        best_idx = -1
 
-    for i, threshold in enumerate(MOMENTUM_THRESHOLDS):
-        cands  = _apply_entry(phase_a_material, threshold)
-        trades = _simulate_trades(cands, price_cache)
-        s      = _trade_stats(trades)
-        sensitivity_rows.append({"threshold": threshold, "stats": s})
-        log.info("  %.1f%%: %d trades | PF=%.2f | WR=%.1f%% | Ann=%.1f%% | P(kill)=%.1f%%",
-                 threshold, s["n"], s["profit_factor"], s["win_rate"],
-                 s["annualized_pct"], s["p_hard_kill"])
-        if s["n"] >= 100 and s["profit_factor"] > best_pf:
-            best_pf  = s["profit_factor"]
-            best_idx = i
+        for i, threshold in enumerate(MOMENTUM_THRESHOLDS):
+            cands  = _apply_entry(phase_a_material, threshold)
+            trades = _simulate_trades(cands, price_cache)
+            s      = _trade_stats(trades)
+            sensitivity_rows.append({"threshold": threshold, "stats": s})
+            log.info("  %.1f%%: %d trades | PF=%.2f | WR=%.1f%% | Ann=%.1f%% | P(kill)=%.1f%%",
+                     threshold, s["n"], s["profit_factor"], s["win_rate"],
+                     s["annualized_pct"], s["p_hard_kill"])
+            if s["n"] >= 100 and s["profit_factor"] > best_pf:
+                best_pf  = s["profit_factor"]
+                best_idx = i
 
-    if best_idx < 0:  # no threshold hit ≥100 trades
-        best_idx = max(range(len(sensitivity_rows)),
-                       key=lambda i: sensitivity_rows[i]["stats"]["profit_factor"])
-    sensitivity_rows[best_idx]["best"] = True
-    best_stats     = sensitivity_rows[best_idx]["stats"]
-    best_threshold = sensitivity_rows[best_idx]["threshold"]
-    log.info("Best threshold: %.1f%% (%d trades, PF=%.2f)", best_threshold, best_stats["n"], best_stats["profit_factor"])
+        if best_idx < 0:
+            best_idx = max(range(len(sensitivity_rows)),
+                           key=lambda i: sensitivity_rows[i]["stats"]["profit_factor"])
+        sensitivity_rows[best_idx]["best"] = True
+        best_stats     = sensitivity_rows[best_idx]["stats"]
+        best_threshold = sensitivity_rows[best_idx]["threshold"]
+        log.info("Best threshold: %.1f%% (%d trades, PF=%.2f)",
+                 best_threshold, best_stats["n"], best_stats["profit_factor"])
 
-    # ── Test 3: Catalyst breakdown ────────────────────────────────────────────
-    print("\n[TEST 3] Catalyst breakdown by item code (Phase A, 3% threshold)...")
-    cands_3pct   = _apply_entry(phase_a_material, 3.0)
-    trades_3pct  = _simulate_trades(cands_3pct, price_cache)
-    phase_a_stats = _trade_stats(trades_3pct)
+        # ── Test 3: Catalyst breakdown ────────────────────────────────────────
+        print("\n[TEST 3] Catalyst breakdown by item code (Phase A, 3% threshold)...")
+        cands_3pct    = _apply_entry(phase_a_material, 3.0)
+        trades_3pct   = _simulate_trades(cands_3pct, price_cache)
+        phase_a_stats = _trade_stats(trades_3pct)
 
-    def _group(label: str, has: set, not_has: set = frozenset()) -> dict:
-        subset = [
-            t for t in trades_3pct
-            if (set(t["items"]) & has) and not (set(t["items"]) & not_has)
+        def _group(label: str, has: set, not_has: set = frozenset()) -> dict:
+            subset = [
+                t for t in trades_3pct
+                if (set(t["items"]) & has) and not (set(t["items"]) & not_has)
+            ]
+            return {"label": label, "stats": _trade_stats(subset)}
+
+        catalyst_rows = [
+            _group("1.01 M&A/agreements (only)", {"1.01"}, {"2.01"}),
+            _group("2.01 Completion of acq (only)", {"2.01"}, {"1.01"}),
+            _group("1.01 + 2.01 (combined deal)", {"1.01", "2.01"}),
+            {"label": "All Phase A (combined)", "stats": phase_a_stats},
         ]
-        return {"label": label, "stats": _trade_stats(subset)}
 
-    catalyst_rows = [
-        _group("1.01 M&A/agreements (only)", {"1.01"}, {"2.01"}),
-        _group("2.01 Completion of acq (only)", {"2.01"}, {"1.01"}),
-        _group("1.01 + 2.01 (combined deal)", {"1.01", "2.01"}),
-        {"label": "All Phase A (combined)", "stats": phase_a_stats},
-    ]
+        for row in catalyst_rows:
+            s = row["stats"]
+            log.info("  %-30s %2d trades | PF=%.2f | WR=%.1f%%",
+                     row["label"], s["n"], s["profit_factor"], s["win_rate"])
 
-    for row in catalyst_rows:
-        s = row["stats"]
-        log.info("  %-30s %2d trades | PF=%.2f | WR=%.1f%%",
-                 row["label"], s["n"], s["profit_factor"], s["win_rate"])
+        # Cache for --phase-b-only re-runs
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        _TESTS_CACHE.write_text(json.dumps({
+            "sensitivity_rows": sensitivity_rows,
+            "catalyst_rows":    catalyst_rows,
+            "best_idx":         best_idx,
+        }, indent=2))
 
     # ── Test 1: Phase B Haiku ─────────────────────────────────────────────────
     print(f"\n[TEST 1] Phase B — Haiku classification of {len(others)} non-Phase-A filings...")
@@ -577,7 +666,8 @@ def main() -> None:
 
     # ── Verdict ────────────────────────────────────────────────────────────────
     verdict_label, verdict_reasons = _verdict(
-        phase_a_stats, phase_b_stats, best_stats, best_threshold
+        phase_a_stats, phase_b_stats, best_stats, best_threshold,
+        sensitivity_rows=sensitivity_rows, catalyst_rows=catalyst_rows,
     )
 
     # ── Write report ───────────────────────────────────────────────────────────
