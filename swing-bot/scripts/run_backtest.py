@@ -74,7 +74,8 @@ EDGAR_IDENTITY = "Jack Gardiner jackgardiner050@gmail.com"
 # ── Paths ──────────────────────────────────────────────────────────────────────
 _CACHE_DIR   = _ROOT / "data" / "backtest_cache"
 _CIK_CACHE   = _ROOT / "data" / "cik_map_cache.json"
-_OUTPUT_DIR  = _ROOT / "data" / "backtest"
+_OUTPUT_DIR  = _ROOT / "reports"           # markdown reports (committed to git)
+_DATA_DIR    = _ROOT / "data" / "backtest" # JSONL trade log (gitignored)
 
 # ── Globals (cost tracking) ────────────────────────────────────────────────────
 _haiku_cost_gbp: float = 0.0
@@ -600,7 +601,11 @@ def _write_report(
         row("After 5.02 price-move gate (≥5%)", total - no_price - no_item - drop_7_01 - drop_5_02, drop_5_02),
         row("After price floor (≥£5 / $6.35)", after_prefilter + drop_delist, drop_price_fl),
         row("After delisting filter (60d)", after_prefilter, drop_delist),
-        row("After Haiku materiality (confidence ≥0.6)", after_haiku, after_prefilter - after_haiku),
+        row(
+            "After Haiku materiality (confidence ≥0.6)" if use_haiku
+            else "After Phase A materiality (1.01/2.01 item codes only)",
+            after_haiku, after_prefilter - after_haiku,
+        ),
         row("After entry rules (momentum + liquidity)", after_entry, after_haiku - after_entry),
         row("After concurrency constraint (≤10 positions)", final_trades, after_entry - final_trades),
         "",
@@ -667,7 +672,17 @@ def _write_report(
         "| Skip reason | Count |",
         "|-------------|------:|",
     ]
-    for reason, cnt in sorted(skip_reasons.items(), key=lambda x: -x[1]):
+    # Aggregate granular per-percentage keys into readable groups
+    grouped_skips: dict[str, int] = {}
+    for reason, cnt in skip_reasons.items():
+        if reason.startswith("7.01_no_move"):
+            key = "7.01 Reg FD — move < 3% threshold"
+        elif reason.startswith("5.02_no_move"):
+            key = "5.02 leadership — move < 5% threshold"
+        else:
+            key = reason
+        grouped_skips[key] = grouped_skips.get(key, 0) + cnt
+    for reason, cnt in sorted(grouped_skips.items(), key=lambda x: -x[1]):
         lines.append(f"| {reason} | {cnt:,} |")
 
     lines += [
@@ -902,8 +917,8 @@ def main() -> None:
     mc = _monte_carlo(trades)
 
     # ── 10. Save trade log ────────────────────────────────────────────────────
-    _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    trades_path = _OUTPUT_DIR / f"trades_{run_date.replace('-', '')}.jsonl"
+    _DATA_DIR.mkdir(parents=True, exist_ok=True)
+    trades_path = _DATA_DIR / f"trades_{run_date.replace('-', '')}.jsonl"
     with open(trades_path, "w") as f:
         for t in trades:
             f.write(json.dumps(t, default=str) + "\n")
