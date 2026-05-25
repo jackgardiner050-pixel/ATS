@@ -1,0 +1,5 @@
+Agent ran 2026-05-25.
+6 tickers screened.
+Distribution: SB=17 B=3 H=12 S=8 SS=20.
+Paper book: 12 open positions. Closed trades: 0, avg alpha +0.00%.
+SPY: $745.64
