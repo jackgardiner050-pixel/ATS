@@ -1,4 +1,4 @@
-"""Swing Bot v1 test suite — 35+ tests covering all hard rules.
+"""Swing Bot v1 test suite — 100+ tests covering all hard rules.
 
 Hard rules verified:
   1. place_real_order() raises RuntimeError (always)
@@ -15,6 +15,8 @@ Hard rules verified:
  12. signal reversal overrides price-based exits
  13. is_negative_8k: Phase A rule (5.02 only → negative; 5.02+1.01 → not negative)
  14. Position round-trip: open → save → load → close → append → reload
+ 15. Finnhub client: rate limiting, graceful failure, 429 handling
+ 16. Active watchlist: add/get/prune, open positions always included, cap at 50
 """
 from __future__ import annotations
 
@@ -642,3 +644,185 @@ class TestTelegramClient:
              patch("requests.post", return_value=mock_resp):
             result = send_message("hello")
         assert result is True
+
+
+# ─── Finnhub client ───────────────────────────────────────────────────────────
+
+class TestFinnhubClient:
+    def _mock_response(self, data: dict, status: int = 200):
+        m = MagicMock()
+        m.status_code = status
+        m.json.return_value = data
+        m.raise_for_status = MagicMock() if status == 200 else MagicMock(side_effect=Exception("HTTP error"))
+        return m
+
+    def test_quote_returns_price_data(self):
+        from src.finnhub_client import FinnhubClient
+        data = {"c": 215.0, "pc": 210.0, "o": 211.0, "h": 216.0, "l": 209.0, "dp": 2.38, "t": 1234}
+        with patch("requests.get", return_value=self._mock_response(data)):
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            result = client.quote("AAPL")
+        assert result["current_price"] == 215.0
+        assert "price_change_pct" in result
+        assert "prev_close" in result
+
+    def test_quote_returns_empty_on_zero_price(self):
+        from src.finnhub_client import FinnhubClient
+        with patch("requests.get", return_value=self._mock_response({"c": 0, "pc": 0})):
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            result = client.quote("INVALID")
+        assert result == {}
+
+    def test_quote_returns_empty_on_network_error(self):
+        from src.finnhub_client import FinnhubClient
+        with patch("requests.get", side_effect=ConnectionError("down")):
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            result = client.quote("AAPL")
+        assert result == {}
+
+    def test_quote_returns_empty_without_api_key(self):
+        from src.finnhub_client import FinnhubClient
+        with patch("src.finnhub_client._load_api_key", return_value=""):
+            client = FinnhubClient()
+            result = client.quote("AAPL")
+        assert result == {}
+
+    def test_rate_limit_429_returns_empty(self):
+        from src.finnhub_client import FinnhubClient
+        resp = self._mock_response({}, status=429)
+        resp.raise_for_status = MagicMock()
+        with patch("requests.get", return_value=resp), \
+             patch("time.sleep") as mock_sleep:
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            result = client.quote("AAPL")
+        assert result == {}
+        mock_sleep.assert_called()
+
+    def test_batch_quotes_returns_all_valid(self):
+        from src.finnhub_client import FinnhubClient
+        data = {"c": 100.0, "pc": 98.0, "o": 99.0, "h": 101.0, "l": 97.0}
+        with patch("requests.get", return_value=self._mock_response(data)):
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            results = client.batch_quotes(["AAPL", "MSFT"])
+        assert "AAPL" in results
+        assert "MSFT" in results
+
+    def test_batch_quotes_skips_failed_tickers(self):
+        from src.finnhub_client import FinnhubClient
+
+        def side_effect(url, params, timeout):
+            sym = params.get("symbol", "")
+            if sym == "AAPL":
+                m = MagicMock()
+                m.status_code = 200
+                m.json.return_value = {"c": 100.0, "pc": 98.0, "o": 99.0, "h": 101.0, "l": 97.0}
+                m.raise_for_status = MagicMock()
+                return m
+            raise ConnectionError("fail")
+
+        with patch("requests.get", side_effect=side_effect):
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            results = client.batch_quotes(["AAPL", "BAD"])
+        assert "AAPL" in results
+        assert "BAD" not in results
+
+    def test_price_change_pct_computed_from_prev_close(self):
+        from src.finnhub_client import FinnhubClient
+        data = {"c": 110.0, "pc": 100.0, "o": 101.0, "h": 112.0, "l": 100.0, "dp": 0}
+        with patch("requests.get", return_value=self._mock_response(data)):
+            client = FinnhubClient(api_key="test_key")
+            client._last_call_time = 0.0
+            q = client.quote("AAPL")
+        assert abs(q["price_change_pct"] - 10.0) < 0.01
+
+
+# ─── Active watchlist (Tier 0) ────────────────────────────────────────────────
+
+class TestActiveWatchlist:
+    def test_empty_on_no_file(self, tmp_path):
+        from src.active_watchlist import load
+        result = load(tmp_path / "nonexistent.json")
+        assert result == {}
+
+    def test_add_catalyst_ticker_persists(self, tmp_path):
+        from src.active_watchlist import add_catalyst_ticker, load
+        p = tmp_path / "aw.json"
+        add_catalyst_ticker("AAPL", "8K:M&A", path=p)
+        stored = load(p)
+        assert "AAPL" in stored
+        assert stored["AAPL"]["reason"] == "8K:M&A"
+
+    def test_add_overwrites_previous_entry(self, tmp_path):
+        from src.active_watchlist import add_catalyst_ticker, load
+        p = tmp_path / "aw.json"
+        add_catalyst_ticker("AAPL", "old_reason", path=p)
+        add_catalyst_ticker("AAPL", "new_reason", path=p)
+        stored = load(p)
+        assert stored["AAPL"]["reason"] == "new_reason"
+
+    def test_get_tier0_includes_open_positions(self, tmp_path):
+        from src.active_watchlist import get_tier0
+        positions = {"MSFT": {"ticker": "MSFT"}, "GOOG": {"ticker": "GOOG"}}
+        result = get_tier0(positions, path=tmp_path / "aw.json")
+        assert "MSFT" in result
+        assert "GOOG" in result
+
+    def test_get_tier0_prunes_stale_catalyst_tickers(self, tmp_path):
+        from src.active_watchlist import get_tier0, save
+        from datetime import datetime, timezone, timedelta
+        p = tmp_path / "aw.json"
+        old_time = (datetime.now(timezone.utc) - timedelta(hours=72)).isoformat()
+        save({"AAPL": {"added": old_time, "reason": "catalyst"}}, p)
+        result = get_tier0({}, path=p)
+        assert "AAPL" not in result
+
+    def test_get_tier0_keeps_recent_catalyst_tickers(self, tmp_path):
+        from src.active_watchlist import get_tier0, save
+        from datetime import datetime, timezone, timedelta
+        p = tmp_path / "aw.json"
+        recent = (datetime.now(timezone.utc) - timedelta(hours=10)).isoformat()
+        save({"AAPL": {"added": recent, "reason": "catalyst"}}, p)
+        result = get_tier0({}, path=p)
+        assert "AAPL" in result
+
+    def test_get_tier0_stale_tickers_kept_if_in_positions(self, tmp_path):
+        from src.active_watchlist import get_tier0, save
+        from datetime import datetime, timezone, timedelta
+        p = tmp_path / "aw.json"
+        old_time = (datetime.now(timezone.utc) - timedelta(hours=72)).isoformat()
+        save({"AAPL": {"added": old_time, "reason": "catalyst"}}, p)
+        # AAPL is also an open position — must be kept despite age
+        result = get_tier0({"AAPL": {}}, path=p)
+        assert "AAPL" in result
+
+    def test_get_tier0_capped_at_max_active(self, tmp_path):
+        from src.active_watchlist import get_tier0, add_catalyst_ticker, MAX_ACTIVE
+        from datetime import datetime, timezone
+        p = tmp_path / "aw.json"
+        # Add 60 tickers (above cap)
+        for i in range(60):
+            add_catalyst_ticker(f"T{i:03d}", "catalyst", path=p)
+        result = get_tier0({}, path=p)
+        assert len(result) <= MAX_ACTIVE
+
+    def test_get_tier0_deduplicates_positions_and_catalysts(self, tmp_path):
+        from src.active_watchlist import get_tier0, add_catalyst_ticker
+        p = tmp_path / "aw.json"
+        add_catalyst_ticker("AAPL", "8K", path=p)
+        # AAPL also in open positions
+        result = get_tier0({"AAPL": {}}, path=p)
+        assert result.count("AAPL") == 1  # no duplicates
+
+    def test_get_tier0_returns_sorted_list(self, tmp_path):
+        from src.active_watchlist import get_tier0, add_catalyst_ticker
+        p = tmp_path / "aw.json"
+        for ticker in ["MSFT", "AAPL", "GOOG"]:
+            add_catalyst_ticker(ticker, "test", path=p)
+        result = get_tier0({}, path=p)
+        assert result == sorted(result)

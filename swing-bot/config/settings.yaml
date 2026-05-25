@@ -39,6 +39,12 @@ edgar:
   high_priority_items: ["1.01", "2.01"]   # trigger without Haiku in Phase A
   user_agent: "Jack Gardiner jackgardiner050@gmail.com"
 
+finnhub:
+  api_key: ${FINNHUB_API_KEY}
+  calls_per_minute: 57             # free tier is 60; we target 57 for headroom
+  tier0_max_tickers: 50            # hard cap on active watchlist size
+  catalyst_ttl_hours: 48           # remove from Tier 0 after 48h if not in book
+
 telegram:
   bot_token: ${SWING_BOT_TOKEN}
   chat_id: ${SWING_BOT_CHAT_ID}
