@@ -33,6 +33,15 @@ screener:
   max_market_cap_usd: 200_000_000_000  # ignore mega-caps
   peer_match_method: "sic"      # match peers by SIC industry code
 
+# Telegram cockpit — Phase 1 (weekly digest + rating change alerts)
+# Credentials come from .env on the droplet (never committed to git).
+telegram:
+  bot_token: ${TELEGRAM_BOT_TOKEN}
+  chat_id: ${TELEGRAM_CHAT_ID}
+  digest_enabled: true
+  alerts_enabled: true
+  quiet_hours_utc: ["22:00", "07:00"]
+
 # Output paths
 paths:
   runs_dir: "runs"

@@ -8,3 +8,4 @@ python-dateutil>=2.8
 requests>=2.31
 anthropic>=0.34  # optional, for LLM narrative
 yfinance>=0.2.43  # for live market prices
+python-telegram-bot>=20.3  # Phase 1: weekly digest + alerts (send-only)
