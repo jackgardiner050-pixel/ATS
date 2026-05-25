@@ -447,9 +447,12 @@ def _spy_return() -> Optional[dict]:
                           auto_adjust=True, progress=False)
         if spy is None or spy.empty:
             return None
-        spy = spy.sort_index()
-        s_price = float(spy["Close"].iloc[0])
-        e_price = float(spy["Close"].iloc[-1])
+        spy   = spy.sort_index()
+        close = spy["Close"]
+        if isinstance(close, pd.DataFrame):
+            close = close.squeeze()   # multi-level columns → Series
+        s_price = float(close.iloc[0])
+        e_price = float(close.iloc[-1])
         ret     = (e_price - s_price) / s_price * 100
         return {
             "start_price": round(s_price, 2),
@@ -488,7 +491,12 @@ def _exit_reason_breakdown(trades: list[dict]) -> dict[str, int]:
 
 
 # ── Verdict ───────────────────────────────────────────────────────────────────
-def _verdict(s: dict, spy: Optional[dict]) -> tuple[str, list[str]]:
+def _verdict(
+    s: dict,
+    spy: Optional[dict],
+    sensitivity: Optional[list] = None,
+    exit_breakdown: Optional[dict] = None,
+) -> tuple[str, list[str]]:
     pf  = s["profit_factor"]
     wr  = s["win_rate"]
     n   = s["n"]
@@ -509,15 +517,60 @@ def _verdict(s: dict, spy: Optional[dict]) -> tuple[str, list[str]]:
         reasons.append(f"PF={pf:.2f}x is marginal with {n} trades. Small-sample risk.")
     else:
         label = "NO_GO"
-        reasons.append(f"PF={pf:.2f}x or WR={wr:.1f}% or n={n} insufficient for live paper.")
+        reasons.append(
+            f"PF={pf:.2f}x, WR={wr:.1f}%, P(hard kill)={pk:.1f}% — strategy as specified has "
+            f"no reliable edge at the 5% EPS beat threshold."
+        )
 
+    # Stop-loss saturation
+    if exit_breakdown:
+        stops = exit_breakdown.get("stop_loss", 0)
+        stop_pct = stops / n * 100 if n > 0 else 0
+        if stop_pct >= 50:
+            reasons.append(
+                f"Stop-loss saturation: {stops}/{n} exits ({stop_pct:.0f}%) hit the −8% stop. "
+                f"The entry trigger (+3% T+1 move) is already buying after the initial pop, "
+                f"leaving little room before the stop is reached on a mean-reversion."
+            )
+
+    # P(kill) warning
+    if pk >= 15.0:
+        reasons.append(
+            f"P(hard kill)={pk:.1f}% — unacceptably high for a £500 paper account. "
+            f"The -8% stop is too wide relative to position size (£50) and recovery dynamics."
+        )
+
+    # Sensitivity note
+    if sensitivity:
+        best = min(sensitivity, key=lambda r: -r["stats"]["profit_factor"])
+        if best["threshold"] != EPS_BEAT_DEFAULT and best["stats"]["profit_factor"] > pf:
+            reasons.append(
+                f"Best sensitivity result: EPS beat ≥ {best['threshold']:.0f}% gives "
+                f"PF={best['stats']['profit_factor']:.2f}x, WR={best['stats']['win_rate']:.1f}%, "
+                f"P(kill)={best['stats']['p_hard_kill']:.1f}% — a different threshold materially "
+                f"changes outcomes, suggesting the 5% default is not a stable optimum."
+            )
+
+    # SPY comparison
     if spy_ret is not None:
         cmp = "beats" if ann > spy_ret else "underperforms"
-        reasons.append(f"Strategy annualises at {ann:+.1f}% vs SPY buy-and-hold {spy_ret:+.1f}% over the window ({cmp} SPY).")
+        reasons.append(
+            f"Strategy annualises at {ann:+.1f}% vs SPY {spy_ret:+.1f}% buy-and-hold over the same window ({cmp} SPY)."
+        )
 
-    if n < 30:
-        reasons.append(f"⚠ Only {n} qualifying trades — results may not be statistically robust. "
-                       f"PEAD backtest is data-limited; earnings data coverage varies by ticker.")
+    # Sample-size caveat
+    if n < 50:
+        reasons.append(
+            f"⚠ {n} trades is a thin sample — earnings data coverage varies by ticker "
+            f"and yfinance historical estimates have known gaps. "
+            f"These results may not generalise."
+        )
+
+    reasons.append(
+        "Recommendation: do NOT run PEAD alongside the swing-bot catalyst strategy. "
+        "If PEAD is to be revisited, use a dedicated earnings data provider (e.g. Finnhub "
+        "earnings calendar) and widen the stop to −12% or switch to a trailing stop."
+    )
 
     return label, reasons
 
@@ -725,7 +778,7 @@ def main() -> None:
     exit_breakdown  = _exit_reason_breakdown(trades)
 
     # ── Verdict ───────────────────────────────────────────────────────────
-    verdict_label, verdict_reasons = _verdict(main_stats, spy)
+    verdict_label, verdict_reasons = _verdict(main_stats, spy, sensitivity, exit_breakdown)
 
     # ── Write report ──────────────────────────────────────────────────────
     report_path = _write_report(
