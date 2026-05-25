@@ -1,0 +1,40 @@
+# Equity Research Agent — global settings
+
+# Discount rate inputs (used in DCF unless overridden per-ticker)
+dcf:
+  risk_free_rate: 0.045        # 10Y UST proxy
+  equity_risk_premium: 0.055
+  default_beta: 1.20
+  terminal_growth: 0.025
+  exit_multiple: 12.0           # EV/EBITDA terminal
+  projection_years: 5
+  mid_year_convention: true
+
+# Default projection assumptions when sector-specific not available
+projections:
+  revenue_growth_decay: [0.18, 0.14, 0.10, 0.07, 0.05]  # FY+1 to FY+5
+  default_gross_margin: 0.30
+  default_sga_pct: 0.18
+  default_tax_rate: 0.21
+  default_capex_pct_rev: 0.04
+
+# Recommendation engine — rating bands
+rating_bands:
+  strong_buy: 0.20    # >20% upside
+  buy: 0.10           # 10-20%
+  hold: -0.05         # -5% to +10%
+  sell: -0.20         # -20% to -5%
+  # below -20% = STRONG SELL
+
+# Screener thresholds
+screener:
+  flag_threshold_pct: 0.25      # flag if >25% over/under peer median
+  min_market_cap_usd: 500_000_000  # ignore micro-caps
+  max_market_cap_usd: 200_000_000_000  # ignore mega-caps
+  peer_match_method: "sic"      # match peers by SIC industry code
+
+# Output paths
+paths:
+  runs_dir: "runs"
+  corpus_file: "corpus.jsonl"
+  cache_dir: ".cache"

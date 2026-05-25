@@ -1,0 +1,88 @@
+# Universe configuration for the screener.
+# 36 names across 6 agent-friendly sectors.
+
+universe:
+  # Power / Infrastructure / EPC (12)
+  - AGX
+  - PWR
+  - MTZ
+  - PRIM
+  - EME
+  - FIX
+  - IESC
+  - STRL
+  - DY
+  - VRT
+  - MOD
+  - CAT
+
+  # Electrical / AI-Data-Center Industrials (6)
+  - ETN
+  - TT
+  - HUBB
+  - AME
+  - ROK
+  - GNRC
+
+  # Defense (5)
+  - LMT
+  - RTX
+  - NOC
+  - GD
+  - LDOS
+
+  # Semi-cap Equipment (4)
+  - AMAT
+  - LRCX
+  - KLAC
+  - ENTG
+
+  # Biotech Tools / Large Pharma (5)
+  - DHR
+  - TMO
+  - A
+  - LLY
+  - ABBV
+
+  # Energy Infrastructure / Midstream (4)
+  - WMB
+  - KMI
+  - OKE
+  - TRGP
+
+  # === Diversified Industrials (6) ===
+  - HON
+  - GE
+  - ITW
+  - EMR
+  - PH
+  - DOV
+
+  # === Quality Compounders (5) ===
+  - V
+  - MA
+  - SPGI
+  - MCO
+  - MSCI
+
+  # === Aggregates / Building Products (3) ===
+  # SUM (Summit Materials) removed — acquired by Quikrete 2024, delisted
+  - MLM
+  - VMC
+  - EXP
+
+  # === EPC / Engineering Services (3) ===
+  - J
+  - ACM
+  - FLR
+
+  # === Defense Adjacent (3) ===
+  - HII
+  - KTOS
+  - AVAV
+
+  # === Med-Device + Tools (4) ===
+  - ISRG
+  - IDXX
+  - ZTS
+  - MTD

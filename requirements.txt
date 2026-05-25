@@ -1,0 +1,10 @@
+edgartools>=5.31.0
+openpyxl>=3.1
+pandas>=2.0
+numpy>=1.26
+matplotlib>=3.8
+pyyaml>=6.0
+python-dateutil>=2.8
+requests>=2.31
+anthropic>=0.34  # optional, for LLM narrative
+yfinance>=0.2.43  # for live market prices

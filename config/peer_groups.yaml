@@ -1,0 +1,80 @@
+peer_groups:
+  # Power / EPC
+  AGX:  [PWR, MTZ, PRIM, EME, FIX, STRL, IESC, DY]
+  PWR:  [MTZ, PRIM, EME, FIX, STRL, AGX, DY, IESC]
+  MTZ:  [PWR, PRIM, EME, IESC, DY, AGX, STRL]
+  PRIM: [MTZ, EME, FIX, IESC, STRL, AGX, PWR]
+  EME:  [FIX, IESC, MTZ, PWR, PRIM, ROK, ETN]
+  FIX:  [EME, IESC, MTZ, ETN, HUBB, ROK]
+  IESC: [FIX, EME, PRIM, MTZ, STRL]
+  STRL: [PRIM, MTZ, EME, FIX, IESC]
+  DY:   [MTZ, IESC, STRL, AGX, PRIM]
+  VRT:  [ETN, TT, HUBB, ROK, AME]
+  MOD:  [VRT, ETN, TT, GNRC]
+  CAT:  [DE, CMI, PCAR, OSK]
+  # Electrical / AI
+  ETN:  [HUBB, ROK, AME, EMR, VRT]
+  TT:   [CARR, JCI, LII, MOD]
+  HUBB: [ETN, ROK, AME, EMR]
+  AME:  [HUBB, ROK, ETN, EMR]
+  ROK:  [ETN, AME, HUBB, EMR]
+  GNRC: [CMI, MOD, VRT, ETN]
+  # Defense
+  LMT:  [NOC, GD, RTX]
+  RTX:  [LMT, NOC, GD, BA]
+  NOC:  [LMT, RTX, GD]
+  GD:   [LMT, NOC, RTX, HII]
+  LDOS: [SAIC, CACI, GD, NOC]
+  # Semi-cap
+  AMAT: [LRCX, KLAC, TER, ENTG]
+  LRCX: [AMAT, KLAC, TER, ENTG]
+  KLAC: [AMAT, LRCX, TER]
+  ENTG: [AMAT, LRCX, KLAC, MKSI]
+  # Biotech / Pharma
+  DHR:  [TMO, A, AVTR, MTD, WAT]
+  TMO:  [DHR, A, AVTR, MTD]
+  A:    [DHR, TMO, AVTR, MTD, WAT]
+  LLY:  [MRK, PFE, ABBV, BMY, JNJ]
+  ABBV: [JNJ, MRK, PFE, BMY, LLY]
+  # Energy infrastructure
+  WMB:  [KMI, OKE, EPD, ET]
+  KMI:  [WMB, OKE, EPD, ET]
+  OKE:  [WMB, KMI, EPD, TRGP, ET]
+  TRGP: [OKE, EPD, WMB, ET]
+
+  # === Diversified Industrials (added) ===
+  HON:  [GE, EMR, ITW, PH, DOV]
+  GE:   [RTX, HON, LMT, NOC]
+  ITW:  [DOV, PH, EMR, HON]
+  EMR:  [ROK, ETN, AME, HUBB]
+  PH:   [DOV, ITW, EMR, HON]
+  DOV:  [PH, ITW, EMR, HON]
+
+  # === Quality Compounders (added) ===
+  V:    [MA, AXP]
+  MA:   [V, AXP]
+  SPGI: [MCO, MSCI, FDS]
+  MCO:  [SPGI, MSCI, FDS]
+  MSCI: [SPGI, MCO, FDS]
+
+  # === Aggregates / Building Products (added) ===
+  MLM:  [VMC, EXP]
+  VMC:  [MLM, EXP]
+  EXP:  [MLM, VMC]
+  # SUM removed — acquired by Quikrete 2024, delisted
+
+  # === EPC / Engineering Services (added) ===
+  J:    [ACM, FLR, PWR]
+  ACM:  [J, FLR, PWR]
+  FLR:  [J, ACM, PRIM, PWR]
+
+  # === Defense Adjacent (added) ===
+  HII:  [LMT, GD, NOC]
+  KTOS: [AVAV, MRCY, LDOS]
+  AVAV: [KTOS, MRCY]
+
+  # === Med-Device + Tools (added) ===
+  ISRG: [SYK, BSX, MDT]
+  IDXX: [ZTS, ELAN]
+  ZTS:  [IDXX, ELAN]
+  MTD:  [A, DHR, WAT]
