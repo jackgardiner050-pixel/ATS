@@ -2,7 +2,7 @@
 
 **Generated:** 2026-05-25  
 **Purpose:** Go/No-Go on `alert_mode_only` flip Thursday 2026-05-28  
-**Haiku cost (Test 1):** £0.0000 (0 calls)  
+**Haiku cost (Test 1):** £0.7003 (1881 calls)  
 **Monte Carlo:** 5,000 bootstrap simulations per stats block  
 
 ---
@@ -54,13 +54,14 @@ concurrency ≤10 positions, exit rules unchanged.
 
 ---
 
-## Verdict: 🟢 GO
+## Verdict: 🔴 NO_GO
 
-**`alert_mode_only` Thursday:** **FLIP TO `false`**
+**`alert_mode_only` Thursday:** **KEEP `true`**
 
-- At 1.0% momentum: PF=1.14x, WR=48.9%, 184 trades — marginal positive edge. Live paper acceptable.
-- Phase B adds no incremental trades — Haiku provides no lift at this cost.
-- Recommendation: flip alert_mode_only → false Thursday 2026-05-28 at 1.0% momentum threshold (update settings.yaml).
+- Phase B added 0 incremental trades after Haiku classified 1,881 non-Phase-A filings — Haiku provides no signal beyond the rule-based 1.01/2.01 filter.
+- Sensitivity grid is non-monotonic: 1.14x (1.0%) → 1.14x (1.5%) → 0.97x (2.0%) → 0.86x (2.5%) → 1.13x (3.0%). A genuine edge would degrade monotonically as threshold tightens. The dip-and-recovery pattern at 2.0%–2.5% is characteristic of noise overfitting the 24-month window.
+- M&A concentration: 94% of Phase A trades (47/50) are 1.01 M&A/agreements entries. The system is effectively a single-factor M&A momentum strategy (PF=1.10x) — not the broad catalyst detector it was designed to be.
+- Recommendation: keep alert_mode_only=true. Run 3 weeks of live alert logs to validate the catalyst detection pipeline before committing to a live paper position cycle.
 
 ---
 
