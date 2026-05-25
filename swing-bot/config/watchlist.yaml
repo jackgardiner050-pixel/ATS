@@ -1,0 +1,565 @@
+# Swing Bot v1 — catalyst watchlist (~500 tickers)
+# Tier 1: long-term agent universe (60 names) — already well-covered
+# Tier 2: S&P 500 ex-overlap (~440 names) — broad US large/mid-cap catalyst coverage
+# Refresh: quarterly
+
+# ── Tier 1: Long-term agent universe (60) ────────────────────────────────────
+tier1:
+  - AGX
+  - PWR
+  - MTZ
+  - PRIM
+  - EME
+  - FIX
+  - IESC
+  - STRL
+  - DY
+  - VRT
+  - MOD
+  - CAT
+  - ETN
+  - TT
+  - HUBB
+  - AME
+  - ROK
+  - GNRC
+  - LMT
+  - RTX
+  - NOC
+  - GD
+  - LDOS
+  - AMAT
+  - LRCX
+  - KLAC
+  - ENTG
+  - DHR
+  - TMO
+  - A
+  - LLY
+  - ABBV
+  - WMB
+  - KMI
+  - OKE
+  - TRGP
+  - HON
+  - GE
+  - ITW
+  - EMR
+  - PH
+  - DOV
+  - V
+  - MA
+  - SPGI
+  - MCO
+  - MSCI
+  - MLM
+  - VMC
+  - EXP
+  - J
+  - ACM
+  - FLR
+  - HII
+  - KTOS
+  - AVAV
+  - ISRG
+  - IDXX
+  - ZTS
+  - MTD
+
+# ── Tier 2: S&P 500 ex-overlap (~440) ────────────────────────────────────────
+tier2:
+  # Mega-cap technology
+  - AAPL
+  - MSFT
+  - NVDA
+  - AMZN
+  - META
+  - GOOGL
+  - GOOG
+  - TSLA
+  - ORCL
+  - CSCO
+
+  # Semiconductors
+  - INTC
+  - AMD
+  - TXN
+  - QCOM
+  - MU
+  - AVGO
+  - ANET
+  - ON
+  - ADI
+  - NXPI
+  - MCHP
+  - MPWR
+  - SWKS
+  - QRVO
+  - WOLF
+  - ACLS
+  - ONTO
+  - COHU
+  - FORM
+  - UCTT
+
+  # Software & cloud
+  - NOW
+  - CRM
+  - ADBE
+  - INTU
+  - WDAY
+  - ANSS
+  - CDNS
+  - SNPS
+  - CTSH
+  - IBM
+  - ACN
+  - PANW
+  - CRWD
+  - FTNT
+  - ZS
+  - OKTA
+  - SNOW
+  - DDOG
+  - MDB
+  - HUBS
+  - TEAM
+  - ZM
+  - DOCU
+  - BILL
+  - GTLB
+  - DOMO
+  - APPN
+
+  # Hardware / devices
+  - HPQ
+  - HPE
+  - DELL
+  - STX
+  - WDC
+  - NTAP
+  - PSTG
+  - POWI
+  - AAON
+
+  # Fintech / payments
+  - PYPL
+  - SQ
+  - COIN
+  - HOOD
+  - AFRM
+  - UPST
+  - LC
+  - SOFI
+
+  # Financials — banks
+  - JPM
+  - BAC
+  - WFC
+  - C
+  - GS
+  - MS
+  - USB
+  - PNC
+  - TFC
+  - RF
+  - CFG
+  - KEY
+  - FITB
+  - HBAN
+  - ZION
+  - MTB
+  - CMA
+  - BOK
+  - FHN
+  - FNB
+
+  # Financials — brokers, exchanges, asset managers
+  - BK
+  - STT
+  - BLK
+  - SCHW
+  - AMP
+  - CME
+  - ICE
+  - NDAQ
+  - CBOE
+  - MKTX
+  - LPLA
+  - RJF
+  - SF
+
+  # Insurance
+  - PRU
+  - MET
+  - AFL
+  - AIG
+  - CB
+  - TRV
+  - PGR
+  - ALL
+  - HIG
+  - MMC
+  - AON
+  - WTW
+  - ACGL
+  - RNR
+  - RE
+
+  # Healthcare — managed care
+  - UNH
+  - CVS
+  - CI
+  - HUM
+  - ELV
+  - CNC
+  - MOH
+
+  # Healthcare — large pharma
+  - JNJ
+  - PFE
+  - BMY
+  - MRK
+  - AMGN
+  - GILD
+  - BIIB
+  - VRTX
+  - REGN
+  - MRNA
+
+  # Healthcare — biotech (high catalyst frequency)
+  - ALNY
+  - IONS
+  - ARWR
+  - INCY
+  - HALO
+  - RCUS
+  - SGEN
+  - ROIV
+  - PRLD
+  - IMVT
+  - KYMR
+  - ALLO
+  - FOLD
+  - PTGX
+  - ARCT
+  - CARA
+  - NTRA
+  - EXAS
+  - NTLA
+  - EDIT
+  - BEAM
+  - CRSP
+  - VERV
+  - BLUE
+  - SRPT
+  - BMRN
+  - PTCT
+  - RARE
+
+  # Healthcare — devices and tools
+  - BSX
+  - SYK
+  - ZBH
+  - STE
+  - BDX
+  - EW
+  - DXCM
+  - RMD
+  - BAX
+  - ILMN
+  - IQV
+  - CRL
+  - WAT
+  - TECH
+  - BIO
+  - HSIC
+  - XRAY
+  - ABMD
+  - NVCR
+
+  # Consumer discretionary — retail
+  - HD
+  - LOW
+  - TGT
+  - WMT
+  - COST
+  - BBY
+  - DG
+  - DLTR
+  - ROST
+  - TJX
+  - FIVE
+  - OLLI
+  - BURL
+  - JWN
+  - M
+  - KSS
+
+  # Consumer discretionary — auto & parts
+  - APTV
+  - BWA
+  - MGA
+  - GNTX
+  - LEA
+  - ALV
+  - GT
+  - CTB
+  - FOXF
+
+  # Consumer discretionary — auto dealers / services
+  - AZO
+  - ORLY
+  - AAP
+  - AN
+  - KMX
+
+  # Consumer discretionary — apparel / footwear
+  - NKE
+  - LULU
+  - DKS
+  - FL
+  - SKX
+  - CROX
+  - VFC
+  - PVH
+  - RL
+  - TPR
+  - CPRI
+  - UAA
+
+  # Consumer discretionary — leisure / travel
+  - BKNG
+  - EXPE
+  - ABNB
+  - MAR
+  - HLT
+  - MGM
+  - WYNN
+  - LVS
+  - CCL
+  - RCL
+  - NCLH
+  - DAL
+  - UAL
+  - AAL
+  - LUV
+  - SAVE
+
+  # Consumer discretionary — restaurants / food service
+  - MCD
+  - SBUX
+  - YUM
+  - QSR
+  - DRI
+  - CMG
+  - SHAK
+  - RRGB
+
+  # Consumer staples
+  - PG
+  - KO
+  - PEP
+  - PM
+  - MO
+  - MDLZ
+  - GIS
+  - CAG
+  - CPB
+  - HRL
+  - MKC
+  - CLX
+  - CL
+  - EL
+  - KHC
+  - TSN
+  - TAP
+  - WBA
+  - SYY
+  - PFGC
+  - USFD
+
+  # Communication services
+  - NFLX
+  - DIS
+  - CMCSA
+  - T
+  - VZ
+  - TMUS
+  - CHTR
+  - WBD
+  - PARA
+  - FOX
+  - FOXA
+  - IPG
+  - OMC
+  - TTWO
+  - EA
+  - ATVI
+
+  # Industrials — aerospace & defense contractors
+  - BA
+  - TDG
+  - HEI
+  - CW
+  - KTOS  # (already Tier 1, intentional overlap OK)
+  - MOOG
+  - HEICO
+  - AXON
+
+  # Industrials — transport & logistics
+  - UPS
+  - FDX
+  - UNP
+  - CSX
+  - NSC
+  - EXPD
+  - XPO
+  - CHRW
+  - JBHT
+  - ODFL
+  - SAIA
+  - ARCB
+
+  # Industrials — machinery & equipment
+  - MMM
+  - GWW
+  - ROP
+  - FAST
+  - SNA
+  - SWK
+  - PNR
+  - IR
+  - NDSN
+  - ALSN
+  - FLOW
+  - REVG
+  - TRS
+  - GTLS
+  - HLIO
+  - RXO
+
+  # Industrials — construction & engineering
+  - URI
+  - WSC
+  - SITE
+  - BLDR
+  - MAS
+  - IBP
+  - APOG
+  - AWI
+
+  # Industrials — metals & mining
+  - NUE
+  - STLD
+  - CLF
+  - X
+  - AA
+  - ATI
+  - CMC
+  - WOR
+  - ZEUS
+
+  # Energy — E&P
+  - XOM
+  - CVX
+  - COP
+  - EOG
+  - DVN
+  - MRO
+  - APA
+  - OXY
+  - FANG
+  - CTRA
+  - CNX
+  - EQT
+  - RRC
+  - AR
+  - SWN
+
+  # Energy — services
+  - SLB
+  - HAL
+  - BKR
+  - RIG
+  - NE
+  - VAL
+  - OVV
+
+  # Energy — refining & marketing
+  - MPC
+  - PSX
+  - VLO
+  - DK
+  - PBF
+
+  # Materials — chemicals
+  - LIN
+  - APD
+  - ECL
+  - PPG
+  - SHW
+  - EMN
+  - CC
+  - OLN
+  - HUN
+  - AVNT
+  - RPM
+  - FMC
+
+  # Materials — agriculture
+  - CF
+  - MOS
+  - NTR
+  - CTVA
+  - ICL
+
+  # Materials — precious metals
+  - NEM
+  - AEM
+  - GOLD
+  - WPM
+  - FNV
+  - RGLD
+
+  # Real estate (high catalyst potential — M&A, asset sales)
+  - AMT
+  - CCI
+  - SBAC
+  - DLR
+  - EQIX
+  - PLD
+  - PSA
+  - EXR
+  - AVB
+  - EQR
+  - SPG
+  - O
+  - WPC
+  - VICI
+  - IRM
+  - INVH
+  - AMH
+  - CBRE
+  - JLL
+
+  # Utilities
+  - NEE
+  - DUK
+  - SO
+  - D
+  - EXC
+  - SRE
+  - AEP
+  - PCG
+  - ED
+  - ETR
+  - PPL
+  - EIX
+  - FE
+  - WEC
+  - AEE
+  - CMS
+  - NI
+  - ATO
+  - AWK

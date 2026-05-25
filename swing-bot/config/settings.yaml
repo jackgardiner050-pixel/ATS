@@ -1,0 +1,44 @@
+# Swing Bot v1 — configuration
+# Hard rule: this file is NEVER imported by the long-term agent (agent/src/).
+# Ringfenced to agent/swing-bot/ only.
+
+bot:
+  name: "swing-bot-v1"
+  start_date: "2026-05-25"          # first live paper run date
+  disable_date: "2026-11-25"        # 6-month auto-disable (hard rule #9)
+  paper_only: true                   # immutable
+  alert_mode_only: true             # Phase D smoke test — flip to false for live paper execution
+
+portfolio:
+  start_value_gbp: 500.0
+  position_size_gbp: 50.0
+  max_positions: 10
+  kill_switch_pct: -10.0            # disable if cumulative P&L drops below -10% (-£50)
+
+entry_rules:
+  min_price_change_pct: 3.0         # stock must be up ≥ 3% on catalyst day
+  min_liquidity_usd: 6_350_000      # ≈ £5M at 1.27 GBPUSD — avg daily notional
+  earnings_beat_min_pct: 5.0        # EPS beat must be ≥ 5%
+  volume_spike_multiplier: 3.0      # today's volume > 3× 30-day avg
+  five_day_trend_floor_pct: -1.0    # 5-day trend must be ≥ -1% (neutral OK)
+
+exit_rules:
+  profit_target_pct: 10.0           # +10% → close
+  stop_loss_pct: -5.0               # -5% → close
+  max_hold_trading_days: 10         # 10 trading days → force close
+
+llm:
+  model: "claude-haiku-4-5-20251001"
+  max_input_chars: 5000
+  monthly_cost_cap_gbp: 5.0         # hard-fail if exceeded
+  enabled: false                    # Phase A: disabled; set true in Phase B
+
+edgar:
+  poll_lookback_minutes: 20         # re-check filings filed in the last N minutes
+  material_items: ["1.01", "2.01", "5.02", "7.01", "8.01"]
+  high_priority_items: ["1.01", "2.01"]   # trigger without Haiku in Phase A
+  user_agent: "Jack Gardiner jackgardiner050@gmail.com"
+
+telegram:
+  bot_token: ${SWING_BOT_TOKEN}
+  chat_id: ${SWING_BOT_CHAT_ID}
