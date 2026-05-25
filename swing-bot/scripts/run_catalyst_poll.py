@@ -35,7 +35,7 @@ import yaml
 from src.active_watchlist import add_catalyst_ticker, get_tier0
 from src.catalysts.edgar_8k import get_recent_8ks
 from src.finnhub_client import FinnhubClient
-from src.kill_switch import check_kill_switch, format_kill_alert
+from src.kill_switch import check_kill_switch, format_kill_alert, format_soft_alert
 from src.paper_executor import (
     append_trade, close_position, load_positions, load_trades,
     open_position, save_positions,
@@ -134,7 +134,6 @@ def main() -> None:
 
     alert_mode = bool(bot_cfg.get("alert_mode_only", True))
     disable_date = str(bot_cfg.get("disable_date", "2026-11-25"))
-    max_drawdown_pct = float(portfolio_cfg.get("kill_switch_pct", -10.0))
     phase_b = cfg.get("llm", {}).get("enabled", False)
 
     position_size_gbp = float(portfolio_cfg.get("position_size_gbp", 50.0))
@@ -149,11 +148,11 @@ def main() -> None:
 
     # ── 1. Kill switch pre-check ──────────────────────────────────────────────
     trades = load_trades()
-    triggered, reason = check_kill_switch(trades, max_drawdown_pct=max_drawdown_pct, disable_date=disable_date)
-    if triggered:
-        log.error("Kill switch active (%s) — aborting", reason)
+    hard_killed, reason, _ = check_kill_switch(trades, disable_date=disable_date)
+    if hard_killed:
+        log.error("Kill switch hard kill (%s) — aborting", reason)
         cumulative_gbp = sum(t.get("pnl_gbp", 0) for t in trades)
-        cumulative_pct = sum(t.get("return_pct", 0) for t in trades) * 100
+        cumulative_pct = cumulative_gbp / 500.0 * 100
         send_message(format_kill_alert(reason, cumulative_pct, cumulative_gbp))
         sys.exit(0)
 
@@ -310,11 +309,13 @@ def main() -> None:
     # ── 9. Post-trade kill switch ──────────────────────────────────────────────
     if not alert_mode and closed:
         trades_now = load_trades()
-        triggered, reason = check_kill_switch(trades_now, max_drawdown_pct=max_drawdown_pct, disable_date=disable_date)
-        if triggered:
-            cum_gbp = sum(t.get("pnl_gbp", 0) for t in trades_now)
-            cum_pct = sum(t.get("return_pct", 0) for t in trades_now) * 100
+        hard_killed, reason, soft_fired = check_kill_switch(trades_now, disable_date=disable_date)
+        cum_gbp = sum(t.get("pnl_gbp", 0) for t in trades_now)
+        cum_pct = cum_gbp / 500.0 * 100
+        if hard_killed:
             send_message(format_kill_alert(reason, cum_pct, cum_gbp))
+        elif soft_fired:
+            send_message(format_soft_alert(cum_pct, cum_gbp))
 
     log.info("Poll done: %d opened, %d closed, %d open, %d Finnhub calls",
              len(opened), len(closed), len(positions), finnhub_calls)

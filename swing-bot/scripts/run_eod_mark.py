@@ -26,7 +26,7 @@ sys.path.insert(0, str(_ROOT))
 import yaml
 
 from src.kill_switch import (
-    check_kill_switch, format_kill_alert, is_disabled, update_pnl,
+    check_kill_switch, format_kill_alert, format_soft_alert, is_disabled, update_pnl,
 )
 from src.paper_executor import (
     append_trade, close_position, load_positions, load_trades, save_positions,
@@ -44,7 +44,6 @@ log = logging.getLogger("eod_mark")
 _CONFIG_PATH = _ROOT / "config" / "settings.yaml"
 _MARKS_LOG = _ROOT / "data" / "eod_marks.jsonl"
 _DATA_DIR = _ROOT / "data"
-_KILL_WARN_THRESHOLD = -7.0  # warn via Telegram when cumulative P&L approaches kill switch
 
 
 def _closing_price(ticker: str) -> float:
@@ -78,7 +77,6 @@ def main() -> None:
 
     alert_mode = bool(bot_cfg.get("alert_mode_only", True))
     disable_date = str(bot_cfg.get("disable_date", "2026-11-25"))
-    max_drawdown_pct = float(portfolio_cfg.get("kill_switch_pct", -10.0))
     profit_target = float(exit_cfg.get("profit_target_pct", 10.0))
     stop_loss = float(exit_cfg.get("stop_loss_pct", -5.0))
     max_hold_days = int(exit_cfg.get("max_hold_trading_days", 10))
@@ -169,23 +167,15 @@ def main() -> None:
     all_trades = load_trades() if not alert_mode else trades
     update_pnl(all_trades)
 
-    # Kill switch check after EOD closes
+    # Kill switch check after EOD closes (two-tier: soft alert at -10%, hard kill at -20%)
     if not alert_mode:
-        triggered, reason = check_kill_switch(all_trades, max_drawdown_pct=max_drawdown_pct, disable_date=disable_date)
-        if triggered:
-            cum_gbp = sum(t.get("pnl_gbp", 0) for t in all_trades)
-            cum_pct = sum(t.get("return_pct", 0) for t in all_trades) * 100
+        hard_killed, reason, soft_fired = check_kill_switch(all_trades, disable_date=disable_date)
+        cum_gbp = sum(t.get("pnl_gbp", 0) for t in all_trades)
+        cum_pct = cum_gbp / 500.0 * 100
+        if hard_killed:
             send_message(format_kill_alert(reason, cum_pct, cum_gbp))
-        else:
-            # Warn if approaching threshold
-            cum_pct = sum(t.get("return_pct", 0) for t in all_trades) * 100 * (50.0 / 500.0)
-            if cum_pct <= _KILL_WARN_THRESHOLD:
-                send_message(
-                    f"⚠️ SWING BOT WARNING\n\n"
-                    f"Cumulative P&L approaching kill switch.\n"
-                    f"Current: {cum_pct:+.1f}% (kill at {max_drawdown_pct:.1f}%)\n"
-                    f"Review open positions."
-                )
+        elif soft_fired:
+            send_message(format_soft_alert(cum_pct, cum_gbp))
 
     # EOD summary
     unrealised_pnl = sum(

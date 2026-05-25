@@ -13,7 +13,8 @@ portfolio:
   start_value_gbp: 500.0
   position_size_gbp: 50.0
   max_positions: 10
-  kill_switch_pct: -10.0            # disable if cumulative P&L drops below -10% (-£50)
+  soft_alert_pct: -10.0             # Telegram warning at -10% (bot keeps running, £450 mark)
+  hard_kill_pct: -20.0             # auto-disable at -20% (£400 floor on £500 start)
 
 entry_rules:
   min_price_change_pct: 3.0         # stock must be up ≥ 3% on catalyst day

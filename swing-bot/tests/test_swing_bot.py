@@ -41,7 +41,7 @@ from src.paper_executor import (
 )
 from src.kill_switch import (
     check_kill_switch, is_disabled, load_state, save_state,
-    format_kill_alert, update_pnl,
+    format_kill_alert, format_soft_alert, update_pnl,
 )
 from src.rules.entry import check_entry, build_entry_signal, EntrySignal
 from src.rules.exit import check_exit, ExitSignal, _count_trading_days
@@ -174,116 +174,187 @@ class TestRingfencedPaths:
         assert _TRADES_PATH.name != "paper_trades.jsonl"
 
 
-# ─── Hard rule #4: kill switch at -10% P&L ───────────────────────────────────
+# ─── Two-tier kill switch: soft alert at -10%, hard kill at -20% ─────────────
 
-class TestKillSwitchPnL:
-    def test_no_trigger_at_zero_pnl(self):
+class TestKillSwitchSoftAlert:
+    """Soft alert: fires once at -10%, bot keeps running."""
+
+    def test_no_alert_at_zero_pnl(self):
         tmp = _tmp_path() / "ks.yaml"
-        trades = _make_trades([0.0])
-        triggered, reason = check_kill_switch(trades, path=tmp)
-        assert not triggered
+        hard_killed, reason, soft_fired = check_kill_switch([], path=tmp)
+        assert not hard_killed
+        assert not soft_fired
         assert reason == "ok"
 
-    def test_no_trigger_at_minus_9pct(self):
+    def test_no_alert_below_minus_9pct(self):
         tmp = _tmp_path() / "ks.yaml"
         # -9% of £500 = -£45
-        trades = _make_trades([-45.0])
-        triggered, reason = check_kill_switch(trades, path=tmp)
-        assert not triggered
+        hard_killed, reason, soft_fired = check_kill_switch(_make_trades([-45.0]), path=tmp)
+        assert not hard_killed
+        assert not soft_fired
 
-    def test_trigger_at_exactly_minus_10pct(self):
+    def test_soft_alert_fires_at_exactly_minus_10pct(self):
         tmp = _tmp_path() / "ks.yaml"
-        # -10% of £500 = -£50
+        hard_killed, reason, soft_fired = check_kill_switch(_make_trades([-50.0]), path=tmp)
+        assert not hard_killed      # bot NOT disabled
+        assert soft_fired           # alert fires
+        assert reason == "ok"
+
+    def test_soft_alert_fires_between_minus_10_and_minus_20(self):
+        tmp = _tmp_path() / "ks.yaml"
+        hard_killed, reason, soft_fired = check_kill_switch(_make_trades([-75.0]), path=tmp)
+        assert not hard_killed
+        assert soft_fired
+
+    def test_soft_alert_fires_only_once_per_period(self):
+        tmp = _tmp_path() / "ks.yaml"
         trades = _make_trades([-50.0])
-        triggered, reason = check_kill_switch(trades, path=tmp)
-        assert triggered
-        assert "cumulative_loss" in reason
+        # First call: soft alert fires
+        _, _, soft1 = check_kill_switch(trades, path=tmp)
+        assert soft1
+        # Second call at same loss level: no repeat
+        _, _, soft2 = check_kill_switch(trades, path=tmp)
+        assert not soft2
 
-    def test_trigger_at_minus_11pct(self):
+    def test_soft_alert_once_flag_persisted_in_state(self):
         tmp = _tmp_path() / "ks.yaml"
-        trades = _make_trades([-55.0])
-        triggered, reason = check_kill_switch(trades, path=tmp)
-        assert triggered
+        check_kill_switch(_make_trades([-50.0]), path=tmp)
+        state = load_state(tmp)
+        assert state["soft_alert_sent"] is True
 
-    def test_trigger_sets_disabled_in_state_file(self):
+    def test_soft_alert_does_not_set_disabled(self):
         tmp = _tmp_path() / "ks.yaml"
-        trades = _make_trades([-60.0])
-        check_kill_switch(trades, path=tmp)
+        check_kill_switch(_make_trades([-50.0]), path=tmp)
+        state = load_state(tmp)
+        assert state["disabled"] is False
+
+    def test_soft_alert_not_fired_when_already_sent(self):
+        tmp = _tmp_path() / "ks.yaml"
+        save_state({"soft_alert_sent": True, "disabled": False, "start_value_gbp": 500.0}, tmp)
+        _, _, soft_fired = check_kill_switch(_make_trades([-60.0]), path=tmp)
+        assert not soft_fired
+
+
+class TestKillSwitchHardKill:
+    """Hard kill: auto-disables at -20%, requires manual re-enable."""
+
+    def test_no_hard_kill_at_minus_19pct(self):
+        tmp = _tmp_path() / "ks.yaml"
+        # -19% of £500 = -£95
+        hard_killed, _, _ = check_kill_switch(_make_trades([-95.0]), path=tmp)
+        assert not hard_killed
+
+    def test_hard_kill_at_exactly_minus_20pct(self):
+        tmp = _tmp_path() / "ks.yaml"
+        # -20% of £500 = -£100  (£400 floor)
+        hard_killed, reason, soft_fired = check_kill_switch(_make_trades([-100.0]), path=tmp)
+        assert hard_killed
+        assert "hard_kill" in reason
+        assert not soft_fired   # hard kill, not soft
+
+    def test_hard_kill_at_minus_21pct(self):
+        tmp = _tmp_path() / "ks.yaml"
+        hard_killed, _, _ = check_kill_switch(_make_trades([-105.0]), path=tmp)
+        assert hard_killed
+
+    def test_hard_kill_sets_disabled_true(self):
+        tmp = _tmp_path() / "ks.yaml"
+        check_kill_switch(_make_trades([-100.0]), path=tmp)
         state = load_state(tmp)
         assert state["disabled"] is True
 
-    def test_trigger_preserves_disable_reason(self):
+    def test_hard_kill_preserves_disable_reason(self):
         tmp = _tmp_path() / "ks.yaml"
-        trades = _make_trades([-60.0])
-        _, reason = check_kill_switch(trades, path=tmp)
+        _, reason, _ = check_kill_switch(_make_trades([-100.0]), path=tmp)
         state = load_state(tmp)
         assert state["disable_reason"] == reason
 
-    def test_accumulates_across_multiple_trades(self):
+    def test_hard_kill_accumulates_across_trades(self):
         tmp = _tmp_path() / "ks.yaml"
-        # Six trades at -£9 each = -£54 = -10.8%
-        trades = _make_trades([-9.0] * 6)
-        triggered, _ = check_kill_switch(trades, path=tmp)
-        assert triggered
+        # 11 trades at -£10 = -£110 = -22%
+        hard_killed, _, _ = check_kill_switch(_make_trades([-10.0] * 11), path=tmp)
+        assert hard_killed
 
+    def test_floor_is_400_gbp(self):
+        """Hard kill triggers at exactly -£100 (£400 floor on £500 start)."""
+        tmp = _tmp_path() / "ks.yaml"
+        # -£99 = -19.8% → no hard kill
+        hard_at_99, _, _ = check_kill_switch(_make_trades([-99.0]), path=tmp)
+        tmp2 = _tmp_path() / "ks.yaml"
+        # -£100 = -20.0% → hard kill
+        hard_at_100, _, _ = check_kill_switch(_make_trades([-100.0]), path=tmp2)
+        assert not hard_at_99
+        assert hard_at_100
 
-# ─── Hard rule #5: kill switch at time expiry ────────────────────────────────
 
 class TestKillSwitchTimeExpiry:
     def test_trigger_when_today_equals_disable_date(self):
         tmp = _tmp_path() / "ks.yaml"
         today = date.today().isoformat()
-        triggered, reason = check_kill_switch([], path=tmp, disable_date=today)
-        assert triggered
+        hard_killed, reason, _ = check_kill_switch([], path=tmp, disable_date=today)
+        assert hard_killed
         assert "time_expiry" in reason
 
     def test_trigger_when_past_disable_date(self):
         tmp = _tmp_path() / "ks.yaml"
         yesterday = (date.today() - timedelta(days=1)).isoformat()
-        triggered, reason = check_kill_switch([], path=tmp, disable_date=yesterday)
-        assert triggered
+        hard_killed, _, _ = check_kill_switch([], path=tmp, disable_date=yesterday)
+        assert hard_killed
 
     def test_no_trigger_before_disable_date(self):
         tmp = _tmp_path() / "ks.yaml"
         tomorrow = (date.today() + timedelta(days=1)).isoformat()
-        triggered, _ = check_kill_switch([], path=tmp, disable_date=tomorrow)
-        assert not triggered
+        hard_killed, _, _ = check_kill_switch([], path=tmp, disable_date=tomorrow)
+        assert not hard_killed
 
-
-# ─── Hard rule #6: disabled state blocks further checks ──────────────────────
 
 class TestKillSwitchPersistence:
-    def test_already_disabled_returns_immediately(self):
+    def test_already_hard_killed_returns_immediately(self):
         tmp = _tmp_path() / "ks.yaml"
-        state = {"disabled": True, "disable_reason": "manual_disable"}
+        state = {"disabled": True, "disable_reason": "hard_kill (-20.0%)"}
         save_state(state, tmp)
-        triggered, reason = check_kill_switch([], path=tmp)
-        assert triggered
-        assert reason == "manual_disable"
+        hard_killed, reason, soft_fired = check_kill_switch([], path=tmp)
+        assert hard_killed
+        assert "hard_kill" in reason
+        assert not soft_fired
 
     def test_is_disabled_returns_true_when_triggered(self):
         tmp = _tmp_path() / "ks.yaml"
-        state = {"disabled": True}
-        save_state(state, tmp)
+        save_state({"disabled": True}, tmp)
         assert is_disabled(tmp) is True
 
     def test_is_disabled_returns_false_when_ok(self):
         tmp = _tmp_path() / "ks.yaml"
-        assert is_disabled(tmp) is False  # no file → default = False
+        assert is_disabled(tmp) is False
 
 
-# ─── Kill switch: alert formatting ───────────────────────────────────────────
-
-class TestKillSwitchAlert:
-    def test_alert_contains_ticker_and_pct(self):
-        msg = format_kill_alert("cumulative_loss (-10.5%)", -10.5, -52.5)
-        assert "KILL SWITCH" in msg
-        assert "-10.5%" in msg
-        assert "£-52.50" in msg or "£" in msg
-
-    def test_alert_instructs_manual_reenable(self):
-        msg = format_kill_alert("time_expiry", 0.0, 0.0)
+class TestKillSwitchAlertFormatting:
+    def test_hard_kill_alert_contains_pct_and_floor(self):
+        msg = format_kill_alert("hard_kill (-20.5%)", -20.5, -102.5)
+        assert "HARD KILL" in msg
+        assert "-20.5%" in msg
+        assert "£400" in msg   # floor on £500 start at -20%
         assert "DISABLED" in msg or "disabled" in msg.lower()
+
+    def test_hard_kill_alert_instructs_manual_reenable(self):
+        msg = format_kill_alert("hard_kill (-20.0%)", -20.0, -100.0)
+        assert "Re-enable" in msg or "re-enable" in msg.lower()
+
+    def test_soft_alert_format_contains_both_thresholds(self):
+        msg = format_soft_alert(-10.5, -52.5)
+        assert "WARNING" in msg
+        assert "-10" in msg    # soft threshold
+        assert "-20" in msg    # hard threshold shown for context
+        assert "still running" in msg.lower() or "still" in msg.lower()
+
+    def test_soft_alert_does_not_say_disabled(self):
+        msg = format_soft_alert(-10.0, -50.0)
+        assert "DISABLED" not in msg
+        assert "disabled" not in msg.lower()
+
+    def test_soft_alert_shows_floor(self):
+        msg = format_soft_alert(-10.0, -50.0)
+        assert "£400" in msg   # hard kill floor
 
 
 # ─── Entry rules ──────────────────────────────────────────────────────────────
