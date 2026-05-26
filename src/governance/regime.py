@@ -244,7 +244,7 @@ def _score_regimes(conditions: dict[str, float]) -> dict[str, float]:
     }
 
 
-def fetch_indicators(lookback_days: int = 250) -> dict[str, float]:
+def fetch_indicators(lookback_days: int = 320) -> dict[str, float]:
     """Fetch market data and compute regime indicators via yfinance.
 
     Returns dict of raw indicator values.
@@ -289,13 +289,17 @@ def fetch_indicators(lookback_days: int = 250) -> dict[str, float]:
     result["vix_5d_ago"] = float(vix.iloc[-6]) if len(vix) >= 6 else float(vix.iloc[0])
 
     spy = _series("SPY")
-    if spy is None or len(spy) < 201:
+    if spy is None or len(spy) < 55:
         raise RuntimeError(
-            f"Insufficient SPY data: need 201 days, got {len(spy) if spy is not None else 0}"
+            f"Insufficient SPY data: need ≥55 days, got {len(spy) if spy is not None else 0}"
         )
     result["spy_current"] = float(spy.iloc[-1])
     result["spy_50d_avg"] = float(spy.iloc[-50:].mean())
-    result["spy_200d_avg"] = float(spy.iloc[-200:].mean())
+    # Use all available history for the long-term MA (up to 200 days)
+    long_window = min(len(spy), 200)
+    result["spy_200d_avg"] = float(spy.iloc[-long_window:].mean())
+    if long_window < 200:
+        result["spy_200d_avg_note"] = f"using_{long_window}d_avg_only"
 
     spy_rets = spy.pct_change().dropna()
     result["spy_realized_vol_20d"] = (
