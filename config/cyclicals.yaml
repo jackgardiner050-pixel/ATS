@@ -1,0 +1,70 @@
+# Cyclical sector definitions for EBITDA normalization in the DCF skepticism layer.
+#
+# When a ticker appears here, dcf_skeptic.py computes a multi-year median EBITDA
+# and compares it to trailing EBITDA. If trailing exceeds normalized by >25%,
+# a cycle_peak_detected flag is raised and confidence is penalised.
+#
+# normalization_years: how many trailing years to use for the median
+#   3yr: shorter cycles (semi-cap, EPC, power generation)
+#   5yr: longer commodity / materials cycles
+#
+# Human-editable. Review annually — cycle definitions rot.
+# Last reviewed: 2026-05-26
+
+cyclical_sectors:
+
+  semicap_equipment:
+    tickers: [AMAT, LRCX, KLAC, ENTG, TER]
+    normalization_years: 3
+    cycle_peak_threshold: 0.25   # >25% above normalized → peak_detected
+    note: >
+      Semiconductor capex cycles run 3-5 years. 2021-2025 was an extraordinary
+      build cycle driven by AI accelerators and advanced-node transitions.
+      Trailing EBITDA reflects peak utilisation that will not persist.
+
+  power_generation_backup:
+    tickers: [GNRC]
+    normalization_years: 3
+    cycle_peak_threshold: 0.25
+    note: >
+      Generac experienced extreme demand pull-forward during 2020-2022 (COVID
+      home investment, grid unreliability). Normalise to pre-COVID trajectory
+      to avoid valuing peak-cycle revenue as steady-state.
+
+  infrastructure_epc:
+    tickers: [ACM, J, FLR, DY, PWR, MTZ, PRIM, EME, FIX, IESC, STRL, AGX]
+    normalization_years: 3
+    cycle_peak_threshold: 0.25
+    note: >
+      IRA (2022) and IIJA (2021) created a sharp step-up in government and
+      utility infrastructure spending. EPC backlogs and margins are elevated
+      vs 2017-2021 baseline. Normalise to temper cycle-peak DCF inputs.
+
+  industrial_cyclicals:
+    tickers: [CAT, HON, EMR, PH, DOV, ITW, GE, MMM, URI, PCAR]
+    normalization_years: 3
+    cycle_peak_threshold: 0.25
+    note: >
+      Global industrial capex cycles typically run 3-4 years. This group
+      tracks closely with global PMI and manufacturing output.
+
+  commodity_sensitive:
+    tickers: [FCX, NEM, NUE, LIN, APD, EMN, IFF, SHW]
+    normalization_years: 5
+    cycle_peak_threshold: 0.30   # wider tolerance — commodity cycles are longer
+    note: >
+      Commodity-linked industrials have longer mean-reversion cycles (5-7 years).
+      Use 5-year median to capture a full commodity cycle. Threshold widened to
+      0.30 because commodity-price inflation can persist for several years.
+
+  telecom_infrastructure:
+    tickers: [DY, MTZ, IESC]
+    normalization_years: 3
+    cycle_peak_threshold: 0.25
+    note: >
+      Telecom capex (5G, fibre) is cyclical. Carriers defer discretionary
+      infrastructure in economic slowdowns. Tickers overlap with infrastructure_epc;
+      the most conservative (shorter) normalization window applies.
+
+# Tickers NOT in this file are treated as non-cyclical by dcf_skeptic.
+# Default: no normalization, no cycle-peak penalty.

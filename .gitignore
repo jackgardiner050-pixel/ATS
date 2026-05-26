@@ -9,3 +9,7 @@ __pycache__/
 bin/
 logs/
 data/governance/
+# Operational logs — local only, intentionally not git-tracked (see docs/environment_snapshot.md)
+data/governance_journal/
+data/attribution_log.jsonl
+data/last_digest_state.json

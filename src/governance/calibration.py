@@ -16,7 +16,7 @@ infrastructure is here to accumulate evidence over time.
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 import yaml
@@ -204,7 +204,7 @@ def run_calibration(
     total_closed = len(closed_trades)
 
     result = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "total_signal_entries": len(signal_entries),
         "total_unique_tickers": total_tickers,
         "total_closed_trades": total_closed,

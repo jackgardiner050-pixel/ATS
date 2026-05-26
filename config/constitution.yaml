@@ -35,3 +35,19 @@ WARN_CONFIDENCE_LOW_FRACTION: 0.50    # warn if >50% of positions are LOW/BROKEN
 MIN_SIGNAL_QUALITY_THRESHOLD: 0.45   # warn if rolling signal quality falls below 45%
 SIGNAL_DECAY_LOOKBACK_WEEKS: 8       # rolling window for decay detection
 MIN_OBSERVATIONS_FOR_CALIBRATION: 20 # minimum closed trades before calibration is meaningful
+
+# ─── Phase II: DCF skepticism thresholds ─────────────────────────────────────
+DCF_UPSIDE_AGGRESSIVE_THRESHOLD: 0.40    # stress-adjusted upside: flag AGGRESSIVE_UPSIDE
+DCF_UPSIDE_REVIEW_THRESHOLD: 0.80        # stress-adjusted upside: flag HIGH_UPSIDE_REVIEW_REQUIRED
+DCF_UPSIDE_ANOMALY_THRESHOLD: 1.20       # stress-adjusted upside: flag EXTREME_UPSIDE_ANOMALY
+DCF_WACC_DESTROYS_UPSIDE_FRACTION: 0.50 # +150bps halves upside → wacc_destroys_upside flag
+DCF_CYCLE_PEAK_THRESHOLD_DEFAULT: 0.25  # trailing > normalised by 25% → cyclical_peak_detected
+
+# ─── Phase II: Concentration caps (new cluster types) ────────────────────────
+MAX_LEVERAGE_CLUSTER_EXPOSURE: 0.20  # positions with net_debt/ebitda >2.5x capped at 20%
+MAX_POLICY_DEPENDENCY_EXPOSURE: 0.25 # govt-revenue-dependent names capped at 25%
+MAX_CYCLICAL_PEAK_EXPOSURE: 0.30     # cyclical-peak tickers capped at 30% of book
+
+# ─── Phase II: Confidence calibration ────────────────────────────────────────
+CONFIDENCE_COMPRESSION_WARN_THRESHOLD: 0.50  # warn if >50% positions share one tier
+CONFIDENCE_V2_ENABLED: true                   # use assess_confidence_v2 as primary signal

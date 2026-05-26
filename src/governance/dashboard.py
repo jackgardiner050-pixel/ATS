@@ -321,6 +321,195 @@ def _format_fragility_summary(
     return "\n".join(lines)
 
 
+def _format_portfolio_intelligence(portfolio_result: Optional[dict]) -> str:
+    lines = ["─── 8. PORTFOLIO INTELLIGENCE ───────────────────────────────────────"]
+    if portfolio_result is None:
+        lines.append("  [!] Portfolio intelligence not run. Pass --portfolio to include.")
+        return "\n".join(lines)
+
+    exposure = portfolio_result.get("exposure", {})
+    survivability = portfolio_result.get("survivability", {})
+    stress = portfolio_result.get("stress", {})
+    factor = portfolio_result.get("factor", {})
+    escalations = portfolio_result.get("escalation_triggers", [])
+
+    # Narrative
+    narrative = exposure.get("narrative", "")
+    if narrative:
+        lines.append(f"  {narrative}")
+        lines.append("")
+
+    # Effective bets
+    eff_bets = exposure.get("effective_bets", "?")
+    n_pos = exposure.get("n_positions", "?")
+    div_ratio = exposure.get("effective_diversification_ratio", 0)
+    lines.append(
+        f"  Effective macro bets: {eff_bets:.1f} of {n_pos} positions "
+        f"(diversification ratio: {div_ratio:.0%})"
+    )
+
+    # Top theme concentrations
+    theme_exp = exposure.get("theme_exposure", {})
+    if theme_exp:
+        lines.append("")
+        lines.append("  TOP THEME CONCENTRATIONS:")
+        for theme, w in list(theme_exp.items())[:6]:
+            if theme == "unclassified":
+                continue
+            flag = " [!BLOCK]" if w > 0.25 else (" [WATCH]" if w >= 0.20 else "")
+            lines.append(f"    {theme:<30} {_pct(w)} {_bar(w)}{flag}")
+
+    # Cluster summary
+    for cluster_key in ("leverage_cluster", "policy_cluster", "cyclical_cluster"):
+        c = exposure.get(cluster_key, {})
+        if c:
+            w = c.get("exposure", 0)
+            limit = c.get("limit", 1)
+            tickers = c.get("tickers", [])
+            flag = " [!BLOCK]" if c.get("breached") else ""
+            label = cluster_key.replace("_cluster", "").replace("_", " ").title()
+            lines.append(
+                f"    {label + ' cluster':<30} {_pct(w)} [{', '.join(tickers)}]{flag}"
+            )
+
+    # Survivability
+    if survivability:
+        score = survivability.get("survivability_score", 0)
+        classification = survivability.get("classification", "?")
+        max_dd = survivability.get("estimated_max_drawdown", 0)
+        lines.append("")
+        lines.append(
+            f"  SURVIVABILITY: {score:.0f}/100  [{classification}]  "
+            f"estimated max drawdown: {_pct(max_dd)}"
+        )
+        breakdown = survivability.get("component_breakdown", {})
+        if breakdown:
+            parts = [f"{k}={v:.2f}" for k, v in list(breakdown.items())[:5]]
+            lines.append(f"    Components: {', '.join(parts)}")
+
+    # Stress test summary
+    if stress:
+        worst = stress.get("worst_scenario", "?")
+        worst_dd = stress.get("worst_case_drawdown", 0)
+        avg_dd = stress.get("average_drawdown", 0)
+        port_class = stress.get("portfolio_classification", "?")
+        lines.append("")
+        lines.append(
+            f"  STRESS TEST: worst='{worst}' ({_pct(worst_dd)})  "
+            f"avg={_pct(avg_dd)}  classification={port_class}"
+        )
+        always_vuln = stress.get("always_vulnerable", [])
+        if always_vuln:
+            lines.append(f"    Hurt in 7+/10 scenarios: {', '.join(always_vuln)}")
+
+    # Factor summary
+    if factor:
+        top_factor = factor.get("most_concentrated_factor", "?")
+        top_score = factor.get("most_concentrated_score", 0)
+        factor_warns = factor.get("warnings", [])
+        lines.append("")
+        lines.append(
+            f"  FACTOR DOMINANCE: top={top_factor} ({top_score:.2f})  "
+            f"warnings={len(factor_warns)}"
+        )
+
+    # Escalation triggers
+    if escalations:
+        lines.append("")
+        lines.append(f"  ESCALATION TRIGGERS ({len(escalations)}):")
+        for e in escalations:
+            lines.append(f"    ⚠ {e}")
+
+    # Hidden dependencies
+    hidden = exposure.get("hidden_dependencies", [])
+    if hidden:
+        lines.append("")
+        lines.append("  HIDDEN DEPENDENCIES:")
+        for h in hidden[:3]:
+            lines.append(f"    • {h}")
+
+    return "\n".join(lines)
+
+
+def _format_universe_intelligence(universe_result: Optional[dict]) -> str:
+    lines = ["─── 9. UNIVERSE INTELLIGENCE ────────────────────────────────────────"]
+    if universe_result is None:
+        lines.append("  [!] Universe intelligence not run. Pass --universe to include.")
+        return "\n".join(lines)
+
+    audit = universe_result.get("audit", {})
+    gov = universe_result.get("governance", {})
+    diversifier = universe_result.get("diversifier", {})
+    alignment = universe_result.get("alignment", {})
+
+    n = audit.get("n_tickers", 0)
+    bal_score = audit.get("balance_score", 0.0)
+    bias_summary = audit.get("universe_bias_summary", "")
+    lines.append(f"  Universe size: {n} tickers   Balance score: {bal_score:.2f}/1.00")
+    if bias_summary:
+        lines.append(f"  {bias_summary[:120]}")
+    lines.append("")
+
+    # Archetype distribution (top overrepresented)
+    overrep = audit.get("overrepresented_archetypes", [])
+    absent = audit.get("absent_archetypes", [])
+    if overrep or absent:
+        lines.append("  ARCHETYPE BALANCE:")
+    if overrep:
+        for a in overrep[:4]:
+            frac = audit.get("archetype_exposures", {}).get(a, 0.0)
+            lines.append(f"    {a:<30} {_pct(frac)} {_bar(frac)} [!OVERREP]")
+    if absent:
+        for a in absent[:4]:
+            lines.append(f"    {a:<30}   0.0%  {'░'*20}  [ABSENT]")
+
+    # Key balance metrics
+    lines.append("")
+    lines.append("  COMPOSITION:")
+    cyclical_frac = audit.get("cyclical_fraction", 0.0)
+    defensive_frac = audit.get("defensive_fraction", 0.0)
+    recession_frac = audit.get("recession_resilient_fraction", 0.0)
+    global_frac = audit.get("global_diversifier_fraction", 0.0)
+    flag_cyc = " [!CONCENTRATED]" if cyclical_frac > 0.30 else (" [WATCH]" if cyclical_frac > 0.25 else "")
+    flag_def = " [!THIN]" if defensive_frac < 0.15 else ""
+    lines.append(f"    {'Cyclical group':<28} {_pct(cyclical_frac)} {_bar(cyclical_frac)}{flag_cyc}")
+    lines.append(f"    {'Defensive group':<28} {_pct(defensive_frac)} {_bar(defensive_frac)}{flag_def}")
+    lines.append(f"    {'Recession resilient':<28} {_pct(recession_frac)} {_bar(recession_frac)}")
+    lines.append(f"    {'Global diversifiers':<28} {_pct(global_frac)} {_bar(global_frac)}")
+
+    # Top diversifier recommendations
+    top_recs = diversifier.get("top_recommendations", [])
+    if top_recs:
+        lines.append("")
+        lines.append(f"  TOP DIVERSIFIER CANDIDATES (addressing universe gaps):")
+        for rec in top_recs[:5]:
+            gaps = rec.get("addresses_gaps", [])
+            gap_str = f" fills: {', '.join(gaps[:2])}" if gaps else ""
+            priority = rec.get("priority", "?")
+            lines.append(
+                f"    [{priority:<6}] {rec['ticker']:<6}  "
+                f"contribution={rec['diversification_contribution']:.2f}{gap_str}"
+            )
+
+    # Portfolio-universe alignment escalations
+    escalation_notes = alignment.get("escalation_notes", [])
+    if escalation_notes:
+        lines.append("")
+        lines.append(f"  PORTFOLIO-UNIVERSE ALIGNMENT ISSUES ({len(escalation_notes)}):")
+        for note in escalation_notes:
+            lines.append(f"    ⚠ {note}")
+
+    # Governance warnings
+    warnings = gov.get("warnings", []) + gov.get("gap_alerts", [])
+    if warnings:
+        lines.append("")
+        lines.append(f"  UNIVERSE GOVERNANCE ({len(warnings)} warnings/gaps):")
+        for w in warnings[:5]:
+            lines.append(f"    • {w[:100]}")
+
+    return "\n".join(lines)
+
+
 def render_dashboard(
     regime_result: Optional[dict] = None,
     exposure_result: Optional[dict] = None,
@@ -328,6 +517,8 @@ def render_dashboard(
     calib_result: Optional[dict] = None,
     adversarial_result: Optional[dict] = None,
     constitution_report=None,
+    portfolio_result: Optional[dict] = None,
+    universe_result: Optional[dict] = None,
 ) -> str:
     """Render the full anti-delusion dashboard to a string."""
     now = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
@@ -356,6 +547,10 @@ def render_dashboard(
         _format_fragility_summary(
             regime_result, exposure_result, signal_result, calib_result, constitution_report
         ),
+        "",
+        _format_portfolio_intelligence(portfolio_result),
+        "",
+        _format_universe_intelligence(universe_result),
     ]
 
     return "\n".join(header + sections)
@@ -367,6 +562,8 @@ def to_dict(
     signal_result: Optional[dict] = None,
     calib_result: Optional[dict] = None,
     adversarial_result: Optional[dict] = None,
+    portfolio_result: Optional[dict] = None,
+    universe_result: Optional[dict] = None,
 ) -> dict:
     """Serialize all governance outputs to a single dict for Telegram or storage."""
     return {
@@ -376,4 +573,6 @@ def to_dict(
         "signals": signal_result,
         "calibration": calib_result,
         "adversarial": adversarial_result,
+        "portfolio_intelligence": portfolio_result,
+        "universe_intelligence": universe_result,
     }

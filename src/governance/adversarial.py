@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Optional
 
@@ -181,7 +181,7 @@ def run_adversarial_review(
 
     if not context["tickers"]:
         result = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "status": "no_positions",
             "critique": None,
             "diagnostic_only": True,
@@ -202,7 +202,7 @@ def run_adversarial_review(
     critique = _parse_adversarial_response(raw)
 
     result = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "status": "error" if "error" in critique else "ok",
         "tickers_reviewed": context["tickers"],
         "themes_at_review": context["themes"],

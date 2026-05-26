@@ -182,3 +182,9 @@ peer_groups:
   NOW:  [CRM, ADBE, INTU, WDAY]
   INTU: [ADBE, CRM, NOW, PAYX]
   ADP:  [PAYX, WEX, VRSN, INTU]
+
+  # === Diversification Additions (Phase III, admitted 2026-05-26) ===
+  NEE:  [DUK, SO, AEP, EXC, XEL]         # regulated utility
+  CME:  [ICE, NDAQ, CBOE, MSCI, SPGI]    # exchange / market infrastructure
+  BLK:  [TROW, BEN, STT, IVZ, BX]        # asset manager
+  JNJ:  [PFE, MRK, ABBV, ABT, MDT]       # diversified pharma / healthcare

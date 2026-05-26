@@ -1,0 +1,127 @@
+# ATS Multi-Theme Membership Registry
+# A ticker can belong to multiple themes simultaneously.
+# Thematic overlap is the concentration risk — it is intentional to track it here.
+#
+# Version: 1.0  Effective: 2026-05-26
+# HUMAN-EDITABLE — add/remove tickers and themes as the portfolio and universe evolve.
+
+version: "1.0"
+effective_date: "2026-05-26"
+
+# ─── Concentration hard limits (loaded by concentration_governor.py) ──────────
+limits:
+  max_single_theme: 0.25          # >25% of portfolio in one theme → BLOCK
+  max_leverage_cluster: 0.20      # >20% in leverage_sensitive → BLOCK
+  max_policy_cluster: 0.25        # >25% in policy_sensitive → BLOCK
+  max_cyclical_cluster: 0.35      # >35% in cyclical_industrial or semiconductor_cycle → BLOCK
+  max_factor_dominance: 0.40      # any single factor avg >40% → WARNING
+  max_single_position: 0.10       # single ticker >10% → BLOCK
+  low_confidence_cap: 0.02        # LOW confidence position max weight
+  med_low_confidence_cap: 0.04    # MED_LOW confidence position max weight
+
+# ─── Theme definitions ────────────────────────────────────────────────────────
+# description: human-readable explanation
+# tickers: list of tickers with meaningful membership in this theme
+# severity: how dangerous is concentration here? (HIGH / MEDIUM / LOW)
+
+themes:
+
+  AI_capex:
+    description: "AI / data center capex cycle — semicap equipment and datacenter infrastructure"
+    severity: HIGH
+    # TER, ONTO, ACLS: expansion candidates — not in universe.yaml yet
+    tickers: [AMAT, LRCX, KLAC, ENTG, VRT, MOD, TER, ONTO, ACLS]
+
+  AI_capex_adjacent:
+    description: "AI capex adjacent — power, cooling, electrical equipment for data centers"
+    severity: HIGH
+    tickers: [GNRC, VRT, ETN, HUBB, MOD, PWR]
+
+  government_spending:
+    description: "US federal government spending dependency (DoD + bipartisan infrastructure)"
+    severity: HIGH
+    tickers: [GD, LDOS, ACM, J, LMT, RTX, NOC, HII, KTOS, FLR, PWR, DY, MTZ]
+
+  defense:
+    description: "Defense primes and national security IT services"
+    severity: MEDIUM
+    tickers: [GD, LDOS, LMT, RTX, NOC, HII, KTOS, AVAV]
+
+  industrial_capex:
+    description: "Industrial capital expenditure and automation cycle"
+    severity: MEDIUM
+    tickers: [EMR, HUBB, HON, ITW, PH, DOV, CAT, AME, ROK, GE]
+
+  leverage_sensitive:
+    description: "High leverage / rates-sensitive balance sheets (net_debt/EBITDA >2x)"
+    severity: HIGH
+    # AM, MPLX: expansion candidates — not in universe.yaml yet
+    tickers: [KMI, TRGP, WMB, OKE, GNRC, HII, AM, MPLX]
+
+  infrastructure:
+    description: "Physical infrastructure construction and engineering services"
+    severity: MEDIUM
+    tickers: [ACM, J, DY, PWR, MTZ, PRIM, EME, FIX, IESC, STRL, FLR, AGX]
+
+  semiconductor_cycle:
+    description: "Semiconductor capital equipment — highly cyclical with 2-3yr peak-trough"
+    severity: HIGH
+    # TER, ONTO, ACLS: expansion candidates — not in universe.yaml yet
+    tickers: [AMAT, LRCX, KLAC, ENTG, TER, ONTO, ACLS]
+
+  telecom_infrastructure:
+    description: "Telecommunications network construction and fiber deployment"
+    severity: LOW
+    tickers: [DY, MTZ, IESC, PRIM, PWR]
+
+  housing_sensitive:
+    description: "Revenue correlated to residential construction and housing market"
+    severity: MEDIUM
+    # CARR: expansion candidate — not in universe.yaml yet
+    tickers: [GNRC, ETN, HUBB, MLM, VMC, EXP, CARR, TT]
+
+  energy_infrastructure:
+    description: "Energy / midstream infrastructure — gas gathering, processing, transport"
+    severity: MEDIUM
+    # AM, MPLX: expansion candidates — not in universe.yaml yet
+    tickers: [KMI, TRGP, WMB, OKE, AM, MPLX]
+
+  utility_grid:
+    description: "Electrical grid modernization, smart grid and transmission buildout"
+    severity: MEDIUM
+    tickers: [HUBB, EMR, ETN, DY, GNRC, PWR, VRT]
+
+  rates_sensitive:
+    description: "Interest rate sensitive — long-duration earnings or leveraged balance sheets"
+    severity: HIGH
+    tickers: [KMI, TRGP, WMB, OKE, SPGI, MCO, MSCI, V, MA, GNRC]
+
+  cyclical_industrial:
+    description: "Industrial cycle dependent — revenue highly correlated with capex spending"
+    severity: HIGH
+    tickers: [AMAT, LRCX, KLAC, EMR, HON, CAT, PH, DOV, ITW, GE, ACM, J, DY, AME]
+
+  quality_compounder:
+    description: "High-ROIC recurring revenue businesses with durable competitive moats"
+    severity: LOW
+    tickers: [SPGI, MCO, MSCI, V, MA, IDXX, ISRG]
+
+  recession_resilient:
+    description: "Revenue defensible through recessions (contractual, regulated, or essential)"
+    severity: LOW
+    tickers: [GD, LDOS, SPGI, MCO, KMI, TRGP, WMB, OKE, JNJ, NEE]
+
+  policy_sensitive:
+    description: "Revenue meaningfully dependent on government policy, regulation, or appropriations"
+    severity: HIGH
+    tickers: [GD, LDOS, ACM, J, DY, MTZ, KMI, TRGP, FLR, PWR, GNRC, NEE]
+
+  regulated_utility:
+    description: "Rate-regulated utility businesses — near-monopoly returns, policy-capped upside"
+    severity: LOW
+    tickers: [NEE]
+
+  asset_manager:
+    description: "Asset management and exchange businesses — AUM-fee and transaction-fee recurring revenue"
+    severity: MEDIUM
+    tickers: [BLK, CME, SPGI, MCO, MSCI]

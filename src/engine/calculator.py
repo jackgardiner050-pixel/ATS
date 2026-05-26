@@ -273,6 +273,174 @@ def assess_confidence(
     return "HIGH", flags
 
 
+def assess_confidence_v2(
+    expected_return: float,
+    n_peers_resolved: int,
+    dcf_gordon: float,
+    dcf_exit: float,
+    comps_median: float,
+    price_target: float,
+    # Phase II stress inputs (all optional for backward compatibility)
+    is_cyclical: bool = False,
+    cyclical_peak_detected: bool = False,
+    upside_gate: str = "OK",
+    wacc_destroys_upside: bool = False,
+    net_debt_ebitda: float = 0.0,
+    multiple_fragility_warning: bool = False,
+    fragility_score: float = 0.0,
+    confidence_penalty_override: int = 0,
+) -> tuple[str, list[str]]:
+    """Return (tier, reasons) with genuine 5-tier dispersion.
+
+    Tiers: HIGH | MED_HIGH | MED | MED_LOW | LOW | BROKEN
+
+    Scoring: start at 75, add bonuses for strong signals, subtract penalties for
+    risk factors. Maps score to tier at the end. The penalty path is intentionally
+    heavier than the bonus path — the system prefers false negatives over false
+    positives (missed quality is less dangerous than missed risk).
+
+    All Phase II inputs default to their least-penalised value so callers that
+    have not yet run dcf_skeptic still get a reasonable output.
+
+    Expected calibration (for reference):
+      SPGI (financial data, stable moat, low cyclicality) → HIGH or MED_HIGH
+      GD   (defense, stable government CF, low debt)      → HIGH or MED_HIGH
+      HUBB (electrical industrial, moderate cyclicality)  → MED_HIGH
+      AMAT (semicap, cyclical peak, high upside)          → MED_LOW
+      GNRC (high leverage, cyclical peak, thin peers)     → LOW
+    """
+    flags: list[str] = []
+
+    # ── BROKEN override ───────────────────────────────────────────────────────
+    if (price_target is None
+            or price_target <= 0
+            or (isinstance(price_target, float) and math.isnan(price_target))):
+        flags.append("price_target_non_positive")
+        return "BROKEN", flags
+
+    # ── Base score ────────────────────────────────────────────────────────────
+    score = 75
+
+    # ── Method convergence ────────────────────────────────────────────────────
+    methods = [v for v in [dcf_gordon, dcf_exit, comps_median]
+               if v is not None and v > 0 and not math.isnan(v)]
+    cv = 0.0
+    if len(methods) >= 2:
+        mean_m = sum(methods) / len(methods)
+        if mean_m > 0:
+            var = sum((v - mean_m) ** 2 for v in methods) / len(methods)
+            cv = (var ** 0.5) / mean_m
+
+    if cv < 0.20:
+        score += 5
+        flags.append("methods_converge_tightly")
+    elif cv < 0.35:
+        score += 3
+    elif cv > 0.50:
+        score -= 8
+        flags.append("methods_diverge_widely")
+    elif cv > 0.35:
+        score -= 5
+        flags.append("methods_diverge_moderately")
+
+    # ── Peer resolution ───────────────────────────────────────────────────────
+    if n_peers_resolved >= 5:
+        score += 8
+        flags.append("strong_peer_cohort")
+    elif n_peers_resolved >= 3:
+        score += 5
+        flags.append("adequate_peer_cohort")
+    elif n_peers_resolved in (1, 2):
+        score -= 7
+        flags.append("thin_peer_cohort")
+    else:  # 0 peers
+        score -= 15
+        flags.append("no_peers_resolved")
+
+    # ── Expected return magnitude ─────────────────────────────────────────────
+    abs_ret = abs(expected_return) if expected_return is not None else 0
+    if abs_ret > 0.50:
+        score -= 5
+        flags.append("extreme_expected_return")
+    elif abs_ret > 0.30:
+        score -= 3
+        flags.append("large_expected_return")
+
+    # ── Leverage ──────────────────────────────────────────────────────────────
+    if net_debt_ebitda > 3.0:
+        score -= 8
+        flags.append(f"high_leverage_{net_debt_ebitda:.1f}x_net_debt_ebitda")
+    elif net_debt_ebitda > 2.0:
+        score -= 5
+        flags.append(f"elevated_leverage_{net_debt_ebitda:.1f}x_net_debt_ebitda")
+    elif net_debt_ebitda > 1.0:
+        score -= 3
+        flags.append(f"moderate_leverage_{net_debt_ebitda:.1f}x_net_debt_ebitda")
+    elif net_debt_ebitda < 0:
+        score += 3   # net-cash position is a quality signal
+        flags.append("net_cash_position")
+
+    # ── Cyclicality ───────────────────────────────────────────────────────────
+    if cyclical_peak_detected:
+        score -= 10
+        flags.append("cyclical_peak_ebitda_detected")
+    elif is_cyclical:
+        score -= 5
+        flags.append("cyclical_sector")
+
+    # ── DCF stress outputs ────────────────────────────────────────────────────
+    gate_penalties = {
+        "EXTREME_UPSIDE_ANOMALY": 20,
+        "HIGH_UPSIDE_REVIEW_REQUIRED": 12,
+        "AGGRESSIVE_UPSIDE": 6,
+        "OK": 0,
+    }
+    gate_penalty = gate_penalties.get(upside_gate, 0)
+    if gate_penalty:
+        score -= gate_penalty
+        flags.append(f"upside_gate_{upside_gate.lower()}")
+
+    if wacc_destroys_upside:
+        score -= 10
+        flags.append("wacc_sensitivity_destroys_upside")
+
+    if multiple_fragility_warning:
+        score -= 7
+        flags.append("multiple_fragility_warning")
+
+    if fragility_score > 0.70:
+        score -= 5
+        flags.append(f"high_fragility_{fragility_score:.2f}")
+    elif fragility_score > 0.50:
+        score -= 3
+        flags.append(f"moderate_fragility_{fragility_score:.2f}")
+
+    # ── External override (from stress analysis confidence_penalty field) ─────
+    if confidence_penalty_override > 0:
+        score -= confidence_penalty_override
+
+    # ── Cohort outlier guard (preserve legacy behaviour) ─────────────────────
+    # If target EV/EBITDA > 1.5× peer median this flag is set upstream;
+    # treat it like thin_peer_cohort if not already penalised.
+    if "target_ev_ebitda_2x_peer_median" in flags:
+        score -= 5
+
+    # ── Map score → tier ──────────────────────────────────────────────────────
+    if score >= 80:
+        tier = "HIGH"
+    elif score >= 65:
+        tier = "MED_HIGH"
+    elif score >= 50:
+        tier = "MED"
+    elif score >= 35:
+        tier = "MED_LOW"
+    else:
+        tier = "LOW"
+
+    flags.append(f"confidence_v2_score_{score}")
+    return tier, flags
+
+
 def build_fixed_numbers(
     ticker: str,
     current_price: float,

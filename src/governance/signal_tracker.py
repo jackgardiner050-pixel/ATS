@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import json
 import math
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 
 _SIGNAL_LOG = Path(__file__).parent.parent.parent / "data" / "signal_log.jsonl"
@@ -287,7 +287,7 @@ def run_signal_tracker(
     )
 
     result = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "n_signal_entries": len(signal_entries),
         "any_decay_warning": any_decay,
         "signals": {

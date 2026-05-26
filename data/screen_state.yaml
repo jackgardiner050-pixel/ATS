@@ -1199,16 +1199,6 @@ state:
   earnings_date_next: '2026-08-03'
   force_rescreen: false
   notes: ''
-- ticker: SUM
-  last_screen_date: '2026-05-25'
-  last_rating: BROKEN
-  last_confidence: UNKNOWN
-  last_pt: 0.0
-  last_expected_return: 0.0
-  next_due_date: '2026-06-22'
-  earnings_date_next: null
-  force_rescreen: false
-  notes: ''
 - ticker: SYK
   last_screen_date: '2026-05-26'
   last_rating: SELL
@@ -1417,16 +1407,6 @@ state:
   last_expected_return: 0.07717046337701161
   next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-29'
-  force_rescreen: false
-  notes: ''
-- ticker: X
-  last_screen_date: '2026-05-26'
-  last_rating: BROKEN
-  last_confidence: UNKNOWN
-  last_pt: 0.0
-  last_expected_return: 0.0
-  next_due_date: '2026-06-23'
-  earnings_date_next: null
   force_rescreen: false
   notes: ''
 - ticker: ZBH

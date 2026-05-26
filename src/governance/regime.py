@@ -28,7 +28,7 @@ from __future__ import annotations
 
 import json
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from pathlib import Path
 from typing import Optional
 
@@ -255,7 +255,7 @@ def fetch_indicators(lookback_days: int = 320) -> dict[str, float]:
     except ImportError as e:
         raise RuntimeError(f"yfinance required for regime engine: {e}") from e
 
-    end = datetime.utcnow().date()
+    end = datetime.now(UTC).date()
     start = end - timedelta(days=lookback_days)
 
     raw = yf.download(
@@ -374,7 +374,7 @@ def classify_regime(
             for k, v in indicators.items()
         },
         "conditions": {k: v for k, v in conditions.items() if v > 0.0},
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
     }
 
 

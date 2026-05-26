@@ -13,9 +13,11 @@ from typing import Optional
 
 import yaml
 
-from .data.edgar_client import fetch_company
+from .data.edgar_client import fetch_company, extract_historical_metrics
 from .agents.model import build_model
 from .agents.valuation import value_ticker
+from .engine.calculator import assess_confidence_v2
+from .governance.dcf_skeptic import run_stress_analysis
 
 _EXIT_FLOOR = 8.0
 _EXIT_CAP = 30.0
@@ -217,6 +219,65 @@ def run_pipeline(
         cohort_outlier=cohort_outlier,
     )
 
+    # Stage 4c: Phase II — DCF skepticism overlay
+    print(f"[{ticker}] Stage 4c: running DCF stress analysis...")
+    hist_metrics = extract_historical_metrics(cd)
+    historical_ebitda_mm: list[float] = []
+    for period in sorted(hist_metrics.keys()):
+        m = hist_metrics[period]
+        oi = m.get("operating_income")
+        dep = m.get("depreciation")
+        if oi is not None and oi > 0:
+            historical_ebitda_mm.append(
+                (oi + (dep if dep is not None else 0)) / 1e6
+            )
+
+    stress = run_stress_analysis(
+        ticker=ticker,
+        current_price=current_price,
+        raw_intrinsic_value=fixed.price_target_12m,
+        ufcf_stream=model.ufcf_stream,
+        terminal_ebitda_mm=model.terminal_ebitda,
+        wacc=wacc,
+        terminal_growth=terminal_growth,
+        exit_multiple=exit_multiple_used,
+        cash_plus_investments_mm=model.cash_plus_investments,
+        debt_mm=model.debt,
+        diluted_shares_mm=model.diluted_shares_mm,
+        historical_ebitda_mm=historical_ebitda_mm,
+    )
+    print(
+        f"[{ticker}]   stress: gate={stress.upside_gate}  "
+        f"adj_upside={stress.adjusted_upside*100:+.1f}%  "
+        f"fragility={stress.fragility_score:.2f}"
+    )
+    if stress.review_flags:
+        for flag in stress.review_flags:
+            print(f"[{ticker}]   [FLAG] {flag}")
+
+    # Stage 4d: Phase II — enhanced confidence scoring (5-tier)
+    net_debt_ebitda = (
+        model.debt / model.fy1_ebitda
+        if model.fy1_ebitda and model.fy1_ebitda > 0
+        else 0.0
+    )
+    conf_v2, conf_v2_flags = assess_confidence_v2(
+        expected_return=fixed.expected_return,
+        n_peers_resolved=n_peers_resolved,
+        dcf_gordon=fixed.dcf_price_gordon,
+        dcf_exit=fixed.dcf_price_exit,
+        comps_median=fixed.comps_price_median_ev_ebitda,
+        price_target=fixed.price_target_12m,
+        is_cyclical=stress.is_cyclical,
+        cyclical_peak_detected=stress.cyclical_peak_detected,
+        upside_gate=stress.upside_gate,
+        wacc_destroys_upside=stress.wacc_destroys_upside,
+        net_debt_ebitda=net_debt_ebitda,
+        multiple_fragility_warning=stress.multiple_fragility_warning,
+        fragility_score=stress.fragility_score,
+    )
+    print(f"[{ticker}]   confidence_v2={conf_v2}  (legacy={fixed.confidence})")
+
     # Stage 5: Persist outputs
     print(f"[{ticker}] Stage 5: writing recommendation.json...")
     result = {
@@ -225,11 +286,33 @@ def run_pipeline(
         "company_name": cd.name,
         "valuation_date": ts,
         "current_price": current_price,
+        # Legacy confidence (backward-compatible)
         "rating": fixed.rating,
         "confidence": fixed.confidence,
         "confidence_flags": fixed.confidence_flags,
         "price_target_12m": fixed.price_target_12m,
         "expected_return": fixed.expected_return,
+        # Phase II: stress-adjusted decision-grade outputs
+        "confidence_v2": conf_v2,
+        "confidence_v2_flags": conf_v2_flags,
+        "stress_adjusted_pt": stress.adjusted_intrinsic_value,
+        "stress_adjusted_upside": stress.adjusted_upside,
+        "upside_gate": stress.upside_gate,
+        "fragility_score": stress.fragility_score,
+        "dcf_stress": {
+            "raw_upside": stress.raw_upside,
+            "adjusted_upside": stress.adjusted_upside,
+            "downside_case": stress.downside_case,
+            "wacc_destroys_upside": stress.wacc_destroys_upside,
+            "cyclical_peak_detected": stress.cyclical_peak_detected,
+            "cycle_inflation_pct": stress.cycle_inflation_pct,
+            "multiple_fragility_warning": stress.multiple_fragility_warning,
+            "normalization_method": stress.normalization_method,
+            "review_flags": stress.review_flags,
+            "sensitivity_summary": stress.sensitivity_summary,
+        },
+        "net_debt_ebitda": round(net_debt_ebitda, 2),
+        # Underlying model and fixed numbers
         "fixed_numbers": _safe_json(fixed),
         "model_outputs": _safe_json(model),
         "notes": cd.notes,

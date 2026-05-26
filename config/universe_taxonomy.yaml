@@ -1,0 +1,682 @@
+# ATS Universe Taxonomy — Economic Behavior Archetype Registry
+# Classifies universe tickers by economic behavior, NOT GICS sector.
+#
+# Two companies in different sectors may behave identically.
+# AMAT and GNRC both behave as AI-capex cyclicals.
+# SPGI and CME both behave as financial infrastructure compounders.
+# DUK and SO both behave as regulated defensive utilities.
+#
+# Version: 1.0  Effective: 2026-05-26
+# HUMAN-EDITABLE — update as business models evolve.
+#
+# Tickers marked [EXPANSION] are not in the current universe but represent
+# key archetype gaps — they are valid candidates for universe admission.
+
+version: "1.0"
+effective_date: "2026-05-26"
+
+# ─── Universe-level hard limits ───────────────────────────────────────────────
+limits:
+  max_archetype_fraction: 0.20        # >20% in one archetype → OVERREPRESENTED
+  max_cyclical_fraction: 0.30         # >30% cyclical heavy → CONCENTRATED warning
+  max_policy_fraction: 0.20           # >20% policy sensitive → warning
+  max_leverage_fraction: 0.15         # >15% leverage sensitive → warning
+  max_macro_dependency: 0.25          # >25% single macro dependency → warning
+  min_defensive_fraction: 0.15        # <15% defensive archetypes → GAP alert
+  min_recession_resilient_fraction: 0.10  # <10% recession_resilient → GAP alert
+  overrepresented_threshold: 0.25     # flag archetype above this fraction
+
+# ─── Archetype definitions ────────────────────────────────────────────────────
+# cyclicality: 0.0 = immune to cycles, 1.0 = highly cyclical
+# defensiveness: 0.0 = no recession defense, 1.0 = maximum defense
+# Each score informs per-ticker characteristic derivation.
+
+archetypes:
+
+  defensive_compounder:
+    description: "High-ROIC businesses with stable pricing power, recurring demand, durable moats — earnings power survives recessions"
+    severity: LOW
+    cyclicality: 0.15
+    defensiveness: 0.85
+    tickers:
+      # Current universe
+      - V
+      - MA
+      - SPGI
+      - MCO
+      - COST
+      - WMT
+      - KO
+      - PG
+      - PEP
+      - CL
+      - KMB
+      - MCD
+      - RSG
+      - WM
+      - INTU
+      - ADP
+      - ISRG
+      - IDXX
+      - ZTS
+      - LLY
+      - ABBV
+      - AMGN
+      # Expansion candidates
+      - JNJ  # admitted 2026-05-26
+      - MSFT   # [EXPANSION] software moat compounder
+
+  cyclical_industrial:
+    description: "Revenue and earnings highly correlated with industrial capex cycle and economic activity — significant recession risk"
+    severity: HIGH
+    cyclicality: 0.85
+    defensiveness: 0.10
+    tickers:
+      # Power / EPC
+      - AGX
+      - PWR
+      - MTZ
+      - PRIM
+      - EME
+      - FIX
+      - IESC
+      - STRL
+      - DY
+      - VRT
+      - MOD
+      - CAT
+      # Electrical / AI
+      - ETN
+      - TT
+      - HUBB
+      - AME
+      - ROK
+      - GNRC
+      # Semi-cap
+      - AMAT
+      - LRCX
+      - KLAC
+      - ENTG
+      # Diversified industrials
+      - HON
+      - GE
+      - ITW
+      - EMR
+      - PH
+      - DOV
+      # Aggregates
+      - MLM
+      - VMC
+      - EXP
+      # EPC
+      - J
+      - ACM
+      - FLR
+      # Defense with cyclical characteristics
+      - TXT
+      # Materials
+      - NUE
+      # Industrials additional
+      - MMM
+      - GWW
+      - FAST
+      - WSO
+      - URI
+      - PCAR
+      - LUV
+      - FDX
+      # Tech
+      - INTC
+      # Expansion
+      - ASML   # [EXPANSION] semcap, highly cyclical
+
+  AI_capex:
+    description: "Revenue directly tied to AI / data center capital expenditure — extreme cyclicality when capex cycle turns"
+    severity: HIGH
+    cyclicality: 0.90
+    defensiveness: 0.05
+    tickers:
+      - AMAT
+      - LRCX
+      - KLAC
+      - ENTG
+      - VRT
+      - ETN
+      - HUBB
+      - GNRC
+      - MOD
+      - PWR
+      - INTC
+      # Expansion
+      - ASML
+      - MSFT   # [EXPANSION] Azure infrastructure
+
+  infrastructure:
+    description: "Physical infrastructure construction and engineering services — project-based, cyclical but with government backstop"
+    severity: MEDIUM
+    cyclicality: 0.65
+    defensiveness: 0.25
+    tickers:
+      - AGX
+      - PWR
+      - MTZ
+      - PRIM
+      - EME
+      - FIX
+      - IESC
+      - STRL
+      - DY
+      - ACM
+      - J
+      - FLR
+      - UNP
+      - CSX
+
+  government_spending:
+    description: "US federal government spending dependency — defense, IT services, and infrastructure appropriations"
+    severity: HIGH
+    cyclicality: 0.40
+    defensiveness: 0.55
+    tickers:
+      - GD
+      - LDOS
+      - LMT
+      - RTX
+      - NOC
+      - HII
+      - KTOS
+      - AVAV
+      - LHX
+      - TXT
+      - ACM
+      - J
+      - FLR
+      - PWR
+      - DY
+      - MTZ
+      - ACN
+
+  defense:
+    description: "Defense primes and national security IT — revenue tied to DoD budget, long-cycle contracts, bipartisan stability"
+    severity: MEDIUM
+    cyclicality: 0.20
+    defensiveness: 0.80
+    tickers:
+      - GD
+      - LMT
+      - RTX
+      - NOC
+      - LDOS
+      - HII
+      - KTOS
+      - AVAV
+      - LHX
+      - TXT
+
+  energy_infrastructure:
+    description: "Midstream energy — gas gathering, processing, transport; fee-based revenue but high leverage and rate sensitivity"
+    severity: MEDIUM
+    cyclicality: 0.25
+    defensiveness: 0.65
+    tickers:
+      - KMI
+      - TRGP
+      - WMB
+      - OKE
+      - FLR
+      - APD    # industrial gases: infrastructure-like behavior
+
+  regulated_utility:
+    description: "Regulated electric/gas utilities — rate-of-return regulation, inelastic demand, maximum recession resilience"
+    severity: LOW
+    cyclicality: 0.05
+    defensiveness: 0.95
+    tickers:
+      - NEE    # admitted 2026-05-26 — largest US renewable utility
+      - DUK    # expansion candidate — regulated electric
+      - SO     # expansion candidate — Southeast utility
+      - AEP    # expansion candidate — transmission-heavy
+
+  healthcare_stable:
+    description: "Medical devices, diagnostics, and life sciences — non-discretionary demand, recurring consumables, recession-resistant"
+    severity: LOW
+    cyclicality: 0.15
+    defensiveness: 0.85
+    tickers:
+      - DHR
+      - TMO
+      - A
+      - LLY
+      - ABBV
+      - ISRG
+      - IDXX
+      - ZTS
+      - MTD
+      - SYK
+      - BSX
+      - MDT
+      - EW
+      - DXCM
+      - BDX
+      - ZBH
+      - BAX
+      - GILD
+      - REGN
+      - VRTX
+      - BIIB
+      - AMGN
+      - WAT
+      - BIO
+      - RVTY
+      - MCK
+      - COR
+      - CAH
+      - JNJ   # admitted 2026-05-26
+      - ABT   # [EXPANSION] diversified pharma/medtech
+
+  healthcare_cyclical:
+    description: "Managed care and pharmacy benefit — premiums and volumes tied to employment; more policy-sensitive and cyclical than devices"
+    severity: MEDIUM
+    cyclicality: 0.45
+    defensiveness: 0.50
+    tickers:
+      - UNH
+      - HUM
+      - CI
+      - CVS
+      - ELV
+
+  software_platform:
+    description: "Mission-critical software with recurring subscription revenue — sticky customers, high margins, capital-light"
+    severity: LOW
+    cyclicality: 0.30
+    defensiveness: 0.65
+    tickers:
+      - ORCL
+      - CRM
+      - ACN
+      - IBM
+      - CSCO
+      - ADBE
+      - NOW
+      - INTU
+      - ADP
+      - ROK   # industrial software division is meaningful
+      - HON   # connected enterprise software segment
+      # Expansion
+      - MSFT  # [EXPANSION] dominant enterprise platform
+      - SAP   # [EXPANSION] ERP global leader
+
+  financial_data:
+    description: "Financial data, analytics, and index businesses — subscription revenues tied to financial market activity, capital-light"
+    severity: LOW
+    cyclicality: 0.35
+    defensiveness: 0.60
+    tickers:
+      - SPGI
+      - MCO
+      - MSCI
+      # Expansion
+      - CME  # admitted 2026-05-26
+      - ICE   # [EXPANSION] exchange / data
+
+  payments_network:
+    description: "Payments network infrastructure — volume-based fees, no credit risk on-balance-sheet, secular growth from cash displacement"
+    severity: LOW
+    cyclicality: 0.30
+    defensiveness: 0.65
+    tickers:
+      - V
+      - MA
+
+  consumer_staples:
+    description: "Essential consumer goods with inelastic demand — defensive pricing power, global brand portfolios, consistent dividends"
+    severity: LOW
+    cyclicality: 0.10
+    defensiveness: 0.90
+    tickers:
+      - KO
+      - PG
+      - PEP
+      - COST
+      - WMT
+      - MDLZ
+      - CL
+      - KMB
+      - GIS
+      - HSY
+      - MCD
+      # Expansion
+      - JNJ  # admitted 2026-05-26 — pharma/consumer hybrid
+      - UL    # [EXPANSION] global consumer staples
+
+  recession_resilient:
+    description: "Revenues defensible through recessions — contractual, regulated, essential, or non-discretionary demand"
+    severity: LOW
+    cyclicality: 0.20
+    defensiveness: 0.80
+    tickers:
+      - GD
+      - LDOS
+      - SPGI
+      - MCO
+      - MSCI
+      - KMI
+      - TRGP
+      - WMB
+      - OKE
+      - KO
+      - PG
+      - PEP
+      - COST
+      - WMT
+      - MDLZ
+      - CL
+      - KMB
+      - GIS
+      - HSY
+      - MCD
+      - TJX
+      - V
+      - MA
+      - GILD
+      - AMGN
+      - ABBV
+      - LLY
+      - ISRG
+      - IDXX
+      - ZTS
+      - UNP
+      - CSX
+      - WM
+      - RSG
+      - ORCL
+      - ADP
+      - MCK
+      - COR
+      - CAH
+      # Expansion
+      - NEE
+      - DUK
+      - SO
+      - AEP
+      - JNJ
+      - CME
+      - ICE
+
+  housing_sensitive:
+    description: "Revenue correlated to residential construction, housing starts, or consumer housing spending"
+    severity: MEDIUM
+    cyclicality: 0.75
+    defensiveness: 0.10
+    tickers:
+      - GNRC
+      - ETN
+      - HUBB
+      - MLM
+      - VMC
+      - EXP
+      - SHW
+      - HD
+      - LOW
+      - WSO
+
+  leverage_sensitive:
+    description: "High leverage — net_debt/EBITDA typically >2.5x; disproportionately impaired in rate shocks and credit crises"
+    severity: HIGH
+    cyclicality: 0.45
+    defensiveness: 0.35
+    tickers:
+      - KMI
+      - TRGP
+      - WMB
+      - OKE
+      - GNRC
+      - HII
+      - T
+      - VZ
+      - CHTR
+      - URI
+
+  capital_light:
+    description: "Low capital requirements relative to revenue — asset-light models with high FCF conversion and ROIC"
+    severity: LOW
+    cyclicality: 0.25
+    defensiveness: 0.70
+    tickers:
+      - V
+      - MA
+      - SPGI
+      - MCO
+      - MSCI
+      - COST
+      - WMT
+      - ORCL
+      - CRM
+      - ADBE
+      - NOW
+      - INTU
+      - ADP
+      - ISRG
+      - IDXX
+      - ZTS
+      - MTD
+      - SYK
+      - MDT
+      - EW
+      - DXCM
+      - WAT
+      - GWW
+      - FAST
+      - WSO
+      - ECL
+      - SHW
+      - BKNG
+      - MAR
+      - TJX
+      - CMG
+      - LULU
+      # Expansion
+      - CME
+      - ICE
+      - BLK
+      - MSFT
+
+  capital_intensive:
+    description: "High capital requirements — heavy plant, equipment, or infrastructure investment; depreciation-heavy P&L"
+    severity: MEDIUM
+    cyclicality: 0.65
+    defensiveness: 0.20
+    tickers:
+      - AGX
+      - PWR
+      - MTZ
+      - PRIM
+      - EME
+      - FIX
+      - IESC
+      - STRL
+      - DY
+      - VRT
+      - MOD
+      - CAT
+      - ETN
+      - TT
+      - HUBB
+      - AME
+      - HON
+      - GE
+      - ITW
+      - EMR
+      - PH
+      - DOV
+      - MLM
+      - VMC
+      - EXP
+      - HII
+      - BSX
+      - BDX
+      - DHR
+      - TMO
+      - LIN
+      - APD
+      - FCX
+      - NEM
+      - NUE
+      - EMN
+      - CMCSA
+      - T
+      - VZ
+      - CHTR
+      - UNP
+      - CSX
+      - UPS
+      - FDX
+      - MMM
+      - URI
+      - PCAR
+      - LUV
+      - UNH
+      - HD
+      # Expansion
+      - NEE
+      - DUK
+      - SO
+      - AEP
+
+  commodity_sensitive:
+    description: "Revenue or costs meaningfully tied to commodity prices — materials, metals, specialty chemicals"
+    severity: MEDIUM
+    cyclicality: 0.70
+    defensiveness: 0.15
+    tickers:
+      - APD
+      - LIN
+      - SHW
+      - FCX
+      - NEM
+      - NUE
+      - ECL
+      - IFF
+      - EMN
+      - CAT   # machinery sold into mining/agriculture
+
+  telecom_infrastructure:
+    description: "Telecommunications network construction, fiber deployment, and carrier infrastructure"
+    severity: LOW
+    cyclicality: 0.35
+    defensiveness: 0.55
+    tickers:
+      - DY
+      - MTZ
+      - IESC
+      - PRIM
+      - PWR
+      - CMCSA
+      - T
+      - VZ
+      - CHTR
+      - CSCO
+      - IBM
+
+  asset_manager:
+    description: "Asset / investment management — AUM-based fee revenues, earnings highly correlated with market levels"
+    severity: MEDIUM
+    cyclicality: 0.50
+    defensiveness: 0.45
+    tickers:
+      - CME   # admitted 2026-05-26 — exchange infrastructure
+      - BLK   # admitted 2026-05-26 — largest asset manager
+      - ICE   # expansion candidate — exchange / clearing
+
+  quality_compounder:
+    description: "Consistent high ROIC, defensible moats, durable reinvestment opportunities — outperform over full cycles"
+    severity: LOW
+    cyclicality: 0.25
+    defensiveness: 0.70
+    tickers:
+      - V
+      - MA
+      - SPGI
+      - MCO
+      - MSCI
+      - COST
+      - ISRG
+      - IDXX
+      - ZTS
+      - SYK
+      - VRTX
+      - ECL
+      - WM
+      - ORCL
+      - ADBE
+      - NOW
+      - INTU
+      - ADP
+      - ITW
+      - NKE
+      - SBUX
+      - MCD
+      # Expansion
+      - CME
+      - ICE
+      - BLK
+      - MSFT
+      - ASML
+
+  global_diversifier:
+    description: "Meaningful non-US revenue — reduces domestic macro concentration; behavior partially decoupled from US cycle"
+    severity: LOW
+    cyclicality: 0.40
+    defensiveness: 0.50
+    tickers:
+      - V
+      - MA
+      - KO
+      - PG
+      - PEP
+      - MDLZ
+      - CL
+      - MCD
+      - NKE
+      - SBUX
+      - MAR
+      - BKNG
+      - MDT
+      - CAT
+      - GE
+      - MMM
+      - UPS
+      - FDX
+      - FCX
+      - DIS
+      - PCAR
+      # Expansion
+      - ASML  # [EXPANSION] Netherlands-based global monopoly
+      - JNJ
+
+  policy_sensitive:
+    description: "Revenue meaningfully dependent on government policy, regulation, or appropriations — budget risk is real"
+    severity: HIGH
+    cyclicality: 0.45
+    defensiveness: 0.40
+    tickers:
+      - GD
+      - LDOS
+      - LMT
+      - RTX
+      - NOC
+      - HII
+      - KTOS
+      - AVAV
+      - LHX
+      - ACM
+      - J
+      - DY
+      - MTZ
+      - KMI
+      - TRGP
+      - FLR
+      - PWR
+      - GNRC
+      - ACN

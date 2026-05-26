@@ -1,5 +1,7 @@
 # Universe configuration for the screener.
-# 143 names across 22 sectors (expanded 2026-05-26, was 60; X removed 2026-05-26).
+# 147 names across 23 sectors (expanded 2026-05-26 to 143; +4 diversification additions 2026-05-26).
+# Additions: NEE (regulated_utility), CME (asset_manager/financial_data), BLK (asset_manager),
+#            JNJ (healthcare_stable/recession_resilient) — fills absent archetypes identified by Phase III audit.
 
 universe:
   # Power / Infrastructure / EPC (12)
@@ -193,3 +195,10 @@ universe:
   - NOW
   - INTU
   - ADP
+
+  # === Diversification Additions — Phase III (4) ===
+  # Fills absent archetypes identified by universe balance audit (2026-05-26)
+  - NEE   # regulated_utility — fills ABSENT archetype (was 0% of universe)
+  - CME   # asset_manager + financial_data — fills ABSENT asset_manager archetype
+  - BLK   # asset_manager — fills ABSENT asset_manager archetype (AUM-fee recurring revenue)
+  - JNJ   # healthcare_stable + recession_resilient — strengthens defensive fraction

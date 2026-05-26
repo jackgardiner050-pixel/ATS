@@ -1,4 +1,7 @@
-edgartools>=5.31,<6.0
+# Pinned to known-good version — edgartools upstream has had silent behavioral
+# changes between minor releases (EDGAR filing parser internals, XML schema handling).
+# Do not loosen this pin without running the full test suite against the new version.
+edgartools==5.31.5
 openpyxl>=3.1
 pandas>=2.0
 numpy>=1.26
