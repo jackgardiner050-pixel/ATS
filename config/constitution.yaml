@@ -1,0 +1,37 @@
+# Constitutional Risk Layer — immutable portfolio laws.
+#
+# HUMAN-EDITABLE ONLY. Changes require deliberate human review.
+# This file is the single source of truth for hard risk limits.
+# Never programmatically modified.
+#
+# Effective: 2026-05-26 | Version: 1.0
+
+version: "1.0"
+effective_date: "2026-05-26"
+
+# ─── Hard prohibitions (booleans — must always be True) ──────────────────────
+# These are constitutionally immutable. Any code that sets them False
+# is a constitutional violation and will be caught by tests.
+NO_LEVERAGE: true
+NO_SHORT_SELLING: true
+NO_AUTONOMOUS_EXECUTION: true
+HUMAN_APPROVAL_REQUIRED: true
+NO_LIVE_PNL_LEARNING: true
+NO_BROKER_INTEGRATION: true
+NO_SELF_MODIFYING_RISK_RULES: true
+
+# ─── Position concentration limits (fraction of total portfolio) ──────────────
+MAX_SINGLE_POSITION: 0.10        # no single ticker > 10% of book
+MAX_SINGLE_THEME_EXPOSURE: 0.25  # no single theme > 25% of book
+MAX_SINGLE_FACTOR_EXPOSURE: 0.40 # no single cross-cutting factor > 40% of book
+MAX_SATELLITE_CAPITAL: 0.30      # non-core (LOW confidence) positions cap
+
+# ─── Warning thresholds (soft — generate warnings, not hard violations) ──────
+WARN_CORRELATED_CLUSTER_SIZE: 4       # warn if ≥4 positions share ≥0.70 rolling corr
+WARN_REGIME_DEPENDENT_EXPOSURE: 0.40  # warn if >40% of book is adversely hit in one regime
+WARN_CONFIDENCE_LOW_FRACTION: 0.50    # warn if >50% of positions are LOW/BROKEN confidence
+
+# ─── Signal reliability thresholds ───────────────────────────────────────────
+MIN_SIGNAL_QUALITY_THRESHOLD: 0.45   # warn if rolling signal quality falls below 45%
+SIGNAL_DECAY_LOOKBACK_WEEKS: 8       # rolling window for decay detection
+MIN_OBSERVATIONS_FOR_CALIBRATION: 20 # minimum closed trades before calibration is meaningful
