@@ -1,521 +1,1201 @@
 state:
 - ticker: A
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: BUY
   last_confidence: MED
-  last_pt: 133.6869913355377
-  last_expected_return: 0.16290006380947908
-  next_due_date: '2026-06-01'
+  last_pt: 133.78208632374998
+  last_expected_return: 0.1591897263993587
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-05-27'
   force_rescreen: false
   notes: ''
 - ticker: ABBV
-  last_screen_date: '2026-05-25'
-  last_rating: BUY
-  last_confidence: HIGH
-  last_pt: 247.09408023288205
-  last_expected_return: 0.14554511002726955
-  next_due_date: '2026-06-01'
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 126.76353585043304
+  last_expected_return: -0.40439065991433054
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: ACM
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 188.01761756255476
-  last_expected_return: 1.6099058517844913
-  next_due_date: '2026-06-01'
+  last_pt: 190.59125046481054
+  last_expected_return: 1.6160352819272599
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-03'
   force_rescreen: false
   notes: ''
+- ticker: ACN
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 436.1665209751811
+  last_expected_return: 1.485845896359176
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-06-18'
+  force_rescreen: false
+  notes: ''
+- ticker: ADBE
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 422.79917037044635
+  last_expected_return: 0.7449408599688252
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-06-11'
+  force_rescreen: false
+  notes: ''
+- ticker: ADP
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: HIGH
+  last_pt: 279.02967301632856
+  last_expected_return: 0.2650390942391465
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
 - ticker: AGX
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 292.2897889183786
-  last_expected_return: -0.5546738951498764
-  next_due_date: '2026-06-08'
+  last_pt: 299.9899296829047
+  last_expected_return: -0.5542497330120286
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-06-04'
   force_rescreen: false
   notes: ''
 - ticker: AMAT
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 578.9562827508729
-  last_expected_return: 0.339680402514978
-  next_due_date: '2026-06-01'
+  last_pt: 594.2701084943045
+  last_expected_return: 0.3344788208351399
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-13'
   force_rescreen: false
   notes: ''
 - ticker: AME
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 224.5301455713743
-  last_expected_return: 4.518782903217833e-05
-  next_due_date: '2026-06-08'
+  last_pt: 227.06121269966053
+  last_expected_return: 0.0004900317235538854
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: AMGN
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 549.9797794738713
+  last_expected_return: 0.6233169405958421
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-08-04'
+  force_rescreen: false
+  notes: ''
+- ticker: APD
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 207.1340432554182
+  last_expected_return: -0.2840535635711311
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: AVAV
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: SELL
   last_confidence: LOW
-  last_pt: 149.6651318645443
-  last_expected_return: -0.14099103561645931
-  next_due_date: '2026-06-22'
-  earnings_date_next: '2026-06-23'
+  last_pt: 151.1135281653169
+  last_expected_return: -0.187037184391452
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-06-29'
+  force_rescreen: false
+  notes: ''
+- ticker: BAX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 34.0890439112326
+  last_expected_return: 0.7805716328666807
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: BDX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 330.0604945897912
+  last_expected_return: 1.24363057976882
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-08-06'
+  force_rescreen: false
+  notes: ''
+- ticker: BIIB
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 629.941396126249
+  last_expected_return: 2.239023040986446
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: BIO
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 367.26906362445004
+  last_expected_return: 0.2752398042515627
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: BKNG
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 201.63891473370168
+  last_expected_return: 0.21439963101482595
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: BSX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 92.57066709682431
+  last_expected_return: 0.6032328904888171
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: CAH
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 77.65949071520126
+  last_expected_return: -0.6119159926280483
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-04-30'
   force_rescreen: false
   notes: ''
 - ticker: CAT
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: SELL
   last_confidence: LOW
-  last_pt: 716.794251404175
-  last_expected_return: -0.18535924785578306
-  next_due_date: '2026-06-22'
+  last_pt: 727.0793445880603
+  last_expected_return: -0.191972456060034
+  next_due_date: '2026-06-23'
   earnings_date_next: '2026-08-04'
   force_rescreen: false
   notes: ''
-- ticker: DHR
-  last_screen_date: '2026-05-25'
-  last_rating: SELL
-  last_confidence: MED
-  last_pt: 155.59894643762092
-  last_expected_return: -0.0953549625719714
-  next_due_date: '2026-06-22'
-  earnings_date_next: '2026-07-21'
+- ticker: CHTR
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: HIGH
+  last_pt: 29.49862662776418
+  last_expected_return: -0.7960195925196959
+  next_due_date: '2026-07-21'
+  earnings_date_next: '2026-07-24'
   force_rescreen: false
   notes: ''
-- ticker: DOV
-  last_screen_date: '2026-05-25'
-  last_rating: HOLD
-  last_confidence: MED
-  last_pt: 227.97602845026012
-  last_expected_return: 0.08611733420800438
-  next_due_date: '2026-06-08'
-  earnings_date_next: '2026-07-23'
-  force_rescreen: false
-  notes: ''
-- ticker: DY
-  last_screen_date: '2026-05-25'
+- ticker: CI
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 765.6343198784302
-  last_expected_return: 0.8619511670195288
-  next_due_date: '2026-06-01'
+  last_pt: 712.4446281200682
+  last_expected_return: 1.5341275809919193
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: CL
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: HIGH
+  last_pt: 85.59644947075351
+  last_expected_return: -0.048240957683287844
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-31'
+  force_rescreen: true
+  notes: ''
+- ticker: CMCSA
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 60.13200197552591
+  last_expected_return: 1.3823995140877376
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: CMG
+  last_screen_date: '2026-05-26'
+  last_rating: BUY
+  last_confidence: MED
+  last_pt: 35.86191258819602
+  last_expected_return: 0.10873125948975182
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: COR
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 143.72665508408582
+  last_expected_return: -0.47369260455870577
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-08-05'
+  force_rescreen: false
+  notes: ''
+- ticker: COST
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 243.1704512286427
+  last_expected_return: -0.757422650391151
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-05-28'
+  force_rescreen: false
+  notes: ''
+- ticker: CRM
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 317.03795793686123
+  last_expected_return: 0.7478248962834846
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-05-27'
   force_rescreen: false
   notes: ''
-- ticker: EME
-  last_screen_date: '2026-05-25'
+- ticker: CSCO
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 183.6530628646488
+  last_expected_return: 0.56807601489625
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-08-12'
+  force_rescreen: false
+  notes: ''
+- ticker: CSX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 15.276826665096534
+  last_expected_return: -0.6678228600761789
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-04-22'
+  force_rescreen: false
+  notes: ''
+- ticker: CVS
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 30.63472787542972
+  last_expected_return: -0.6666333546392108
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: DHR
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: MED
+  last_pt: 155.7726159926023
+  last_expected_return: -0.0945031913468447
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-21'
+  force_rescreen: false
+  notes: ''
+- ticker: DIS
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 54.456802405076694
+  last_expected_return: -0.4729306774576394
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-08-05'
+  force_rescreen: false
+  notes: ''
+- ticker: DOV
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 885.0028149862659
-  last_expected_return: 0.042516656637648254
-  next_due_date: '2026-06-08'
+  last_pt: 230.4921320588491
+  last_expected_return: 0.0767742016595927
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-23'
+  force_rescreen: false
+  notes: ''
+- ticker: DXCM
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: HIGH
+  last_pt: 70.11864683722888
+  last_expected_return: -0.02034723245226855
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: DY
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 792.7365240258281
+  last_expected_return: 0.8934186587031339
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-05-27'
+  force_rescreen: false
+  notes: ''
+- ticker: ECL
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 148.71956865298895
+  last_expected_return: -0.41547942989038655
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-07-28'
+  force_rescreen: false
+  notes: ''
+- ticker: ELV
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 216.99524514100014
+  last_expected_return: -0.4380981792402503
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-07-16'
+  force_rescreen: false
+  notes: ''
+- ticker: EME
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: MED
+  last_pt: 902.8728026480541
+  last_expected_return: 0.04537884708231532
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-30'
   force_rescreen: true
   notes: ''
-- ticker: EMR
-  last_screen_date: '2026-05-25'
+- ticker: EMN
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 234.39914144973554
-  last_expected_return: 0.7182168410037792
-  next_due_date: '2026-06-01'
+  last_pt: 168.71645996623937
+  last_expected_return: 1.2528569898015673
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: EMR
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 236.93854335948552
+  last_expected_return: 0.7126024095373005
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-05'
   force_rescreen: false
   notes: ''
 - ticker: ENTG
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
-  last_confidence: LOW
-  last_pt: 210.92023346789264
-  last_expected_return: 0.5591383313711757
-  next_due_date: '2026-06-01'
+  last_confidence: MED
+  last_pt: 215.53993636964572
+  last_expected_return: 0.5240043581251905
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: ETN
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: SELL
   last_confidence: MED
-  last_pt: 371.52031648275914
-  last_expected_return: -0.050669946383648634
-  next_due_date: '2026-06-22'
+  last_pt: 374.6230047604064
+  last_expected_return: -0.07036824467614677
+  next_due_date: '2026-06-23'
   earnings_date_next: '2026-08-04'
   force_rescreen: false
   notes: ''
+- ticker: EW
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 40.12267382004366
+  last_expected_return: -0.5398248214239745
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-23'
+  force_rescreen: false
+  notes: ''
 - ticker: EXP
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: LOW
-  last_pt: 273.7222994999587
-  last_expected_return: 0.3725231885872671
-  next_due_date: '2026-06-01'
+  last_pt: 279.076787202757
+  last_expected_return: 0.37104783690865606
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-28'
   force_rescreen: false
   notes: ''
-- ticker: FIX
-  last_screen_date: '2026-05-25'
+- ticker: FAST
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 939.2499791560317
-  last_expected_return: -0.48625736132584074
-  next_due_date: '2026-06-08'
+  last_pt: 27.579062284675985
+  last_expected_return: -0.38121915448337484
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-13'
+  force_rescreen: false
+  notes: ''
+- ticker: FCX
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: LOW
+  last_pt: 51.97087105908497
+  last_expected_return: -0.1958707866457532
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-22'
+  force_rescreen: false
+  notes: ''
+- ticker: FDX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: HIGH
+  last_pt: 811.0573674900622
+  last_expected_return: 1.0191880686875265
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-06-23'
+  force_rescreen: false
+  notes: ''
+- ticker: FIX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 957.0178386388782
+  last_expected_return: -0.49571452882125955
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-23'
   force_rescreen: false
   notes: ''
 - ticker: FLR
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: BUY
   last_confidence: MED
-  last_pt: 53.80967016757078
-  last_expected_return: 0.19923490455918835
-  next_due_date: '2026-06-01'
+  last_pt: 54.597447205708036
+  last_expected_return: 0.18780479072572676
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-31'
   force_rescreen: false
   notes: ''
 - ticker: GD
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 650.0670304673835
-  last_expected_return: 0.8958471535109904
-  next_due_date: '2026-06-01'
+  last_pt: 648.1455708307126
+  last_expected_return: 0.8885085323078412
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-22'
   force_rescreen: false
   notes: ''
 - ticker: GE
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 184.53773637085297
-  last_expected_return: -0.39064279365059773
-  next_due_date: '2026-06-08'
+  last_pt: 184.4903283542845
+  last_expected_return: -0.40473549396868813
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-16'
   force_rescreen: false
   notes: ''
-- ticker: GNRC
-  last_screen_date: '2026-05-25'
+- ticker: GILD
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: HIGH
+  last_pt: 112.0363341284909
+  last_expected_return: -0.1720637442470373
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-08-06'
+  force_rescreen: false
+  notes: ''
+- ticker: GIS
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
-  last_confidence: MED
-  last_pt: 598.9323227696458
-  last_expected_return: 1.2171182452418963
-  next_due_date: '2026-06-01'
+  last_confidence: LOW
+  last_pt: 90.07550062387372
+  last_expected_return: 1.6784270182537528
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-03-18'
+  force_rescreen: false
+  notes: ''
+- ticker: GNRC
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: HIGH
+  last_pt: 646.9457180965525
+  last_expected_return: 1.3908707568518888
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-29'
   force_rescreen: false
   notes: ''
+- ticker: GWW
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: MED
+  last_pt: 1015.5505493226481
+  last_expected_return: -0.18817330152592793
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-08-04'
+  force_rescreen: false
+  notes: ''
+- ticker: HD
+  last_screen_date: '2026-05-26'
+  last_rating: BUY
+  last_confidence: MED
+  last_pt: 352.81712986718514
+  last_expected_return: 0.13022641829540516
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-08-18'
+  force_rescreen: false
+  notes: ''
 - ticker: HII
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: MED
-  last_pt: 188.48166933770202
-  last_expected_return: -0.4121521088553721
-  next_due_date: '2026-07-06'
+  last_pt: 188.474726548506
+  last_expected_return: -0.40731218066507546
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: HON
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 225.03694346571888
-  last_expected_return: -0.012649423193581533
-  next_due_date: '2026-06-08'
+  last_pt: 225.77351156447997
+  last_expected_return: -0.032841365813571
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-23'
   force_rescreen: false
   notes: ''
+- ticker: HSY
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: HIGH
+  last_pt: 166.66090936774538
+  last_expected_return: -0.13714258675772528
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
 - ticker: HUBB
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 590.0694371447429
-  last_expected_return: 0.24222529450904795
-  next_due_date: '2026-06-01'
+  last_pt: 596.544958853595
+  last_expected_return: 0.2389818037168625
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-28'
   force_rescreen: false
   notes: ''
+- ticker: HUM
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 214.83125078780333
+  last_expected_return: -0.2961429434905861
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: IBM
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 348.10673058876625
+  last_expected_return: 0.41065255334427286
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-22'
+  force_rescreen: false
+  notes: ''
 - ticker: IDXX
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 425.16562440764704
-  last_expected_return: -0.23992058135465422
-  next_due_date: '2026-06-08'
+  last_pt: 426.8763702056171
+  last_expected_return: -0.23597442331468876
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-08-03'
   force_rescreen: false
   notes: ''
 - ticker: IESC
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: SELL
   last_confidence: LOW
-  last_pt: 537.1354013230342
-  last_expected_return: -0.18572667123014597
-  next_due_date: '2026-06-22'
+  last_pt: 551.1833482304846
+  last_expected_return: -0.19036340556705922
+  next_due_date: '2026-06-23'
   earnings_date_next: '2026-07-31'
   force_rescreen: false
   notes: ''
+- ticker: IFF
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 124.63537420598891
+  last_expected_return: 0.6389686923004656
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-08-04'
+  force_rescreen: false
+  notes: ''
+- ticker: INTC
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: LOW
+  last_pt: 113.14924423207407
+  last_expected_return: -0.07155861665762087
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-23'
+  force_rescreen: false
+  notes: ''
+- ticker: INTU
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: HIGH
+  last_pt: 339.8074149113443
+  last_expected_return: 0.07457479614623863
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-08-20'
+  force_rescreen: true
+  notes: ''
 - ticker: ISRG
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 249.47483336669885
-  last_expected_return: -0.43055276565464773
-  next_due_date: '2026-06-08'
+  last_pt: 249.3334900443438
+  last_expected_return: -0.43108316970669514
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-21'
   force_rescreen: false
   notes: ''
 - ticker: ITW
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 267.32552321271123
-  last_expected_return: 0.05997431884500881
-  next_due_date: '2026-06-08'
+  last_pt: 273.6360162919776
+  last_expected_return: 0.08147978931300925
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-29'
   force_rescreen: false
   notes: ''
 - ticker: J
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 138.92843413194961
-  last_expected_return: 0.21133868804559786
-  next_due_date: '2026-06-01'
+  last_pt: 141.3658548721715
+  last_expected_return: 0.21266013186507826
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-04'
   force_rescreen: false
   notes: ''
 - ticker: KLAC
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: LOW
-  last_pt: 1807.5282742641982
-  last_expected_return: -0.04281538977102162
-  next_due_date: '2026-06-08'
+  last_pt: 1860.4311761648212
+  last_expected_return: -0.04650971403723847
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-30'
   force_rescreen: true
   notes: ''
+- ticker: KMB
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: HIGH
+  last_pt: 103.62085015724462
+  last_expected_return: 0.04199155470103699
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-08-10'
+  force_rescreen: false
+  notes: ''
 - ticker: KMI
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 69.18444730016842
-  last_expected_return: 1.0474829032307906
-  next_due_date: '2026-06-01'
+  last_pt: 68.62503161487385
+  last_expected_return: 1.0567969913044761
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-15'
   force_rescreen: false
   notes: ''
-- ticker: KTOS
-  last_screen_date: '2026-05-25'
+- ticker: KO
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 19.71221337128985
-  last_expected_return: -0.6491240054950187
-  next_due_date: '2026-06-08'
+  last_pt: 52.040221891358094
+  last_expected_return: -0.3549399207764723
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-21'
+  force_rescreen: false
+  notes: ''
+- ticker: KTOS
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 20.709624191918472
+  last_expected_return: -0.6416393834922975
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-08-06'
   force_rescreen: false
   notes: ''
 - ticker: LDOS
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: MED
-  last_pt: 250.07097352456216
-  last_expected_return: 0.9845327634676784
-  next_due_date: '2026-06-01'
+  last_pt: 248.68502771573927
+  last_expected_return: 0.9794247440262607
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-28'
   force_rescreen: false
   notes: ''
-- ticker: LLY
-  last_screen_date: '2026-05-25'
+- ticker: LHX
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 657.3699013911486
-  last_expected_return: -0.38275126629939105
-  next_due_date: '2026-06-08'
+  last_pt: 219.392672013255
+  last_expected_return: -0.2959947630617389
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-24'
+  force_rescreen: false
+  notes: ''
+- ticker: LIN
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: MED
+  last_pt: 532.6774097325193
+  last_expected_return: 0.034827410845107876
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-31'
+  force_rescreen: false
+  notes: ''
+- ticker: LLY
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 652.4338677780567
+  last_expected_return: -0.3864816040754383
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-08-05'
   force_rescreen: false
   notes: ''
 - ticker: LMT
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: BROKEN
   last_pt: 0.0
   last_expected_return: -1.0
-  next_due_date: '2026-07-06'
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-21'
   force_rescreen: false
   notes: ''
+- ticker: LOW
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 328.64864172524113
+  last_expected_return: 0.5281363388986637
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-08-19'
+  force_rescreen: false
+  notes: ''
 - ticker: LRCX
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 216.51987595771504
-  last_expected_return: -0.2909124743484034
-  next_due_date: '2026-06-08'
+  last_pt: 220.8739606939468
+  last_expected_return: -0.30105388850369674
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-29'
   force_rescreen: false
   notes: ''
+- ticker: LULU
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 436.26466213590083
+  last_expected_return: 2.441656026903583
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-06-04'
+  force_rescreen: false
+  notes: ''
+- ticker: LUV
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 54.54811968703083
+  last_expected_return: 0.29506456996749364
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-22'
+  force_rescreen: false
+  notes: ''
 - ticker: MA
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: BROKEN
   last_pt: 0.0
   last_expected_return: -1.0
-  next_due_date: '2026-07-06'
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
-- ticker: MCO
-  last_screen_date: '2026-05-25'
+- ticker: MAR
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
+  last_confidence: MED
+  last_pt: 364.46991011403935
+  last_expected_return: -0.02155728828445813
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-08-04'
+  force_rescreen: false
+  notes: ''
+- ticker: MCD
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 45.77274317753581
+  last_expected_return: -0.8367445628977769
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-08-06'
+  force_rescreen: false
+  notes: ''
+- ticker: MCK
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 280.35639292662177
+  last_expected_return: -0.6309011770783184
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-08-05'
+  force_rescreen: false
+  notes: ''
+- ticker: MCO
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
   last_confidence: HIGH
-  last_pt: 432.7180245507602
-  last_expected_return: -0.03652025171277118
-  next_due_date: '2026-06-22'
+  last_pt: 367.05260355201847
+  last_expected_return: -0.18715444387404145
+  next_due_date: '2026-06-23'
   earnings_date_next: '2026-07-23'
   force_rescreen: false
   notes: ''
-- ticker: MLM
-  last_screen_date: '2026-05-25'
+- ticker: MDLZ
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: MED
-  last_pt: 353.6884757054198
-  last_expected_return: -0.3407238374116094
-  next_due_date: '2026-07-06'
+  last_pt: 43.38393010676496
+  last_expected_return: -0.30385779788729306
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-07-28'
+  force_rescreen: false
+  notes: ''
+- ticker: MDT
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 159.12985807539675
+  last_expected_return: 1.041173141038953
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-06-03'
+  force_rescreen: false
+  notes: ''
+- ticker: MLM
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 358.2233704707045
+  last_expected_return: -0.35327651768677937
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-04-30'
   force_rescreen: false
   notes: ''
+- ticker: MMM
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 227.43752036204367
+  last_expected_return: 0.4760044153549463
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-21'
+  force_rescreen: false
+  notes: ''
 - ticker: MOD
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: MED
-  last_pt: 175.18353243160985
-  last_expected_return: -0.3275620588376713
-  next_due_date: '2026-07-06'
+  last_pt: 176.73308995770734
+  last_expected_return: -0.4442006102342684
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-05-26'
   force_rescreen: false
   notes: ''
 - ticker: MSCI
-  last_screen_date: '2026-05-25'
-  last_rating: HOLD
-  last_confidence: HIGH
-  last_pt: 564.5656906152776
-  last_expected_return: -0.040751523888747476
-  next_due_date: '2026-06-22'
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 383.7062497647678
+  last_expected_return: -0.34700524197211113
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-21'
   force_rescreen: false
   notes: ''
 - ticker: MTD
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: HIGH
-  last_pt: 1189.464685424179
-  last_expected_return: 0.07830248250294991
-  next_due_date: '2026-06-22'
+  last_pt: 1192.5586407310261
+  last_expected_return: 0.08073499119235339
+  next_due_date: '2026-06-23'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: MTZ
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 409.8760863368427
-  last_expected_return: 0.0726651653629653
-  next_due_date: '2026-06-08'
+  last_pt: 425.65603300592403
+  last_expected_return: 0.08086649147031322
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-30'
   force_rescreen: true
   notes: ''
+- ticker: NEM
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: HIGH
+  last_pt: 236.67872464528506
+  last_expected_return: 1.1337786210357468
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-23'
+  force_rescreen: false
+  notes: ''
+- ticker: NKE
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 34.66533373566401
+  last_expected_return: -0.2251825271420651
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-06-25'
+  force_rescreen: false
+  notes: ''
 - ticker: NOC
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 568.7753850560471
-  last_expected_return: 0.023750648072369485
-  next_due_date: '2026-06-08'
+  last_pt: 567.8864279088931
+  last_expected_return: 0.028127868034566905
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-21'
   force_rescreen: false
   notes: ''
-- ticker: OKE
-  last_screen_date: '2026-05-25'
+- ticker: NOW
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 30.83492104247469
+  last_expected_return: -0.6965959718303896
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-22'
+  force_rescreen: false
+  notes: ''
+- ticker: NUE
+  last_screen_date: '2026-05-26'
   last_rating: SELL
-  last_confidence: HIGH
-  last_pt: 75.25356620151238
-  last_expected_return: -0.19968556629254086
-  next_due_date: '2026-06-22'
+  last_confidence: MED
+  last_pt: 204.88225772709177
+  last_expected_return: -0.13974657180067696
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-27'
+  force_rescreen: false
+  notes: ''
+- ticker: OKE
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 112.84921850907958
+  last_expected_return: 0.21388929714494243
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-04-28'
   force_rescreen: false
   notes: ''
-- ticker: PH
-  last_screen_date: '2026-05-25'
+- ticker: ORCL
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: MED
-  last_pt: 536.5650059385666
-  last_expected_return: -0.38109600680704225
-  next_due_date: '2026-07-06'
+  last_pt: 72.7153967426815
+  last_expected_return: -0.6263148325058765
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-06-10'
+  force_rescreen: false
+  notes: ''
+- ticker: PCAR
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 205.36896284764526
+  last_expected_return: 0.8533432257706457
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-21'
+  force_rescreen: false
+  notes: ''
+- ticker: PEP
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 213.02089984202863
+  last_expected_return: 0.4379216297683257
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-16'
+  force_rescreen: false
+  notes: ''
+- ticker: PG
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: HIGH
+  last_pt: 138.3008367190028
+  last_expected_return: -0.04004416798082311
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: true
+  notes: ''
+- ticker: PH
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 541.1765516766559
+  last_expected_return: -0.3804787969908008
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-08-06'
   force_rescreen: false
   notes: ''
 - ticker: PRIM
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: LOW
-  last_pt: 228.0741427825876
-  last_expected_return: 0.9402309041479167
-  next_due_date: '2026-06-01'
+  last_pt: 235.0432054171187
+  last_expected_return: 0.8658665191483585
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-03'
   force_rescreen: false
   notes: ''
 - ticker: PWR
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 383.0937957868797
-  last_expected_return: -0.470455330384165
-  next_due_date: '2026-06-08'
+  last_pt: 394.86791101970084
+  last_expected_return: -0.46748134075103387
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: REGN
+  last_screen_date: '2026-05-26'
+  last_rating: BUY
+  last_confidence: HIGH
+  last_pt: 706.8720503940782
+  last_expected_return: 0.10407355115906247
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: ROK
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: SELL
   last_confidence: MED
-  last_pt: 393.36800853050465
-  last_expected_return: -0.1302748048143787
-  next_due_date: '2026-06-22'
+  last_pt: 397.4244509369219
+  last_expected_return: -0.13026709500618905
+  next_due_date: '2026-06-23'
   earnings_date_next: '2026-08-06'
   force_rescreen: false
   notes: ''
+- ticker: RSG
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 340.2774049127491
+  last_expected_return: 0.6453624336963837
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-28'
+  force_rescreen: false
+  notes: ''
 - ticker: RTX
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: SELL
   last_confidence: HIGH
-  last_pt: 157.75294218514873
-  last_expected_return: -0.10879079043472839
-  next_due_date: '2026-06-22'
+  last_pt: 157.8125405326577
+  last_expected_return: -0.10608054530045485
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-21'
+  force_rescreen: false
+  notes: ''
+- ticker: RVTY
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 135.0214890442059
+  last_expected_return: 0.39976662911264693
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-27'
+  force_rescreen: false
+  notes: ''
+- ticker: SBUX
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: LOW
+  last_pt: 107.13059484624972
+  last_expected_return: 0.044666941455384856
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-28'
+  force_rescreen: true
+  notes: ''
+- ticker: SHW
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 169.4394084220034
+  last_expected_return: -0.4580366926112992
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-21'
   force_rescreen: false
   notes: ''
 - ticker: SPGI
-  last_screen_date: '2026-05-25'
-  last_rating: STRONG_BUY
+  last_screen_date: '2026-05-26'
+  last_rating: BUY
   last_confidence: MED
-  last_pt: 523.9531781327053
-  last_expected_return: 0.25467715070092245
-  next_due_date: '2026-06-01'
+  last_pt: 458.57891583075923
+  last_expected_return: 0.10638241632570344
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: STRL
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 398.5565242528586
-  last_expected_return: -0.4562221679088895
-  next_due_date: '2026-06-08'
+  last_pt: 409.4152111901939
+  last_expected_return: -0.47439441909493174
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-08-03'
   force_rescreen: false
   notes: ''
@@ -529,83 +1209,243 @@ state:
   earnings_date_next: null
   force_rescreen: false
   notes: ''
+- ticker: SYK
+  last_screen_date: '2026-05-26'
+  last_rating: SELL
+  last_confidence: LOW
+  last_pt: 279.54562471511144
+  last_expected_return: -0.10410657720375771
+  next_due_date: '2026-06-23'
+  earnings_date_next: '2026-07-30'
+  force_rescreen: false
+  notes: ''
+- ticker: T
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 38.88313638499855
+  last_expected_return: 0.5575059637491908
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-22'
+  force_rescreen: false
+  notes: ''
+- ticker: TJX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 125.90688459141636
+  last_expected_return: -0.20733515114948153
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-08-19'
+  force_rescreen: false
+  notes: ''
 - ticker: TMO
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: HOLD
   last_confidence: MED
-  last_pt: 489.9954978810186
-  last_expected_return: 0.09305679013344026
-  next_due_date: '2026-06-08'
+  last_pt: 490.8504679862019
+  last_expected_return: 0.09428051539638371
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-22'
   force_rescreen: false
   notes: ''
 - ticker: TRGP
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
-  last_confidence: MED
-  last_pt: 359.2892011331714
-  last_expected_return: 0.29824462920748473
-  next_due_date: '2026-06-01'
+  last_confidence: HIGH
+  last_pt: 355.9654909537761
+  last_expected_return: 0.29540918866689503
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-06'
   force_rescreen: false
   notes: ''
 - ticker: TT
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: MED
-  last_pt: 142.97340527973114
-  last_expected_return: -0.6829998552620036
-  next_due_date: '2026-07-06'
+  last_pt: 144.75941172809434
+  last_expected_return: -0.6862434858236914
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-29'
   force_rescreen: false
   notes: ''
-- ticker: V
-  last_screen_date: '2026-05-25'
+- ticker: TXT
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 142.27752694218492
+  last_expected_return: 0.5339068184160953
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-23'
+  force_rescreen: false
+  notes: ''
+- ticker: UNH
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 90.03331406496122
-  last_expected_return: -0.7262426597392324
-  next_due_date: '2026-06-08'
+  last_pt: 170.14498492143503
+  last_expected_return: -0.5497380519703741
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-28'
+  force_rescreen: false
+  notes: ''
+- ticker: UNP
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: MED
+  last_pt: 81.57412352790446
+  last_expected_return: -0.6979714961710392
+  next_due_date: '2026-07-07'
+  earnings_date_next: '2026-07-23'
+  force_rescreen: false
+  notes: ''
+- ticker: UPS
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 243.586215299167
+  last_expected_return: 1.3801662624503321
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-28'
+  force_rescreen: false
+  notes: ''
+- ticker: URI
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 1901.7080231224104
+  last_expected_return: 0.9866159905588976
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-22'
+  force_rescreen: false
+  notes: ''
+- ticker: V
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 89.76085487498102
+  last_expected_return: -0.7256571820988706
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-28'
   force_rescreen: false
   notes: ''
 - ticker: VMC
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: MED
-  last_pt: 204.44452016663297
-  last_expected_return: -0.2156358328538922
-  next_due_date: '2026-07-06'
+  last_pt: 207.1287697059611
+  last_expected_return: -0.2268718237245303
+  next_due_date: '2026-07-07'
   earnings_date_next: '2026-07-30'
   force_rescreen: false
   notes: ''
 - ticker: VRT
-  last_screen_date: '2026-05-25'
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 125.63290723821095
-  last_expected_return: -0.6163412104128414
-  next_due_date: '2026-06-08'
+  last_pt: 127.63675302445442
+  last_expected_return: -0.622616521962496
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-07-29'
   force_rescreen: false
   notes: ''
-- ticker: WMB
-  last_screen_date: '2026-05-25'
-  last_rating: STRONG_BUY
+- ticker: VRTX
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
   last_confidence: LOW
-  last_pt: 96.36245382813802
-  last_expected_return: 0.22801648818832687
-  next_due_date: '2026-06-01'
+  last_pt: 263.4822713678405
+  last_expected_return: -0.3968310982124843
+  next_due_date: '2026-06-09'
   earnings_date_next: '2026-08-03'
   force_rescreen: false
   notes: ''
-- ticker: ZTS
-  last_screen_date: '2026-05-25'
+- ticker: VZ
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 123.1864220849279
+  last_expected_return: 1.563446510975505
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-21'
+  force_rescreen: false
+  notes: ''
+- ticker: WAT
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 192.59755953235072
+  last_expected_return: -0.4356446229309616
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: WM
+  last_screen_date: '2026-05-26'
   last_rating: STRONG_BUY
   last_confidence: LOW
-  last_pt: 200.2339642823895
-  last_expected_return: 1.462296658661947
-  next_due_date: '2026-06-01'
+  last_pt: 374.45970455003385
+  last_expected_return: 0.7308051978277508
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-07-27'
+  force_rescreen: false
+  notes: ''
+- ticker: WMB
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 39.01032507911365
+  last_expected_return: -0.49767801855377736
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-08-03'
+  force_rescreen: false
+  notes: ''
+- ticker: WMT
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_SELL
+  last_confidence: LOW
+  last_pt: 24.43261092966985
+  last_expected_return: -0.7952088267074318
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-08-20'
+  force_rescreen: false
+  notes: ''
+- ticker: WSO
+  last_screen_date: '2026-05-26'
+  last_rating: HOLD
+  last_confidence: MED
+  last_pt: 405.9478466805775
+  last_expected_return: 0.07717046337701161
+  next_due_date: '2026-06-09'
+  earnings_date_next: '2026-07-29'
+  force_rescreen: false
+  notes: ''
+- ticker: X
+  last_screen_date: '2026-05-26'
+  last_rating: BROKEN
+  last_confidence: UNKNOWN
+  last_pt: 0.0
+  last_expected_return: 0.0
+  next_due_date: '2026-06-23'
+  earnings_date_next: null
+  force_rescreen: false
+  notes: ''
+- ticker: ZBH
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: MED
+  last_pt: 301.7004201189181
+  last_expected_return: 2.5398383212356928
+  next_due_date: '2026-06-02'
+  earnings_date_next: '2026-04-28'
+  force_rescreen: false
+  notes: ''
+- ticker: ZTS
+  last_screen_date: '2026-05-26'
+  last_rating: STRONG_BUY
+  last_confidence: LOW
+  last_pt: 201.50063466599937
+  last_expected_return: 1.4915070746955101
+  next_due_date: '2026-06-02'
   earnings_date_next: '2026-08-04'
   force_rescreen: false
   notes: ''

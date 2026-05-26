@@ -78,3 +78,107 @@ peer_groups:
   IDXX: [ZTS, ELAN]
   ZTS:  [IDXX, ELAN]
   MTD:  [A, DHR, WAT]
+
+  # === Consumer Staples ===
+  KO:   [PEP, MDLZ, KMB, CL, GIS, HSY]
+  PG:   [CL, KMB, UL, HENKY, CHD]
+  PEP:  [KO, MDLZ, MNST, KHC]
+  COST: [WMT, BJ, TGT]
+  WMT:  [COST, TGT, KR]
+  MDLZ: [PEP, KO, GIS, HSY, CPB]
+  CL:   [PG, KMB, UL, CHD]
+  KMB:  [PG, CL, GPK, NWL]
+  GIS:  [MDLZ, CPB, SJM, HSY]
+  HSY:  [MDLZ, GIS, TR, CPB]
+
+  # === Consumer Discretionary ===
+  NKE:  [ADDYY, LULU, VFC, SKX]
+  SBUX: [QSR, MCD, CMG, DNKN]
+  MCD:  [QSR, YUM, CMG, SBUX]
+  CMG:  [MCD, SBUX, JACK, TXRH]
+  TJX:  [ROST, BURL]
+  HD:   [LOW, TSCO]
+  LOW:  [HD, TSCO]
+  MAR:  [HLT, IHG, H, HYATT]
+  BKNG: [EXPE, ABNB, TRVG]
+  LULU: [NKE, ADDYY, UAA, SKX]
+
+  # === Healthcare Services / Managed Care ===
+  UNH:  [HUM, ELV, CI, MOH, CNC]
+  HUM:  [UNH, ELV, CI, MOH, CNC]
+  CI:   [UNH, HUM, ELV, MOH]
+  CVS:  [UNH, WBA, MCK, COR]
+  ELV:  [UNH, HUM, CI, MOH, CNC]
+  MCK:  [COR, CAH, WBA]
+  COR:  [MCK, CAH, WBA]
+  CAH:  [MCK, COR, WBA]
+
+  # === Medical Devices ===
+  SYK:  [BSX, MDT, ZBH, BDX, EW]
+  BSX:  [SYK, MDT, EW, ABT]
+  MDT:  [SYK, BSX, ABT, ZBH, BDX]
+  EW:   [BSX, MDT, ABT, HOLX]
+  DXCM: [PODD, ABT, MDT]
+  BDX:  [SYK, MDT, ABT, BAX]
+  ZBH:  [SYK, MDT, JNJ, SPIN]
+  BAX:  [BDX, SYK, MDT, ICU]
+
+  # === Profitable Biotech ===
+  GILD: [ABBV, AMGN, BIIB, REGN, MRK]
+  REGN: [VRTX, BIIB, AMGN, LLY, SGEN]
+  VRTX: [REGN, BIIB, AMGN, ALXN]
+  BIIB: [VRTX, REGN, AMGN, GILD]
+  AMGN: [GILD, BIIB, ABBV, REGN]
+
+  # === Healthcare Tools — Additional ===
+  WAT:  [DHR, TMO, A, MTD, BRKR]
+  BIO:  [DHR, TMO, A, BRKR, QGEN]
+  RVTY: [DHR, TMO, A, HOLX, QGEN]
+
+  # === Materials ===
+  APD:  [LIN, ECL, CE, DD]
+  LIN:  [APD, AIR, AIRP]
+  SHW:  [RPM, PPG, AXTA]
+  FCX:  [NEM, SCCO, TECK, RIO]
+  NEM:  [FCX, GOLD, AEM, WPM]
+  NUE:  [STLD, CLF, RS]
+  # X (US Steel) removed from universe — EDGAR unavailable after Nippon Steel acquisition
+  ECL:  [SHW, RPM, IFF, EMN]
+  IFF:  [ECL, GIVN, SYNNX, FLXS]
+  EMN:  [LYB, CE, HUN, OLN]
+
+  # === Communications ===
+  DIS:  [NFLX, PARA, WBD, CMCSA]
+  CMCSA: [CHTR, T, VZ, TMUS]
+  T:    [VZ, TMUS, CMCSA]
+  VZ:   [T, TMUS, CHTR]
+  CHTR: [CMCSA, T, VZ, CABO]
+
+  # === Industrials — Additional ===
+  MMM:  [HON, EMR, ITW, DOV]
+  LHX:  [NOC, LMT, RTX, LDOS, KTOS]
+  TXT:  [LHX, HII, GD, NOC]
+  LUV:  [DAL, UAL, AAL, ALK]
+  UNP:  [CSX, NSC, WAB]
+  CSX:  [UNP, NSC, WAB]
+  UPS:  [FDX, XPO, ODFL]
+  FDX:  [UPS, XPO, ODFL]
+  GWW:  [FAST, MSM, DNOW]
+  FAST: [GWW, MSM, DNOW, AVNT]
+  WSO:  [LII, CARR, JCI]
+  URI:  [HEES, AHII, NEFF]
+  RSG:  [WM, CLH, SRCL]
+  WM:   [RSG, CLH, SRCL]
+  PCAR: [CAT, CMI, DE, OSK]
+
+  # === Tech — DCF-Friendly ===
+  ORCL: [SAP, IBM, CRM, NOW]
+  CRM:  [NOW, WDAY, ORCL, SAP]
+  ACN:  [IBM, CTSH, INFY, WIT]
+  IBM:  [ACN, ORCL, SAP, HPE]
+  CSCO: [JNPR, ANET, HPE]
+  INTC: [AMD, QCOM, TXN, NVDA]
+  ADBE: [CRM, NOW, INTU, WDAY]
+  NOW:  [CRM, ADBE, INTU, WDAY]
+  INTU: [ADBE, CRM, NOW, PAYX]
+  ADP:  [PAYX, WEX, VRSN, INTU]

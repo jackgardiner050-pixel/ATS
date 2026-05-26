@@ -1,5 +1,5 @@
 # Universe configuration for the screener.
-# 36 names across 6 agent-friendly sectors.
+# 143 names across 22 sectors (expanded 2026-05-26, was 60; X removed 2026-05-26).
 
 universe:
   # Power / Infrastructure / EPC (12)
@@ -86,3 +86,110 @@ universe:
   - IDXX
   - ZTS
   - MTD
+
+  # === Consumer Staples (10) ===
+  - KO
+  - PG
+  - PEP
+  - COST
+  - WMT
+  - MDLZ
+  - CL
+  - KMB
+  - GIS
+  - HSY
+
+  # === Consumer Discretionary (10) ===
+  - NKE
+  - SBUX
+  - MCD
+  - CMG
+  - TJX
+  - HD
+  - LOW
+  - MAR
+  - BKNG
+  - LULU
+
+  # === Healthcare Services / Managed Care (8) ===
+  # Note: UNH/HUM/CI/ELV are health insurers — DCF modeled on operating cash flows
+  - UNH
+  - HUM
+  - CI
+  - CVS
+  - ELV
+  - MCK
+  - COR
+  - CAH
+
+  # === Medical Devices (8) ===
+  - SYK
+  - BSX
+  - MDT
+  - EW
+  - DXCM
+  - BDX
+  - ZBH
+  - BAX
+
+  # === Profitable Biotech (5) ===
+  - GILD
+  - REGN
+  - VRTX
+  - BIIB
+  - AMGN
+
+  # === Healthcare Tools — Additional (3) ===
+  # PKI rebranded to RVTY (Revvity) 2023 — using RVTY
+  - WAT
+  - BIO
+  - RVTY
+
+  # === Materials (9) ===
+  # X (US Steel) removed — acquired by Nippon Steel, EDGAR CIKID no longer resolves
+  - APD
+  - LIN
+  - SHW
+  - FCX
+  - NEM
+  - NUE
+  - ECL
+  - IFF
+  - EMN
+
+  # === Communications (5) ===
+  - DIS
+  - CMCSA
+  - T
+  - VZ
+  - CHTR
+
+  # === Industrials — Additional (15) ===
+  # LUV (airline) — DCF-unfriendly, expect BROKEN outputs
+  - MMM
+  - LHX
+  - TXT
+  - LUV
+  - UNP
+  - CSX
+  - UPS
+  - FDX
+  - GWW
+  - FAST
+  - WSO
+  - URI
+  - RSG
+  - WM
+  - PCAR
+
+  # === Tech — DCF-Friendly (10) ===
+  - ORCL
+  - CRM
+  - ACN
+  - IBM
+  - CSCO
+  - INTC
+  - ADBE
+  - NOW
+  - INTU
+  - ADP

@@ -49,5 +49,24 @@ bugs; none affect order placement (there is none) or hard rule compliance.
 
 ---
 
+## BUG-006: Health insurer gross_profit inflation — UNH/HUM/CI/ELV/CVS-class
+**Status:** FIXED — high-gross-margin guard added in `src/data/edgar_client.py`  
+**Symptom:** UNH price target computed as ~$4583/share (1080% implied return) vs ~$290 actual. Similar inflation expected for HUM, CI, ELV, CVS.  
+**Root cause:** Health insurers report "Medical costs" (~$314B for UNH) under `us-gaap_PolicyholderBenefitsAndClaimsIncurredNet`, not under standard COGS concepts. The `cost_of_revenue` label map only captured "Cost of products sold" (~$51B — pharmacy segment only). The HON-class computed fallback then computed `gross_profit = revenue - cost_of_revenue = $447B - $51B = $396B` (88.7% gross margin), producing a wildly overstated EBITDA and PT.  
+**Fix applied:** Two-part: (1) Added `medical_costs` field to `LABEL_MAP_IS` with XBRL concepts `us-gaap_PolicyholderBenefitsAndClaimsIncurredNet`, `us-gaap_HealthCareCosts`, etc. (2) Added high-gross-margin guard in `extract_historical_metrics`: when `gross_profit / revenue > 0.70` AND `operating_income` and `sga` are both available, back-compute `gross_profit = operating_income + abs(sga)`. This ensures `EBIT = gross_profit - sga = operating_income` regardless of which revenue figure EDGAR returns.  
+**Note:** Subtracting `medical_costs` directly from `gross_profit` was attempted first but caused negative EBITDA because `standard_concept="Revenue"` picks up "Premiums" ($352B) before "Total revenues" ($447B), and $352B - $314B (medical) - $51B (products) = -$13B. The back-compute guard avoids this ambiguity entirely.  
+**Verified:** UNH fy1_ebitda=$25.9B (actual ~$23B), PT=$293 (SELL). No crashes on SYK, EW, COR.
+
+---
+
+## BUG-007: run_pipeline.py always bypasses live peer fetch
+**Status:** FIXED — `scripts/run_pipeline.py` defaults changed to `None`  
+**Symptom:** All tickers run via `python3 scripts/run_pipeline.py TICKER` showed `no_peers_resolved` in `confidence_flags` even when peers are defined in `peer_groups.yaml` and yfinance returns valid data. Exit multiple always defaulted to 12.0x instead of using the peer-derived value.  
+**Root cause:** `run_pipeline.py` built a `peer_multiples` dict from argparse defaults (14.0, 20.0, 25.0) and passed it to `run_pipeline()`. In `orchestrator.py`, the peer-fetch block is guarded by `if peer_multiples is None:` — so when the dict was passed with defaults, the yfinance fetch was skipped and `n_peers_resolved` stayed at 0.  
+**Fix applied:** Changed `--peer-ev-ebitda-median/p75/pe` defaults to `None`. `peer_multiples` is now set to `None` unless the user explicitly passes `--peer-ev-ebitda-median`. The orchestrator then auto-resolves peers via yfinance as intended.  
+**Note:** `run_universe.py` was unaffected — it calls `run_pipeline()` without `peer_multiples`, so it always fetched live peer data.
+
+---
+
 *Bugs are documented here only when the root cause is non-obvious or the fix is deferred.
 Bugs fixed in the same session as discovery do not require a permanent entry after resolution.*

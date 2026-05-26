@@ -177,6 +177,7 @@ LABEL_MAP_IS = {
     "revenue": {"standard_concept": ["Revenue"], "concept": ["us-gaap_Revenues", "us-gaap_RevenueFromContractWithCustomerExcludingAssessedTax", "us-gaap_RevenueFromContractWithCustomerIncludingAssessedTax", "us-gaap_SalesRevenueNet"], "label": ["Revenues", "Revenue", "Total revenue", "Net sales", "Net revenue"]},
     "cost_of_revenue": {"concept": ["us-gaap_CostOfRevenue", "us-gaap_CostOfGoodsAndServicesSold", "us-gaap_CostOfGoodsSold", "us-gaap_CostOfServices", "us-gaap_CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization"], "label": ["Cost of revenue", "Cost of revenues", "Cost of goods sold", "Cost of products sold", "Cost of products and services sold", "Cost of products and services", "Cost of sales"]},
     "gross_profit": {"standard_concept": ["Gross Profit"], "concept": ["us-gaap_GrossProfit"], "label": ["Gross profit", "Gross Profit"]},
+    "medical_costs": {"concept": ["us-gaap_PolicyholderBenefitsAndClaimsIncurredNet", "us-gaap_PolicyholderBenefitsAndClaimsIncurredGross", "us-gaap_BenefitsLossesAndExpenses", "us-gaap_HealthCareCosts"], "label": ["Medical costs", "Benefit costs", "Benefits and medical expenses", "Medical claims expense", "Health care costs", "Benefits, medical claims and costs of care", "Net medical costs"]},
     "sga": {"concept": ["us-gaap_SellingGeneralAndAdministrativeExpense", "us-gaap_GeneralAndAdministrativeExpense"], "label": ["Selling, general and administrative", "Selling, general and administrative expenses", "Selling, general & administrative"]},
     "operating_income": {"standard_concept": ["Operating Income"], "concept": ["us-gaap_OperatingIncomeLoss"], "label": ["Operating income", "Income from operations", "Operating profit", "Operating income (loss)"]},
     "other_income": {"concept": ["us-gaap_OtherNonoperatingIncomeExpense", "us-gaap_NonoperatingIncomeExpense"], "label": ["Other income, net"]},
@@ -226,13 +227,59 @@ def extract_historical_metrics(cd: CompanyData) -> dict:
             if rev is not None and cor is not None and rev > 0 and cor > 0:
                 m["gross_profit"] = rev - cor
 
+        # Health insurer path (ELV, HUM, CVS, UNH-class):
+        # When medical_costs > 30% of revenue the standard extraction breaks:
+        #   - some companies (ELV, CVS) lack a clear OperatingIncomeLoss XBRL
+        #     concept → oi ends up None, gp ends up inflated.
+        #   - other companies (HUM) have oi extracted but gp remains None,
+        #     causing the model to fall back to a 25% default gross margin.
+        # Two-step fix:
+        #   1. If oi is None, derive it from pre_tax_income (ni + tax).
+        #   2. If gp is None (after step 1), back-compute gp = oi + sga.
+        # The `oi is None` guard in step 1 ensures we do NOT override
+        # UNH/CI where oi IS correctly extracted by EDGAR.
+        _rev = m.get("revenue") or 0
+        _mc = m.get("medical_costs")
+        if _mc is not None and _rev > 0 and _mc / _rev > 0.30:
+            # Step 1: proxy oi from pre_tax when EDGAR didn't extract it
+            if m.get("operating_income") is None:
+                _ni = m.get("net_income")
+                _tax = m.get("tax")
+                if _ni is not None and _tax is not None:
+                    m["operating_income"] = _ni + abs(_tax)
+            # Step 2: back-compute gp when it's still missing
+            if m.get("gross_profit") is None and m.get("operating_income") is not None:
+                _sga = m.get("sga")
+                _oi = m["operating_income"]
+                m["gross_profit"] = _oi + abs(_sga) if _sga is not None else _oi
+
+        # High-gross-margin guard — runs for ALL companies (including health
+        # insurers like UNH where oi is extracted but gp is inflated):
+        # When gross_margin > 70% AND operating_income is extracted, back-compute
+        # gross_profit = operating_income + sga so that ebit = gp - sga = oi.
+        if m.get("gross_profit") is not None and m.get("operating_income") is not None:
+            _rev2 = m.get("revenue") or 0
+            _gp = m.get("gross_profit") or 0
+            _oi = m.get("operating_income")
+            _sga2 = m.get("sga")
+            if _rev2 > 0 and _gp / _rev2 > 0.70 and _sga2 is not None:
+                m["gross_profit"] = _oi + abs(_sga2)
+
         # Derive operating_income from gross_profit - sga when both are available
         # and the direct label is absent.
         if m.get("operating_income") is None:
-            gp = m.get("gross_profit")
-            sga = m.get("sga")
-            if gp is not None and sga is not None:
-                m["operating_income"] = gp - abs(sga)
+            _gp2 = m.get("gross_profit")
+            _sga3 = m.get("sga")
+            if _gp2 is not None and _sga3 is not None:
+                m["operating_income"] = _gp2 - abs(_sga3)
+
+        # Derive sga from gross_profit - operating_income when SGA label absent
+        # (e.g. CVS uses a non-standard XBRL concept for operating expenses).
+        if m.get("sga") is None:
+            _gp3 = m.get("gross_profit")
+            _oi3 = m.get("operating_income")
+            if _gp3 is not None and _oi3 is not None and _gp3 > _oi3:
+                m["sga"] = _gp3 - _oi3
 
         bs_periods = _get_period_columns(bs)
         bs_p = period if period in bs_periods else (bs_periods[-1] if bs_periods else None)
