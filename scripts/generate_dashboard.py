@@ -15,7 +15,7 @@ import json
 import math
 import os
 import sys
-from datetime import datetime, date
+from datetime import datetime, date, UTC
 from pathlib import Path
 from typing import Optional
 
@@ -421,6 +421,84 @@ def _health_bar(
 {last_run_html}
   </div>
 </div>"""
+
+
+def _perf_banner(positions: list[dict]) -> str:
+    """Top-of-page performance banner: portfolio return vs SPY, two equal side-by-side cards."""
+    if not positions:
+        return ""
+
+    tickers = [p["ticker"] for p in positions if "ticker" in p]
+    spy_entry = 745.64
+
+    port_return: Optional[float] = None
+    spy_return: Optional[float] = None
+
+    try:
+        import yfinance as yf
+        all_tickers = tickers + ["SPY"]
+        data = yf.download(all_tickers, period="1d", progress=False, auto_adjust=True)
+        prices: dict[str, float] = {}
+        if "Close" in data:
+            close = data["Close"].iloc[-1]
+            for t in all_tickers:
+                try:
+                    v = float(close[t])
+                    if not math.isnan(v):
+                        prices[t] = v
+                except (KeyError, TypeError, ValueError):
+                    pass
+
+        returns = []
+        for p in positions:
+            t = p.get("ticker", "")
+            entry = float(p.get("entry_price", 0))
+            if t in prices and entry > 0:
+                returns.append((prices[t] - entry) / entry)
+
+        if returns:
+            port_return = sum(returns) / len(returns)
+
+        if "SPY" in prices:
+            spy_return = (prices["SPY"] - spy_entry) / spy_entry
+    except Exception:
+        pass
+
+    def _card(value: Optional[float], label: str) -> str:
+        if value is None:
+            val_str, val_color = "—", "var(--text-muted)"
+        else:
+            sign = "+" if value >= 0 else ""
+            val_str = f"{sign}{value * 100:.1f}%"
+            val_color = "var(--green)" if value >= 0 else "var(--red)"
+        return (
+            f'<div class="card stat-card" style="text-align:center">'
+            f'<div class="stat-value" style="color:{val_color};font-size:2rem">{val_str}</div>'
+            f'<div class="stat-label">{label}</div>'
+            f'<div class="stat-sub">since 25 May 2026</div>'
+            f"</div>"
+        )
+
+    if port_return is not None and spy_return is not None:
+        alpha = port_return - spy_return
+        sign = "+" if alpha >= 0 else ""
+        alpha_color = "var(--green)" if alpha >= 0 else "var(--red)"
+        alpha_html = (
+            f'<div style="text-align:center;margin-top:0.5rem;font-size:0.9rem;'
+            f'color:{alpha_color};font-weight:600">Alpha: {sign}{alpha * 100:.1f}%</div>'
+        )
+    else:
+        alpha_html = ""
+
+    return (
+        f'<div class="container" style="padding-top:1rem">'
+        f'<div class="card-grid">'
+        f"{_card(port_return, 'Portfolio Return')}"
+        f"{_card(spy_return, 'SPY Return')}"
+        f"</div>"
+        f"{alpha_html}"
+        f"</div>"
+    )
 
 
 def _portfolio_overview(positions: list[dict], trades: list[dict]) -> str:
@@ -1081,10 +1159,12 @@ def build_index(
     generated_at: str,
 ) -> str:
     header = _page_header("ATS Research", "Anti-Delusion Dashboard · Paper portfolio · Diagnostic only")
+    perf = _perf_banner(positions)
     health = _health_bar(positions, regime, exposure, signal, generated_at)
 
     body = f"""
 {header}
+{perf}
 {health}
 <main>
 <div class="container">
@@ -1126,7 +1206,7 @@ def main():
     calib = load_latest_governance("calibration_log.jsonl")
     adv = load_latest_governance("adversarial_log.jsonl")
 
-    generated_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+    generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
 
     tickers = [p["ticker"] for p in positions if "ticker" in p]
 
