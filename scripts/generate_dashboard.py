@@ -423,46 +423,45 @@ def _health_bar(
 </div>"""
 
 
-def _perf_banner(positions: list[dict]) -> str:
-    """Top-of-page performance banner: portfolio return vs SPY, two equal side-by-side cards."""
-    if not positions:
-        return ""
-
-    tickers = [p["ticker"] for p in positions if "ticker" in p]
-    spy_entry = 745.64
-
-    port_return: Optional[float] = None
-    spy_return: Optional[float] = None
-
+def _fetch_live_prices(tickers: list[str]) -> dict[str, float]:
+    """Download latest close prices for tickers via yfinance. Returns {} on any failure."""
     try:
         import yfinance as yf
-        all_tickers = tickers + ["SPY"]
-        data = yf.download(all_tickers, period="1d", progress=False, auto_adjust=True)
+        data = yf.download(tickers, period="1d", progress=False, auto_adjust=True)
         prices: dict[str, float] = {}
         if "Close" in data:
             close = data["Close"].iloc[-1]
-            for t in all_tickers:
+            for t in tickers:
                 try:
                     v = float(close[t])
                     if not math.isnan(v):
                         prices[t] = v
                 except (KeyError, TypeError, ValueError):
                     pass
-
-        returns = []
-        for p in positions:
-            t = p.get("ticker", "")
-            entry = float(p.get("entry_price", 0))
-            if t in prices and entry > 0:
-                returns.append((prices[t] - entry) / entry)
-
-        if returns:
-            port_return = sum(returns) / len(returns)
-
-        if "SPY" in prices:
-            spy_return = (prices["SPY"] - spy_entry) / spy_entry
+        return prices
     except Exception:
-        pass
+        return {}
+
+
+def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
+    """Top-of-page performance banner: portfolio return vs SPY, two equal side-by-side cards."""
+    if not positions:
+        return ""
+
+    spy_entry = 745.64
+    port_return: Optional[float] = None
+    spy_return: Optional[float] = None
+
+    returns = []
+    for p in positions:
+        t = p.get("ticker", "")
+        entry = float(p.get("entry_price", 0))
+        if t in prices and entry > 0:
+            returns.append((prices[t] - entry) / entry)
+    if returns:
+        port_return = sum(returns) / len(returns)
+    if "SPY" in prices:
+        spy_return = (prices["SPY"] - spy_entry) / spy_entry
 
     def _card(value: Optional[float], label: str) -> str:
         if value is None:
@@ -499,6 +498,51 @@ def _perf_banner(positions: list[dict]) -> str:
         f"{alpha_html}"
         f"</div>"
     )
+
+
+def _position_returns_chart(positions: list[dict], prices: dict[str, float]) -> str:
+    """Sorted horizontal bar chart: current % return per position, best at top."""
+    if not positions or not prices:
+        return ""
+
+    rows: list[tuple[str, float]] = []
+    for p in positions:
+        t = p.get("ticker", "")
+        entry = float(p.get("entry_price", 0))
+        if t in prices and entry > 0:
+            rows.append((t, (prices[t] - entry) / entry))
+
+    if not rows:
+        return ""
+
+    rows.sort(key=lambda x: x[1], reverse=True)
+
+    _BAR_SCALE = 0.30  # 30% return maps to full bar width
+    bar_rows = []
+    for ticker, ret in rows:
+        bar_w = min(100.0, abs(ret) / _BAR_SCALE * 100)
+        bar_cls = "bar-green" if ret >= 0 else "bar-red"
+        val_color = "var(--green)" if ret >= 0 else "var(--red)"
+        sign = "+" if ret >= 0 else ""
+        bar_rows.append(
+            f'<div class="bar-row">'
+            f'<span class="bar-label-sm">'
+            f'<a href="positions/{ticker}.html" class="ticker-link">{ticker}</a>'
+            f'</span>'
+            f'<div class="bar-track">'
+            f'<div class="bar-fill {bar_cls}" style="width:{bar_w:.1f}%"></div>'
+            f'</div>'
+            f'<span class="bar-value" style="color:{val_color}">{sign}{ret * 100:.1f}%</span>'
+            f'</div>'
+        )
+
+    return f"""
+<section>
+  <h2 class="section-title">Position Returns</h2>
+  <div class="card">
+    {"".join(bar_rows)}
+  </div>
+</section>"""
 
 
 def _portfolio_overview(positions: list[dict], trades: list[dict]) -> str:
@@ -1159,7 +1203,10 @@ def build_index(
     generated_at: str,
 ) -> str:
     header = _page_header("ATS Research", "Anti-Delusion Dashboard · Paper portfolio · Diagnostic only")
-    perf = _perf_banner(positions)
+    pos_tickers = [p["ticker"] for p in positions if "ticker" in p]
+    prices = _fetch_live_prices(pos_tickers + ["SPY"])
+    perf = _perf_banner(positions, prices)
+    returns_chart = _position_returns_chart(positions, prices)
     health = _health_bar(positions, regime, exposure, signal, generated_at)
 
     body = f"""
@@ -1168,6 +1215,7 @@ def build_index(
 {health}
 <main>
 <div class="container">
+  {returns_chart}
   {_portfolio_overview(positions, trades)}
   {_open_positions_table(positions)}
   {_regime_section(regime)}
