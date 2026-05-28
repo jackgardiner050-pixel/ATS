@@ -463,16 +463,17 @@ def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
     if "SPY" in prices:
         spy_return = (prices["SPY"] - spy_entry) / spy_entry
 
-    def _card(value: Optional[float], label: str) -> str:
+    def _card(value: Optional[float], label: str, elem_id: str = "") -> str:
         if value is None:
             val_str, val_color = "—", "var(--text-muted)"
         else:
             sign = "+" if value >= 0 else ""
             val_str = f"{sign}{value * 100:.1f}%"
             val_color = "var(--green)" if value >= 0 else "var(--red)"
+        id_attr = f' id="{elem_id}"' if elem_id else ""
         return (
             f'<div class="card stat-card" style="text-align:center">'
-            f'<div class="stat-value" style="color:{val_color};font-size:2rem">{val_str}</div>'
+            f'<div class="stat-value"{id_attr} style="color:{val_color};font-size:2rem">{val_str}</div>'
             f'<div class="stat-label">{label}</div>'
             f'<div class="stat-sub">since 25 May 2026</div>'
             f"</div>"
@@ -483,7 +484,7 @@ def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
         sign = "+" if alpha >= 0 else ""
         alpha_color = "var(--green)" if alpha >= 0 else "var(--red)"
         alpha_html = (
-            f'<div style="text-align:center;margin-top:0.5rem;font-size:0.9rem;'
+            f'<div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;'
             f'color:{alpha_color};font-weight:600">Alpha: {sign}{alpha * 100:.1f}%</div>'
         )
     else:
@@ -492,8 +493,8 @@ def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
     return (
         f'<div class="container" style="padding-top:1rem">'
         f'<div class="card-grid">'
-        f"{_card(port_return, 'Portfolio Return')}"
-        f"{_card(spy_return, 'SPY Return')}"
+        f"{_card(port_return, 'Portfolio Return', 'live-port-return')}"
+        f"{_card(spy_return, 'SPY Return', 'live-spy-return')}"
         f"</div>"
         f"{alpha_html}"
         f"</div>"
@@ -530,9 +531,9 @@ def _position_returns_chart(positions: list[dict], prices: dict[str, float]) -> 
             f'<a href="positions/{ticker}.html" class="ticker-link">{ticker}</a>'
             f'</span>'
             f'<div class="bar-track">'
-            f'<div class="bar-fill {bar_cls}" style="width:{bar_w:.1f}%"></div>'
+            f'<div id="pos-fill-{ticker}" class="bar-fill {bar_cls}" style="width:{bar_w:.1f}%"></div>'
             f'</div>'
-            f'<span class="bar-value" style="color:{val_color}">{sign}{ret * 100:.1f}%</span>'
+            f'<span id="pos-val-{ticker}" class="bar-value" style="color:{val_color}">{sign}{ret * 100:.1f}%</span>'
             f'</div>'
         )
 
@@ -647,6 +648,9 @@ def _open_positions_table(positions: list[dict]) -> str:
       <span style="font-size:0.77rem;font-weight:600">{fmt_pct(upside)}</span>
     </div>
   </td>
+  <td id="pos-price-{ticker}" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-{ticker}" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-{ticker}" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td>{rating_badge(rating)}</td>
   <td>{conf_badge(conf)}</td>
 </tr>""")
@@ -654,12 +658,14 @@ def _open_positions_table(positions: list[dict]) -> str:
     return f"""
 <section>
   <h2 class="section-title">Open Positions</h2>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem" id="live-cards-ts">Live prices loading…</div>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>Ticker</th><th>Company</th><th>Entry</th><th>Price Target</th>
-          <th>Implied Upside</th><th>Rating</th><th>Conf</th>
+          <th>Implied Upside</th><th>Current</th><th>Today %</th><th>Return</th>
+          <th>Rating</th><th>Conf</th>
         </tr>
       </thead>
       <tbody>{"".join(rows)}</tbody>
@@ -1417,6 +1423,48 @@ def _lab_nav() -> str:
 </nav>"""
 
 
+def _live_cards_js() -> str:
+    """JS block that updates perf banner, position bars, and positions table from ats_live.json every 5 min."""
+    return """<script>
+(function(){
+  var URL='data/ats_live.json', INTERVAL=5*60*1000, STALE_MINS=20, BAR_SCALE=0.30;
+  function fmtPct(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
+  function fmtPrice(v){if(v===null||v===undefined)return'—';return'$'+parseFloat(v).toFixed(2);}
+  function posColor(v){return v>=0?'var(--green)':'var(--red)';}
+  function isMarketHours(){var n=new Date(),d=n.getUTCDay();if(d===0||d===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
+  function render(d){
+    var portEl=document.getElementById('live-port-return');
+    if(portEl){portEl.textContent=fmtPct(d.portfolio_return_pct);portEl.style.color=posColor(d.portfolio_return_pct);}
+    var spyEl=document.getElementById('live-spy-return');
+    if(spyEl){spyEl.textContent=fmtPct(d.spy_return_pct);spyEl.style.color=posColor(d.spy_return_pct);}
+    var alphaEl=document.getElementById('live-alpha-value');
+    if(alphaEl){alphaEl.textContent='Alpha: '+fmtPct(d.alpha_vs_spy_pct);alphaEl.style.color=posColor(d.alpha_vs_spy_pct);}
+    (d.positions||[]).forEach(function(p){
+      var t=p.ticker, ret=p.return_pct, day=p.day_change_pct;
+      var fillEl=document.getElementById('pos-fill-'+t);
+      if(fillEl){fillEl.style.width=Math.min(100,Math.abs(ret)/BAR_SCALE).toFixed(1)+'%';fillEl.className='bar-fill '+(ret>=0?'bar-green':'bar-red');}
+      var valEl=document.getElementById('pos-val-'+t);
+      if(valEl){valEl.textContent=fmtPct(ret);valEl.style.color=posColor(ret);}
+      var prEl=document.getElementById('pos-price-'+t);
+      if(prEl)prEl.textContent=fmtPrice(p.last_price);
+      var tdEl=document.getElementById('pos-today-'+t);
+      if(tdEl){tdEl.textContent=fmtPct(day);tdEl.style.color=posColor(day);}
+      var rtEl=document.getElementById('pos-return-'+t);
+      if(rtEl){rtEl.textContent=fmtPct(ret);rtEl.style.color=posColor(ret);}
+    });
+    var tsEl=document.getElementById('live-cards-ts');
+    if(tsEl){
+      var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
+      var warn=isMarketHours()&&age>STALE_MINS?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
+      tsEl.innerHTML='Live prices as of '+d.fetched_at_uk+warn;
+    }
+  }
+  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var e=document.getElementById('live-cards-ts');if(e)e.textContent='Live data unavailable';});}
+  load();setInterval(load,INTERVAL);
+})();
+</script>"""
+
+
 def build_index(
     positions: list[dict],
     trades: list[dict],
@@ -1466,7 +1514,7 @@ def build_index(
   </div>
 </footer>"""
 
-    return _page_wrap("ATS Research Dashboard", body)
+    return _page_wrap("ATS Research Dashboard", body + _live_cards_js())
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────

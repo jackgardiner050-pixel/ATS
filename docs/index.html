@@ -53,7 +53,7 @@
     
   </div>
 </header>
-<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" style="color:var(--green);font-size:2rem">+2.9%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" style="color:var(--green);font-size:2rem">+0.6%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +2.3%</div></div>
+<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+4.3%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.2%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +3.1%</div></div>
 
 <div class="health-bar">
   <div class="container">
@@ -61,7 +61,7 @@
   <span class="health-pill yellow" title="49.0% confidence"><span class="dot"></span>Regime: Risk On Growth</span>
   <span class="health-pill yellow"><span class="dot"></span>2 Watches</span>
   <span class="health-pill yellow"><span class="dot"></span>Signal Decay</span>
-<span class="health-last-run">Last run: 2026-05-28 13:15 UTC</span>
+<span class="health-last-run">Last run: 2026-05-28 16:57 UTC</span>
   </div>
 </div>
 
@@ -92,7 +92,7 @@
 <section>
   <h2 class="section-title">Position Returns</h2>
   <div class="card">
-    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:95.6%"></div></div><span class="bar-value" style="color:var(--green)">+28.7%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:12.8%"></div></div><span class="bar-value" style="color:var(--green)">+3.8%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:12.4%"></div></div><span class="bar-value" style="color:var(--green)">+3.7%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:12.2%"></div></div><span class="bar-value" style="color:var(--green)">+3.7%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:8.1%"></div></div><span class="bar-value" style="color:var(--green)">+2.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:6.5%"></div></div><span class="bar-value" style="color:var(--green)">+1.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div class="bar-fill bar-green" style="width:3.5%"></div></div><span class="bar-value" style="color:var(--green)">+1.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div class="bar-fill bar-red" style="width:0.2%"></div></div><span class="bar-value" style="color:var(--red)">-0.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div class="bar-fill bar-red" style="width:1.4%"></div></div><span class="bar-value" style="color:var(--red)">-0.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div class="bar-fill bar-red" style="width:1.8%"></div></div><span class="bar-value" style="color:var(--red)">-0.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div class="bar-fill bar-red" style="width:15.5%"></div></div><span class="bar-value" style="color:var(--red)">-4.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div class="bar-fill bar-red" style="width:15.8%"></div></div><span class="bar-value" style="color:var(--red)">-4.7%</span></div>
+    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:100.0%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+33.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:21.0%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+6.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:17.0%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+5.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:14.8%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+4.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-green" style="width:14.5%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--green)">+4.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:13.9%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+4.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-green" style="width:7.4%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--green)">+2.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-green" style="width:4.2%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--green)">+1.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-green" style="width:1.1%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--green)">+0.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-red" style="width:1.8%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--red)">-0.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:14.0%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-4.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:16.8%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-5.0%</span></div>
   </div>
 </section>
   
@@ -140,12 +140,14 @@
   
 <section>
   <h2 class="section-title">Open Positions</h2>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem" id="live-cards-ts">Live prices loading…</div>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>Ticker</th><th>Company</th><th>Entry</th><th>Price Target</th>
-          <th>Implied Upside</th><th>Rating</th><th>Conf</th>
+          <th>Implied Upside</th><th>Current</th><th>Today %</th><th>Return</th>
+          <th>Rating</th><th>Conf</th>
         </tr>
       </thead>
       <tbody>
@@ -160,6 +162,9 @@
       <span style="font-size:0.77rem;font-weight:600">161.0%</span>
     </div>
   </td>
+  <td id="pos-price-ACM" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-ACM" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-ACM" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -174,6 +179,9 @@
       <span style="font-size:0.77rem;font-weight:600">34.0%</span>
     </div>
   </td>
+  <td id="pos-price-AMAT" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-AMAT" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-AMAT" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -188,6 +196,9 @@
       <span style="font-size:0.77rem;font-weight:600">86.2%</span>
     </div>
   </td>
+  <td id="pos-price-DY" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-DY" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-DY" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -202,6 +213,9 @@
       <span style="font-size:0.77rem;font-weight:600">71.8%</span>
     </div>
   </td>
+  <td id="pos-price-EMR" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-EMR" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-EMR" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -216,6 +230,9 @@
       <span style="font-size:0.77rem;font-weight:600">89.6%</span>
     </div>
   </td>
+  <td id="pos-price-GD" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-GD" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-GD" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -230,6 +247,9 @@
       <span style="font-size:0.77rem;font-weight:600">121.7%</span>
     </div>
   </td>
+  <td id="pos-price-GNRC" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-GNRC" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-GNRC" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -244,6 +264,9 @@
       <span style="font-size:0.77rem;font-weight:600">24.2%</span>
     </div>
   </td>
+  <td id="pos-price-HUBB" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-HUBB" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-HUBB" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -258,6 +281,9 @@
       <span style="font-size:0.77rem;font-weight:600">21.1%</span>
     </div>
   </td>
+  <td id="pos-price-J" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-J" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-J" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -272,6 +298,9 @@
       <span style="font-size:0.77rem;font-weight:600">104.7%</span>
     </div>
   </td>
+  <td id="pos-price-KMI" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-KMI" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-KMI" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -286,6 +315,9 @@
       <span style="font-size:0.77rem;font-weight:600">98.5%</span>
     </div>
   </td>
+  <td id="pos-price-LDOS" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-LDOS" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-LDOS" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -300,6 +332,9 @@
       <span style="font-size:0.77rem;font-weight:600">25.5%</span>
     </div>
   </td>
+  <td id="pos-price-SPGI" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-SPGI" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-SPGI" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr>
@@ -314,6 +349,9 @@
       <span style="font-size:0.77rem;font-weight:600">29.8%</span>
     </div>
   </td>
+  <td id="pos-price-TRGP" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-today-TRGP" style="font-variant-numeric:tabular-nums">—</td>
+  <td id="pos-return-TRGP" style="font-variant-numeric:tabular-nums;font-weight:600">—</td>
   <td><span class="badge badge-sb">SB</span></td>
   <td><span class="badge badge-med">MED</span></td>
 </tr></tbody>
@@ -332,7 +370,7 @@
       <tr><td><a href="./" style="color:#58a6ff">ATS</a></td><td>Long-term paper portfolio</td><td style="color:#3fb950">Active</td><td>—</td><td>—</td><td>See portfolio above</td><td>—</td></tr>
       <tr><td><a href="scai/" style="color:#58a6ff">SCAI-II</a></td><td>Structural rotation monitor</td><td style="color:#3fb950">Paper-only</td><td>1</td><td>+0.00%</td><td>cooling_power</td><td>2026-05-28</td></tr>
       <tr><td><a href="hermes/" style="color:#58a6ff">Hermes v1</a></td><td>Experimental paper lab · breadth 38.5%</td><td style="color:#d29922">Observation v1</td><td>1</td><td>+0.00%</td><td>cooling_power</td><td>2026-05-28</td></tr>
-      <tr><td><a href="hermes_v2/" style="color:#58a6ff">Hermes v2</a></td><td>Learning lab · 5 proposals · 12 conv. blocked</td><td style="color:#58a6ff">Learning</td><td>1</td><td>—</td><td>Read-only</td><td>2026-05-28</td></tr>
+      <tr><td><a href="hermes_v2/" style="color:#58a6ff">Hermes v2</a></td><td>Learning lab · 10 proposals · 12 conv. blocked</td><td style="color:#58a6ff">Learning</td><td>1</td><td>—</td><td>Read-only</td><td>2026-05-28</td></tr>
     </tbody>
   </table>
   <p style="margin-top:0.6rem;font-size:0.82rem;color:#58a6ff">⚑ Independent convergence: Hermes &amp; SCAI-II both hold <strong>cooling_power</strong> — validation signal</p>
@@ -740,8 +778,45 @@
 <footer>
   <div class="container">
     ATS Research · Paper portfolio only · Diagnostic read-only layer ·
-    Generated 2026-05-28 13:15 UTC · Not investment advice
+    Generated 2026-05-28 16:57 UTC · Not investment advice
   </div>
-</footer>
+</footer><script>
+(function(){
+  var URL='data/ats_live.json', INTERVAL=5*60*1000, STALE_MINS=20, BAR_SCALE=0.30;
+  function fmtPct(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
+  function fmtPrice(v){if(v===null||v===undefined)return'—';return'$'+parseFloat(v).toFixed(2);}
+  function posColor(v){return v>=0?'var(--green)':'var(--red)';}
+  function isMarketHours(){var n=new Date(),d=n.getUTCDay();if(d===0||d===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
+  function render(d){
+    var portEl=document.getElementById('live-port-return');
+    if(portEl){portEl.textContent=fmtPct(d.portfolio_return_pct);portEl.style.color=posColor(d.portfolio_return_pct);}
+    var spyEl=document.getElementById('live-spy-return');
+    if(spyEl){spyEl.textContent=fmtPct(d.spy_return_pct);spyEl.style.color=posColor(d.spy_return_pct);}
+    var alphaEl=document.getElementById('live-alpha-value');
+    if(alphaEl){alphaEl.textContent='Alpha: '+fmtPct(d.alpha_vs_spy_pct);alphaEl.style.color=posColor(d.alpha_vs_spy_pct);}
+    (d.positions||[]).forEach(function(p){
+      var t=p.ticker, ret=p.return_pct, day=p.day_change_pct;
+      var fillEl=document.getElementById('pos-fill-'+t);
+      if(fillEl){fillEl.style.width=Math.min(100,Math.abs(ret)/BAR_SCALE).toFixed(1)+'%';fillEl.className='bar-fill '+(ret>=0?'bar-green':'bar-red');}
+      var valEl=document.getElementById('pos-val-'+t);
+      if(valEl){valEl.textContent=fmtPct(ret);valEl.style.color=posColor(ret);}
+      var prEl=document.getElementById('pos-price-'+t);
+      if(prEl)prEl.textContent=fmtPrice(p.last_price);
+      var tdEl=document.getElementById('pos-today-'+t);
+      if(tdEl){tdEl.textContent=fmtPct(day);tdEl.style.color=posColor(day);}
+      var rtEl=document.getElementById('pos-return-'+t);
+      if(rtEl){rtEl.textContent=fmtPct(ret);rtEl.style.color=posColor(ret);}
+    });
+    var tsEl=document.getElementById('live-cards-ts');
+    if(tsEl){
+      var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
+      var warn=isMarketHours()&&age>STALE_MINS?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
+      tsEl.innerHTML='Live prices as of '+d.fetched_at_uk+warn;
+    }
+  }
+  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var e=document.getElementById('live-cards-ts');if(e)e.textContent='Live data unavailable';});}
+  load();setInterval(load,INTERVAL);
+})();
+</script>
 </body>
 </html>
