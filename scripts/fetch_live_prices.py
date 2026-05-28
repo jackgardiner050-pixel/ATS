@@ -605,6 +605,13 @@ def _build_hermes_v3_json(
             "alpha_vs_spy_pct": alpha,
             "open_positions": vs.get("open_positions", 0),
             "closed_trades": vs.get("closed_trades", 0),
+            "sharpe_proxy": vs.get("sharpe_proxy"),
+            "max_drawdown_pct": vs.get("max_drawdown_pct"),
+            "win_rate_pct": vs.get("win_rate_pct"),
+            "dsr": vs.get("dsr"),
+            "dsr_cleared": vs.get("dsr_cleared"),
+            "pbo_estimate": vs.get("pbo_estimate"),
+            "promotion_gate_cleared": vs.get("promotion_gate_cleared"),
             "positions": pos_list,
         })
 
