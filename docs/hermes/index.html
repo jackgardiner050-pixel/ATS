@@ -58,9 +58,51 @@
   .mc-value { font-size: 1.1rem; font-weight: 700; color: #c5cae9; margin-top: 0.15rem; }
   .mc-sub   { font-size: 0.7rem; color: #5c6080; margin-top: 0.12rem; }
   .mc-na    { color: #484f58 !important; font-size: 0.82rem !important; font-weight: normal !important; }
+  .mc-pos   { color: #3fb950 !important; }
+  .mc-neg   { color: #ef5350 !important; }
   /* observation banner */
   .obs-banner { background: #1c1a0a; border: 1px solid #5a4a00; border-radius: 6px;
     padding: 0.5rem 1rem; margin: 0.6rem 0 1rem; font-size: 0.8rem; color: #d29922; }
+  /* basket cards */
+  .basket-card { background: #161b22; border: 1px solid #21262d; border-radius: 6px;
+    padding: 0.75rem 1rem; margin: 0.65rem 0; }
+  .basket-header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.5rem;
+    margin-bottom: 0.5rem; }
+  .basket-name { font-weight: 700; color: #c5cae9; font-size: 0.95rem; }
+  .basket-meta { font-size: 0.74rem; color: #6c7a9c; }
+  .basket-live-row { display: flex; gap: 1.1rem; flex-wrap: wrap;
+    padding: 0.4rem 0; border-top: 1px solid #21262d; border-bottom: 1px solid #21262d;
+    font-size: 0.82rem; margin: 0.45rem 0; }
+  .live-metric { color: #8b949e; }
+  .live-metric strong { color: #c5cae9; }
+  .basket-states { display: flex; gap: 0.45rem; flex-wrap: wrap; margin: 0.45rem 0 0.5rem; }
+  .state-badge { font-size: 0.7rem; padding: 0.12rem 0.45rem; border-radius: 3px;
+    background: #21262d; color: #8b949e; }
+  .state-badge.sat-high { background: #3a1c1c; color: #ef5350; }
+  .state-badge.sat-medium { background: #3a2d1a; color: #ffa726; }
+  .state-badge.sat-low { background: #1b3a37; color: #26a69a; }
+  .state-badge.persist-compounding { background: #1b3a37; color: #26a69a; }
+  .state-badge.persist-stagnant { background: #3a1c1c; color: #ef5350; }
+  .state-badge.rot-rotating_in { background: #1a2e3a; color: #42a5f5; }
+  .state-badge.rot-rotating_out { background: #3a1c1c; color: #ef5350; }
+  .constituent-table { font-size: 0.83em; margin-top: 0.4rem; }
+  /* blocked watchlist */
+  .blocked-list { margin: 0.4rem 0; }
+  .blocked-entry { font-size: 0.82rem; padding: 0.3rem 0.6rem; margin: 0.25rem 0;
+    border-left: 2px solid #21262d; background: #0d1117; border-radius: 0 3px 3px 0; }
+  .blocked-near-miss { border-left-color: #d29922 !important; background: #1a1400 !important; }
+  .blocked-sat-only  { border-left-color: #e57373 !important; background: #1c0f0f !important; }
+  .blocked-tag { font-size: 0.68rem; padding: 0.08rem 0.35rem; border-radius: 2px;
+    margin-left: 0.4rem; }
+  .tag-near-miss { background: #3a2d00; color: #d29922; }
+  .tag-sat-only  { background: #3a1010; color: #e57373; }
+  /* benchmark / governance sections */
+  .bench-section, .gov-section { background: #161b22; border: 1px solid #21262d;
+    border-radius: 6px; padding: 0.75rem 1rem; margin: 0.65rem 0; }
+  .bench-insufficient { color: #6c7a9c; font-style: italic; font-size: 0.85rem; }
+  .gov-flag { font-size: 0.82rem; color: #d29922; padding: 0.2rem 0; }
+  .section-empty { color: #484f58; font-size: 0.85rem; font-style: italic;
+    padding: 0.5rem 0; }
 </style>
 </head>
 <body>
@@ -78,22 +120,53 @@
 (function(){
   var URL='../data/hermes_live.json', INTERVAL=5*60*1000;
   function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
+  function fmtPrice(v){if(v===null||v===undefined)return'—';return'$'+v.toFixed(2);}
+  function colorClass(v){if(v===null||v===undefined)return'';return v>=0?'mc-pos':'mc-neg';}
   function pill(s){var m={open:['live-open','● OPEN'],closed:['live-closed','● CLOSED'],pre_market:['live-pre','◐ PRE'],after_hours:['live-ah','◐ AH']};var p=m[s]||['live-pre',s||'?'];return'<span class="live-pill '+p[0]+'">'+p[1]+'</span>';}
+  function setEl(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;}
   function render(d){
-    var el=document.getElementById('live-strip');if(!el)return;
-    var b=d.baskets&&d.baskets[0]?d.baskets[0]:null;
-    var bm=b?b.benchmark:'QQQ';
-    var bm_ret=b?b.benchmark_return_pct:null;
-    var alpha=b?b.alpha_vs_benchmark_pct:null;
-    var stale=d.stale_warning?'<span class="live-stale">⚠ stale</span>':'';
-    el.innerHTML='<div class="live-inner">'+pill(d.market_status)
-      +'<span class="live-item">Portfolio <strong>'+fmt(d.portfolio_return_pct)+'</strong></span>'
-      +'<span class="live-item">Today <strong>'+fmt(d.portfolio_today_pct)+'</strong></span>'
-      +'<span class="live-item">'+bm+' <strong>'+fmt(bm_ret)+'</strong></span>'
-      +(alpha!==null&&alpha!==undefined?'<span class="live-item">Alpha <strong>'+fmt(alpha)+'</strong></span>':'')
-      +stale
-      +'<span class="live-ts" title="'+(d.delay_warning||'')+'">Updated '+d.fetched_at_uk+'</span>'
-      +'</div>';
+    // Live strip
+    var strip=document.getElementById('live-strip');
+    if(strip){
+      var b=d.baskets&&d.baskets[0]?d.baskets[0]:null;
+      var bm=b?b.benchmark:'QQQ';
+      var bm_ret=b?b.benchmark_return_pct:null;
+      var alpha=b?b.alpha_vs_benchmark_pct:null;
+      var stale=d.stale_warning?'<span class="live-stale">⚠ stale</span>':'';
+      strip.innerHTML='<div class="live-inner">'+pill(d.market_status)
+        +'<span class="live-item">Portfolio <strong>'+fmt(d.portfolio_return_pct)+'</strong></span>'
+        +'<span class="live-item">Today <strong>'+fmt(d.portfolio_today_pct)+'</strong></span>'
+        +'<span class="live-item">'+bm+' <strong>'+fmt(bm_ret)+'</strong></span>'
+        +'<span class="live-item">SPY <strong>'+fmt(d.spy_return_pct)+'</strong></span>'
+        +(alpha!==null&&alpha!==undefined?'<span class="live-item">Alpha <strong>'+fmt(alpha)+'</strong></span>':'')
+        +stale
+        +'<span class="live-ts" title="'+(d.delay_warning||'')+'">Updated '+(d.fetched_at_uk||'')+'</span>'
+        +'</div>';
+    }
+    // Metric cards
+    var pr=d.portfolio_return_pct;
+    setEl('mc-port-ret','<span class="'+colorClass(pr)+'">'+fmt(pr)+'</span>');
+    setEl('mc-port-ret-sub',pr!==null&&pr!==undefined?'equal-weight avg':'no open baskets');
+    setEl('mc-spy-ret','<span class="'+colorClass(d.spy_return_pct)+'">'+fmt(d.spy_return_pct)+'</span>');
+    setEl('mc-alpha','<span class="'+colorClass(d.alpha_vs_spy_pct)+'">'+fmt(d.alpha_vs_spy_pct)+'</span>');
+    setEl('mc-today','<span class="'+colorClass(d.portfolio_today_pct)+'">'+fmt(d.portfolio_today_pct)+'</span>');
+    var ms=d.market_status||'';
+    var msColors={open:'#26a69a',closed:'#ef5350',pre_market:'#ffa726',after_hours:'#ffa726'};
+    setEl('mc-market','<span style="color:'+(msColors[ms]||'#c5cae9')+';font-size:0.82rem">'+(d.market_note||ms||'—')+'</span>');
+    setEl('mc-updated',d.fetched_at_uk||'—');
+    // Basket cells
+    if(d.baskets){
+      d.baskets.forEach(function(b){
+        var pid=b.paper_id;
+        setEl('b-ret-'+pid,'<span class="'+colorClass(b.basket_return_pct)+'">'+fmt(b.basket_return_pct)+'</span>');
+        setEl('b-today-'+pid,'<span class="'+colorClass(b.basket_today_pct)+'">'+fmt(b.basket_today_pct)+'</span>');
+        setEl('b-bmret-'+pid,'<span class="'+colorClass(b.benchmark_return_pct)+'">'+fmt(b.benchmark_return_pct)+'</span>');
+        setEl('b-spy-'+pid,'<span class="'+colorClass(b.spy_return_pct)+'">'+fmt(b.spy_return_pct)+'</span>');
+        setEl('b-alpha-'+pid,'<span class="'+colorClass(b.alpha_vs_benchmark_pct)+'">'+fmt(b.alpha_vs_benchmark_pct)+'</span>');
+        if(b.last_prices){Object.keys(b.last_prices).forEach(function(t){setEl('t-price-'+pid+'-'+t,fmtPrice(b.last_prices[t]));});}
+        if(b.returns){Object.keys(b.returns).forEach(function(t){setEl('t-ret-'+pid+'-'+t,'<span class="'+colorClass(b.returns[t])+'">'+fmt(b.returns[t])+'</span>');});}
+      });
+    }
   }
   function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var el=document.getElementById('live-strip');if(el)el.innerHTML='<div class="live-inner" style="color:#5c6080">Live data unavailable</div>';});}
   load();setInterval(load,INTERVAL);
@@ -110,8 +183,12 @@
     <span class="lab-nav-sub">Structural Monitor</span>
   </a>
   <a href="./" class="lab-nav-card lab-nav-active">
-    <span class="lab-nav-title">Hermes</span>
+    <span class="lab-nav-title">Hermes v1</span>
     <span class="lab-nav-sub">Experimental Paper Lab</span>
+  </a>
+  <a href="../hermes_v2/" class="lab-nav-card">
+    <span class="lab-nav-title">Hermes v2</span>
+    <span class="lab-nav-sub">Critique &amp; Learning</span>
   </a>
 </nav>
 <div style="padding: 1.5rem 0 0">
@@ -127,6 +204,26 @@
 </div>
 <div class="metric-cards">
   <div class="metric-card">
+    <div class="mc-label">Portfolio Return</div>
+    <div class="mc-value" id="mc-port-ret"><span class="mc-na">—</span></div>
+    <div class="mc-sub" id="mc-port-ret-sub">loading live data…</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">SPY Return</div>
+    <div class="mc-value" id="mc-spy-ret"><span class="mc-na">—</span></div>
+    <div class="mc-sub">since earliest entry</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Alpha vs SPY</div>
+    <div class="mc-value" id="mc-alpha"><span class="mc-na">—</span></div>
+    <div class="mc-sub">portfolio − SPY</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Today's Move</div>
+    <div class="mc-value" id="mc-today"><span class="mc-na">—</span></div>
+    <div class="mc-sub">equal-weight avg</div>
+  </div>
+  <div class="metric-card">
     <div class="mc-label">Open Baskets</div>
     <div class="mc-value">1 / 5</div>
     <div class="mc-sub">max 5 positions</div>
@@ -137,9 +234,9 @@
     <div class="mc-sub">governance filtered</div>
   </div>
   <div class="metric-card">
-    <div class="mc-label">Return Since Entry</div>
-    <div class="mc-value"><span class="mc-na">Not enough history</span></div>
-    <div class="mc-sub">first week of tracking</div>
+    <div class="mc-label">Market Status</div>
+    <div class="mc-value" id="mc-market" style="font-size:0.82rem"><span class="mc-na">—</span></div>
+    <div class="mc-sub" id="mc-market-sub">live</div>
   </div>
   <div class="metric-card">
     <div class="mc-label">Market Breadth</div>
@@ -153,10 +250,59 @@
   </div>
   <div class="metric-card">
     <div class="mc-label">Last Updated</div>
-    <div class="mc-value" style="font-size:0.82rem">2026-05-28 13:15</div>
-    <div class="mc-sub">UTC</div>
+    <div class="mc-value" id="mc-updated" style="font-size:0.75rem"><span class="mc-na">—</span></div>
+    <div class="mc-sub">live prices</div>
   </div>
 </div>
+<section>
+<h2>Active Paper Baskets</h2>
+<p style="font-size:0.78rem;color:#6c7a9c;margin-bottom:0.6rem">Returns updated live every 5 min · Entry data static (weekly build)</p>
+<div class="basket-card">
+  <div class="basket-header">
+    <span class="basket-name">AI Infrastructure — cooling_power</span>
+    <span class="basket-meta">Entry: 2026-05-28 &nbsp;·&nbsp; Benchmark: QQQ &nbsp;·&nbsp; Score: 3.117</span>
+  </div>
+  <div class="basket-live-row">
+    <span class="live-metric">Return <strong id="b-ret-hp_20260528_5afa37"><span class="mc-na">—</span></strong></span>
+    <span class="live-metric">Today <strong id="b-today-hp_20260528_5afa37"><span class="mc-na">—</span></strong></span>
+    <span class="live-metric">QQQ since entry <strong id="b-bmret-hp_20260528_5afa37"><span class="mc-na">—</span></strong></span>
+    <span class="live-metric">SPY since entry <strong id="b-spy-hp_20260528_5afa37"><span class="mc-na">—</span></strong></span>
+    <span class="live-metric">Alpha vs QQQ <strong id="b-alpha-hp_20260528_5afa37"><span class="mc-na">—</span></strong></span>
+  </div>
+  <div class="basket-states">
+    <span class="state-badge sat-low">Sat: low</span>
+    <span class="state-badge persist-neutral">Persist: neutral</span>
+    <span class="state-badge rot-rotating_in">Rot: rotating_in</span>
+  </div>
+  <table class="constituent-table">
+    <thead><tr><th>Ticker</th><th>Entry Price</th><th>Current Price</th><th>Return %</th><th>Weight</th></tr></thead>
+    <tbody><tr><td><strong>VRT</strong></td><td>$319.78</td><td id="t-price-hp_20260528_5afa37-VRT"><span class="mc-na">—</span></td><td id="t-ret-hp_20260528_5afa37-VRT"><span class="mc-na">—</span></td><td>50%</td></tr><tr><td><strong>SMCI</strong></td><td>$38.19</td><td id="t-price-hp_20260528_5afa37-SMCI"><span class="mc-na">—</span></td><td id="t-ret-hp_20260528_5afa37-SMCI"><span class="mc-na">—</span></td><td>50%</td></tr></tbody>
+  </table>
+</div>
+</section>
+<h2>Blocked Watchlist</h2>
+<div class="blocked-list">
+<div class="blocked-entry blocked-sat-only"><strong>Grid / Power Constraints — power_equip</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=3.849</span><span class="blocked-tag tag-sat-only">sat-only block</span><br><span style="color:#6c7a9c">high saturation (high) — saturation governance blocks entry until saturation normalises; euphoric narrative — persistenc</span></div>
+<div class="blocked-entry blocked-sat-only"><strong>Export Control Fragmentation — domestic_semis</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=3.843</span><span class="blocked-tag tag-sat-only">sat-only block</span><br><span style="color:#6c7a9c">high saturation (high) — saturation governance blocks entry until saturation normalises; euphoric narrative — persistenc</span></div>
+<div class="blocked-entry"><strong>Grid / Power Constraints — transformers</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=1.436</span><br><span style="color:#6c7a9c">selection_score 1.436 &lt; threshold 2.5 — insufficient composite strength</span></div>
+<div class="blocked-entry"><strong>AI Infrastructure — semis</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=1.018</span><br><span style="color:#6c7a9c">high saturation (high) — saturation governance blocks entry until saturation normalises; euphoric narrative — persistenc</span></div>
+<div class="blocked-entry"><strong>AI Infrastructure — networking</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=0.910</span><br><span style="color:#6c7a9c">high saturation (high) — saturation governance blocks entry until saturation normalises; euphoric narrative — persistenc</span></div>
+<div class="blocked-entry"><strong>Grid / Power Constraints — utility_capex</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-0.340</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs XLI (-1.1%) — no demonstrated structural edge; selection_score -0.340 &lt; threshold 2.5 — in</span></div>
+<div class="blocked-entry"><strong>Export Control Fragmentation — test_equipment</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-0.435</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs SMH (-0.7%) — no demonstrated structural edge; selection_score -0.435 &lt; threshold 2.5 — in</span></div>
+<div class="blocked-entry"><strong>AI Infrastructure — datacenter_reit</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-1.304</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs QQQ (-10.4%) — no demonstrated structural edge; selection_score -1.304 &lt; threshold 2.5 — i</span></div>
+<div class="blocked-entry"><strong>Grid / Power Constraints — clean_power</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-1.521</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs XLI (-14.0%) — no demonstrated structural edge; selection_score -1.521 &lt; threshold 2.5 — i</span></div>
+<div class="blocked-entry"><strong>Export Control Fragmentation — semicon_equipment</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-1.558</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs SMH (-17.7%) — no demonstrated structural edge; selection_score -1.558 &lt; threshold 2.5 — i</span></div>
+<div class="blocked-entry"><strong>AI Infrastructure — utilities_dc</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-3.229</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs QQQ (-32.1%) — no demonstrated structural edge; selection_score -3.229 &lt; threshold 2.5 — i</span></div>
+<div class="blocked-entry"><strong>Export Control Fragmentation — reshoring_infra</strong> <span style="color:#6c7a9c;font-size:0.78rem">score=-3.718</span><br><span style="color:#6c7a9c">negative or zero 60d alpha vs SMH (-36.5%) — no demonstrated structural edge; selection_score -3.718 &lt; threshold 2.5 — i</span></div>
+</div>
+<h2>Benchmark Comparison</h2>
+<div class="bench-section"><table><thead><tr><th>Basket</th><th>Entry Date</th><th>Benchmark</th><th>Basket Ret</th><th>BM Ret</th><th>Alpha</th></tr></thead><tbody><tr><td>AI Infrastructure — cooling_power</td><td>2026-05-28</td><td>QQQ</td><td colspan="3" class="bench-insufficient">Not enough history yet (0d / 28d min)</td></tr></tbody></table></div>
+<h2>Governance &amp; Risk Summary</h2>
+<div class="gov-section">
+<div class="gov-flag" style="color:#8b949e">ℹ 2 near-miss candidates blocked this run</div>
+<div style="font-size:0.75rem;color:#484f58;margin-top:0.5rem">PAPER-ONLY · NO REAL ORDERS · NO BROKER · ATS ISOLATED · HERMES ISOLATED</div>
+</div>
+<hr>
 <h1>Hermes Prospective Structural Monitor — 2026-05-28</h1>
 <p>&gt; <em>Paper-only · No real orders · No broker connection · Hermes v1</em></p>
 
@@ -210,7 +356,7 @@
 
 <h1>Hermes Paper Portfolio Summary</h1>
 <p>&gt; <em>Paper-only · No real orders · No broker connection · Hermes v1</em></p>
-<p>&gt; <em>Generated: 2026-05-28 13:15 UTC</em></p>
+<p>&gt; <em>Generated: 2026-05-28 14:14 UTC</em></p>
 
 <h2>Open Baskets (1 / 5 max)</h2>
 
@@ -274,7 +420,7 @@
 
 </div>
 <footer>
-  Generated 2026-05-28 13:15 UTC &nbsp;·&nbsp;
+  Generated 2026-05-28 14:14 UTC &nbsp;·&nbsp;
   PAPER-ONLY · NO REAL ORDERS · NO BROKER CONNECTION · ATS ISOLATED · HERMES ISOLATED ·
   NOT INVESTMENT ADVICE
 </footer>
