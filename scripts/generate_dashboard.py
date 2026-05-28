@@ -1191,6 +1191,140 @@ def _position_detail_page(pos: dict, rec: Optional[dict]) -> str:
 
 # ─── Index page ───────────────────────────────────────────────────────────────
 
+def _systems_overview() -> str:
+    """Cross-system comparison card — reads SCAI-II and Hermes summary JSON read-only."""
+    from pathlib import Path as _Path
+    import json as _json
+
+    _home = _Path.home()
+    scai_path   = _home / "trading" / "scai_lab"  / "data" / "paper" / "structural_paper_summary.json"
+    hermes_path = _home / "trading" / "hermes_lab" / "data" / "paper" / "summary.json"
+    hermes_jrnl = _home / "trading" / "hermes_lab" / "data" / "paper" / "journal.jsonl"
+    hermes_reg  = _home / "trading" / "hermes_lab" / "data" / "learning" / "regime_memory.jsonl"
+
+    def _td(val, href=None, color=None):
+        inner = f'<a href="{href}" style="color:#58a6ff">{val}</a>' if href else str(val)
+        style = f' style="color:{color}"' if color else ""
+        return f"<td{style}>{inner}</td>"
+
+    rows = []
+
+    # ATS row — placeholder, main content is above
+    rows.append(
+        "<tr>"
+        + _td("ATS", href="./")
+        + _td("Long-term paper portfolio")
+        + _td("Active", color="#3fb950")
+        + _td("—") + _td("—") + _td("See portfolio above") + _td("—")
+        + "</tr>"
+    )
+
+    # SCAI-II row
+    scai_open, scai_ret, scai_baskets, scai_updated = "—", "—", "—", "—"
+    if scai_path.exists():
+        try:
+            s = _json.loads(scai_path.read_text())
+            scai_open    = str(s.get("n_open", 0))
+            scai_updated = (s.get("mark_date") or s.get("last_updated", "")[:10])
+            marks = s.get("marks", [])
+            rets = [m["current_return"] for m in marks if m.get("current_return") is not None]
+            scai_ret = f"{sum(rets)/len(rets):+.2f}%" if rets else '<span style="color:#484f58">Not enough history</span>'
+            names = [m["basket_name"].split("—")[-1].strip() for m in marks if m.get("status") == "open"]
+            scai_baskets = ", ".join(names) if names else "none"
+        except Exception:
+            pass
+    rows.append(
+        "<tr>"
+        + _td("SCAI-II", href="scai/")
+        + _td("Structural rotation monitor")
+        + _td("Paper-only", color="#3fb950")
+        + _td(scai_open) + _td(scai_ret) + _td(scai_baskets) + _td(scai_updated)
+        + "</tr>"
+    )
+
+    # Hermes row
+    hermes_open, hermes_ret, hermes_baskets, hermes_updated = "—", "—", "—", "—"
+    hermes_breadth = "—"
+    if hermes_path.exists():
+        try:
+            h = _json.loads(hermes_path.read_text())
+            hermes_open    = str(h.get("n_open", 0))
+            hermes_updated = h.get("updated_at", "")[:10]
+        except Exception:
+            pass
+    if hermes_jrnl.exists():
+        try:
+            seen: dict = {}
+            for line in hermes_jrnl.read_text().splitlines():
+                if line.strip():
+                    d = _json.loads(line)
+                    if "paper_id" in d:
+                        seen[d["paper_id"]] = d
+            rets = [d["basket_return"] for d in seen.values() if d.get("basket_return") is not None]
+            hermes_ret = f"{sum(rets)/len(rets):+.2f}%" if rets else '<span style="color:#484f58">Not enough history</span>'
+            names = [d["basket_name"].split("—")[-1].strip() for d in seen.values() if d.get("status") == "open"]
+            hermes_baskets = ", ".join(names) if names else "none"
+        except Exception:
+            pass
+    if hermes_reg.exists():
+        try:
+            reg_lines = [l for l in hermes_reg.read_text().splitlines() if l.strip()]
+            if reg_lines:
+                reg = _json.loads(reg_lines[-1])
+                bp = reg.get("summary", {}).get("breadth_pct")
+                if bp is not None:
+                    hermes_breadth = f"{bp:.1f}%"
+        except Exception:
+            pass
+
+    rows.append(
+        "<tr>"
+        + _td("Hermes", href="hermes/")
+        + _td(f'Experimental paper lab · breadth {hermes_breadth}')
+        + _td("Observation v1", color="#d29922")
+        + _td(hermes_open) + _td(hermes_ret) + _td(hermes_baskets) + _td(hermes_updated)
+        + "</tr>"
+    )
+
+    # Convergence check
+    convergence_html = ""
+    if scai_path.exists() and hermes_jrnl.exists():
+        try:
+            sm = _json.loads(scai_path.read_text())
+            s_names = {m["basket_name"].split("—")[-1].strip() for m in sm.get("marks", []) if m.get("status") == "open"}
+            hj = {_json.loads(l)["paper_id"]: _json.loads(l) for l in hermes_jrnl.read_text().splitlines() if l.strip()}
+            h_names = {d["basket_name"].split("—")[-1].strip() for d in hj.values() if d.get("status") == "open"}
+            overlap = s_names & h_names
+            if overlap:
+                convergence_html = (
+                    f'<p style="margin-top:0.6rem;font-size:0.82rem;color:#58a6ff">'
+                    f'⚑ Independent convergence: Hermes &amp; SCAI-II both hold '
+                    f'<strong>{", ".join(overlap)}</strong> — validation signal</p>'
+                )
+        except Exception:
+            pass
+
+    rows_html = "\n      ".join(rows)
+    return f"""<section>
+<h2 class="section-title">Research Systems</h2>
+<div class="card">
+  <table>
+    <thead><tr>
+      <th>System</th><th>Role</th><th>Status</th>
+      <th>Open</th><th>Return</th><th>Active Basket(s)</th><th>Updated</th>
+    </tr></thead>
+    <tbody>
+      {rows_html}
+    </tbody>
+  </table>
+  {convergence_html}
+  <p style="margin-top:0.5rem;font-size:0.72rem;color:#484f58">
+    Paper-only · No real orders · No broker connection · Diagnostic only
+  </p>
+</div>
+</section>"""
+
+
 def _lab_nav() -> str:
     """Navigation bar linking to sub-dashboards (SCAI-II and Hermes)."""
     return """
@@ -1232,6 +1366,7 @@ def build_index(
     health = _health_bar(positions, regime, exposure, signal, generated_at)
 
     lab_nav = _lab_nav()
+    systems = _systems_overview()
 
     body = f"""
 {header}
@@ -1243,6 +1378,7 @@ def build_index(
   {returns_chart}
   {_portfolio_overview(positions, trades)}
   {_open_positions_table(positions)}
+  {systems}
   {_regime_section(regime)}
   {_concentration_section(exposure)}
   {_signal_section(signal)}

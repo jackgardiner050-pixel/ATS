@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SCAI Prospective Structural Monitor — 2026-05-28</title>
+  <title>SCAI-II Structural Monitor — 2026-05-28</title>
   <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
     background: #0d1117; color: #c9d1d9;
-    max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem 4rem;
+    max-width: 960px; margin: 0 auto; padding: 0 1rem 4rem;
     font-size: 14px; line-height: 1.6;
   }
   h1 { font-size: 1.6rem; color: #58a6ff; border-bottom: 1px solid #21262d;
@@ -28,30 +28,94 @@
   pre  { background: #161b22; padding: 1rem; border-radius: 6px;
          overflow-x: auto; margin: 0.6rem 0; }
   pre code { background: none; color: #c9d1d9; padding: 0; font-size: 0.85em; }
-  table { width: 100%; border-collapse: collapse; margin: 0.6rem 0;
-          font-size: 0.88em; }
+  table { width: 100%; border-collapse: collapse; margin: 0.6rem 0; font-size: 0.88em; }
   th { background: #161b22; color: #8b949e; text-align: left;
        padding: 0.35rem 0.6rem; border-bottom: 1px solid #30363d; }
   td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #21262d; }
   tr:hover td { background: #161b22; }
   .banner { background: #161b22; border: 1px solid #30363d; border-radius: 6px;
-            padding: 0.6rem 1rem; margin-bottom: 1rem; font-size: 0.82em;
-            color: #8b949e; display: flex; justify-content: space-between; }
+            padding: 0.6rem 1rem; margin: 0.8rem 0; font-size: 0.82em;
+            color: #8b949e; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
   .banner span { color: #58a6ff; }
   .warn { color: #d29922; }
   .ok   { color: #3fb950; }
   footer { margin-top: 3rem; font-size: 0.75em; color: #484f58; text-align: center; }
+  /* lab nav */
+  .lab-nav { background: #11131f; border-bottom: 1px solid #2a2d45;
+    padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.7rem;
+    flex-wrap: wrap; margin: 0 -1rem 1.5rem; }
+  .lab-nav-label { font-size: 0.72rem; color: #5c6080; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-right: 0.25rem; }
+  .lab-nav-card { display: inline-flex; flex-direction: column; padding: 0.3rem 0.75rem;
+    border-radius: 5px; border: 1px solid #2a2d45; text-decoration: none;
+    background: #1a1d2e; }
+  .lab-nav-card:hover { border-color: #5c6bc0; background: #1e2235; }
+  .lab-nav-active { border-color: #3949ab !important; background: #1e2235 !important; }
+  .lab-nav-title { font-size: 0.82rem; font-weight: 700; color: #c5cae9; }
+  .lab-nav-sub   { font-size: 0.7rem; color: #6c7a9c; margin-top: 0.1rem; }
+  /* metric cards */
+  .metric-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 0.55rem; margin: 1rem 0 1.5rem; }
+  .metric-card { background: #161b22; border: 1px solid #21262d;
+    border-radius: 6px; padding: 0.65rem 0.9rem; }
+  .mc-label { font-size: 0.72rem; color: #6c7a9c; text-transform: uppercase;
+    letter-spacing: 0.05em; }
+  .mc-value { font-size: 1.1rem; font-weight: 700; color: #c5cae9; margin-top: 0.15rem; }
+  .mc-sub   { font-size: 0.7rem; color: #5c6080; margin-top: 0.12rem; }
+  .mc-na    { color: #484f58 !important; font-size: 0.82rem !important; font-weight: normal !important; }
 </style>
 </head>
 <body>
-
+<nav class="lab-nav">
+  <span class="lab-nav-label">Dashboards</span>
+  <a href="../" class="lab-nav-card">
+    <span class="lab-nav-title">ATS</span>
+    <span class="lab-nav-sub">Main Dashboard</span>
+  </a>
+  <a href="./" class="lab-nav-card lab-nav-active">
+    <span class="lab-nav-title">SCAI-II</span>
+    <span class="lab-nav-sub">Structural Monitor</span>
+  </a>
+  <a href="../hermes/" class="lab-nav-card">
+    <span class="lab-nav-title">Hermes</span>
+    <span class="lab-nav-sub">Experimental Paper Lab</span>
+  </a>
+</nav>
+<div style="padding: 1.5rem 0 0">
 <div class="banner">
-  <span>SCAI Prospective Structural Monitor</span>
+  <span>SCAI-II Structural Monitor</span>
   <span>Week of 2026-05-28</span>
-  <span>Open baskets: 0 | Blocked this run: 0</span>
+  <span>Open baskets: 1 / 3</span>
+  <span>Blocked this run: 12</span>
   <span class="warn">PAPER-ONLY · NO REAL ORDERS · NOT INVESTMENT ADVICE</span>
 </div>
-
+<div class="metric-cards">
+  <div class="metric-card">
+    <div class="mc-label">Open Baskets</div>
+    <div class="mc-value">1 / 3</div>
+    <div class="mc-sub">max 3 positions</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Blocked This Run</div>
+    <div class="mc-value">12</div>
+    <div class="mc-sub">governance filtered</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Return Since Entry</div>
+    <div class="mc-value">+0.00%</div>
+    <div class="mc-sub">equal-weight avg</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Learning State</div>
+    <div class="mc-value" style="font-size:0.82rem">Frozen</div>
+    <div class="mc-sub">observation only</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Last Updated</div>
+    <div class="mc-value" style="font-size:0.82rem">2026-05-28 12:13</div>
+    <div class="mc-sub">UTC</div>
+  </div>
+</div>
 <h1>Prospective Weekly Structural Monitor</h1>
 
 <p><strong>Week of</strong>: 2026-05-28</p>
@@ -88,11 +152,11 @@
 </ul>
 <h3>4. Is saturation increasing?</h3>
 
-<p><strong>Increasing</strong> — high-saturation clusters: 6 (prev: 0, Δ+6). High-saturation domains: Export Control Fragmentation.</p>
+<p><strong>Stable</strong> — high-saturation clusters: 6 (prev: 6, Δ+0). High-saturation domains: Export Control Fragmentation.</p>
 
 <h3>5. Is persistence strengthening or decaying?</h3>
 
-<p><strong>Strengthening</strong> — compounding clusters: 7 (prev: 0, Δ+7)</p>
+<p><strong>Stable</strong> — compounding clusters: 7 (prev: 7, Δ+0)</p>
 <ul>
 <li>AI Infrastructure: semis, networking, cooling_power</li>
 <li>Export Control Fragmentation: domestic_semis, semicon_equipment, test_equipment</li>
@@ -101,7 +165,7 @@
 </ul>
 <h3>6. Are leadership dynamics broadening or concentrating?</h3>
 
-<p><strong>Broadening</strong> — 8/13 clusters beating benchmark (prev: 0/13, Δ+8).</p>
+<p><strong>Stable</strong> — 8/13 clusters beating benchmark (prev: 8/13, Δ+0).</p>
 
 <h3>7. What observations would falsify the current interpretation?</h3>
 
@@ -205,8 +269,59 @@
 
 <p><em>PAPER-RESEARCH ONLY. Not investment advice. Observation framework only.</em></p>
 
+<h1>Paper Observation Sleeve</h1>
+
+<p><em>PAPER-ONLY — NO REAL ORDERS — NO BROKER CONNECTION — ATS ISOLATED</em></p>
+
+<p>Open baskets: 1</p>
+
+<h2>AI Infrastructure — cooling_power</h2>
+
+<p><strong>Entry date</strong>: 2026-05-28 | <strong>Benchmark</strong>: QQQ | <strong>Price type</strong>: next_open <em>(filled 2026-05-28)</em></p>
+
+<p><strong>Narrative</strong>: consensus | <strong>Saturation</strong>: medium | <strong>Persistence</strong>: compounding | <strong>Rotation</strong>: rotating_in</p>
+
+<p><strong>Selection score</strong>: 5.081 | <strong>Entry reason</strong>: Auto-selected: compounding persistence, rotating_in rotation, medium saturation,</p>
+
+<tr><td>Ticker</td><td>Weight</td><td>Entry $</td><td>Current $</td><td>Return</td></tr>
+<table><thead>
+</thead><tbody>
+<tr><td>VRT</td><td>50%</td><td>$319.78</td><td>$319.78</td><td>+0.0%</td></tr>
+<tr><td>SMCI</td><td>50%</td><td>$38.19</td><td>$38.19</td><td>+0.0%</td></tr>
+</tbody></table>
+
+<p><strong>Basket return</strong>: +0.0% | <strong>QQQ return</strong>: N/A | <strong>Alpha</strong>: N/A</p>
+
+<hr>
+
+<p><em>PAPER-RESEARCH ONLY. Not investment advice. Observation framework only.</em></p>
+
+<h1>Blocked Candidates</h1>
+
+<p><em>Candidates that did not pass governance filters this selection run.</em></p>
+
+<tr><td>Cluster</td><td>Domain</td><td>Score</td><td>Blocking Rules</td></tr>
+<table><thead>
+</thead><tbody>
+<tr><td>test_equipment</td><td>export_controls</td><td>4.69</td><td>high saturation (high) — saturation governance blocks entry until saturation nor</td></tr>
+<tr><td>power_equip</td><td>grid_power</td><td>3.32</td><td>high saturation (high) — saturation governance blocks entry until saturation nor</td></tr>
+<tr><td>domestic_semis</td><td>export_controls</td><td>2.62</td><td>high saturation (high) — saturation governance blocks entry until saturation nor</td></tr>
+<tr><td>semicon_equipment</td><td>export_controls</td><td>2.10</td><td>high saturation (high) — saturation governance blocks entry until saturation nor</td></tr>
+<tr><td>semis</td><td>ai_infrastructure</td><td>1.33</td><td>high saturation (high) — saturation governance blocks entry until saturation nor</td></tr>
+<tr><td>reshoring_infra</td><td>export_controls</td><td>1.32</td><td>selection_score 1.317 &lt; threshold 2.5 — insufficient composite strength</td></tr>
+<tr><td>networking</td><td>ai_infrastructure</td><td>0.93</td><td>high saturation (high) — saturation governance blocks entry until saturation nor</td></tr>
+<tr><td>utilities_dc</td><td>ai_infrastructure</td><td>0.00</td><td>negative or zero 60d alpha vs QQQ (-30.2%) — no demonstrated structural edge; se</td></tr>
+<tr><td>utility_capex</td><td>grid_power</td><td>0.00</td><td>negative or zero 60d alpha vs XLI (-13.5%) — no demonstrated structural edge; se</td></tr>
+<tr><td>clean_power</td><td>grid_power</td><td>0.00</td><td>negative or zero 60d alpha vs XLI (-23.3%) — no demonstrated structural edge; se</td></tr>
+<tr><td>datacenter_reit</td><td>ai_infrastructure</td><td>-0.50</td><td>negative or zero 60d alpha vs QQQ (-11.9%) — no demonstrated structural edge; se</td></tr>
+<tr><td>transformers</td><td>grid_power</td><td>-0.50</td><td>negative or zero 60d alpha vs XLI (-3.6%) — no demonstrated structural edge; sel</td></tr>
+</tbody></table>
+
+<p><strong>Governance rules applied</strong>: saturation ≠ high, narrative ≠ euphoric, 60d alpha &gt; 0, score ≥ threshold, concentration caps, portfolio limits.</p>
+
+</div>
 <footer>
-  Generated 2026-05-28 09:54 UTC &nbsp;·&nbsp;
+  Generated 2026-05-28 12:13 UTC &nbsp;·&nbsp;
   PAPER-ONLY · NO REAL ORDERS · NO BROKER CONNECTION · ATS ISOLATED ·
   NOT INVESTMENT ADVICE
 </footer>
