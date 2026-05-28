@@ -1351,6 +1351,46 @@ def _systems_overview() -> str:
 </section>"""
 
 
+def _live_strip_html(data_url: str, benchmark_label: str = "SPY") -> str:
+    """Live data strip: fetches JSON and renders portfolio/benchmark/alpha/market status."""
+    return f"""<div id="live-strip"><div class="live-inner" style="color:#5c6080;font-size:.78rem;padding:.4rem 1.25rem">Loading live data…</div></div>
+<style>
+#live-strip{{background:#080a12;border-bottom:1px solid #1a1d2e;padding:.45rem 0;font-size:.78rem;}}
+.live-inner{{max-width:1100px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;}}
+.live-item{{color:#9fa8da;}}.live-item strong{{color:#c5cae9;}}
+.live-pill{{display:inline-block;padding:.1rem .55rem;border-radius:4px;font-weight:700;font-size:.75rem;}}
+.live-open{{background:#1b3a37;color:#26a69a;}}.live-closed{{background:#2a1a1a;color:#ef5350;}}
+.live-pre{{background:#3a2d1a;color:#ffa726;}}.live-ah{{background:#3a2d1a;color:#ffa726;}}
+.live-stale{{color:#ffa726;font-weight:600;}}.live-ts{{margin-left:auto;color:#5c6080;font-size:.72rem;cursor:default;}}
+</style>
+<script>
+(function(){{
+  var URL='{data_url}', BM='{benchmark_label}', INTERVAL=5*60*1000;
+  function fmt(v,d){{if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(d||1)+'%';}}
+  function pill(status){{var m={{open:['live-open','● OPEN'],closed:['live-closed','● CLOSED'],pre_market:['live-pre','◐ PRE'],after_hours:['live-ah','◐ AH']}};var p=m[status]||['live-pre',status||'?'];return'<span class="live-pill '+p[0]+'">'+p[1]+'</span>';}}
+  function render(d){{
+    var el=document.getElementById('live-strip');if(!el)return;
+    var stale=d.stale_warning?'<span class="live-stale">⚠ stale</span>':'';
+    var bm_lbl=BM;
+    var bm_ret=d.spy_return_pct!==undefined?d.spy_return_pct:(d.baskets&&d.baskets[0]?d.baskets[0].benchmark_return_pct:null);
+    var alpha=d.alpha_vs_spy_pct!==undefined?d.alpha_vs_spy_pct:(d.baskets&&d.baskets[0]?d.baskets[0].alpha_vs_benchmark_pct:null);
+    var port=d.portfolio_return_pct;
+    var today=d.portfolio_today_pct;
+    el.innerHTML='<div class="live-inner">'+pill(d.market_status)
+      +'<span class="live-item">Portfolio <strong>'+fmt(port)+'</strong></span>'
+      +'<span class="live-item">Today <strong>'+fmt(today)+'</strong></span>'
+      +'<span class="live-item">'+bm_lbl+' <strong>'+fmt(bm_ret)+'</strong></span>'
+      +(alpha!==null&&alpha!==undefined?'<span class="live-item">Alpha <strong>'+fmt(alpha)+'</strong></span>':'')
+      +stale
+      +'<span class="live-ts" title="'+(d.delay_warning||'')+'">Updated '+d.fetched_at_uk+'</span>'
+      +'</div>';
+  }}
+  function load(){{fetch(URL+'?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject(r.status);}}).then(render).catch(function(){{var el=document.getElementById('live-strip');if(el)el.innerHTML='<div class="live-inner" style="color:#5c6080">Live data unavailable</div>';}});}}
+  load();setInterval(load,INTERVAL);
+}})();
+</script>"""
+
+
 def _lab_nav() -> str:
     """Navigation bar linking to sub-dashboards (SCAI-II and Hermes)."""
     return """
@@ -1399,6 +1439,7 @@ def build_index(
     systems = _systems_overview()
 
     body = f"""
+{_live_strip_html("data/ats_live.json", "SPY")}
 {header}
 {perf}
 {health}

@@ -1,0 +1,24 @@
+{
+  "fetched_at_utc": "2026-05-28T13:16:35Z",
+  "fetched_at_uk": "2026-05-28 14:16 BST",
+  "market_status": "pre_market",
+  "market_note": "US pre-market",
+  "systems": {
+    "ats": {
+      "portfolio_return_pct": 2.911,
+      "portfolio_today_pct": -0.192,
+      "alpha_vs_spy_pct": 2.265,
+      "n_positions": 12
+    },
+    "scai": {
+      "portfolio_return_pct": 0.0,
+      "portfolio_today_pct": 0.609,
+      "n_baskets": 1
+    },
+    "hermes": {
+      "portfolio_return_pct": 0.0,
+      "portfolio_today_pct": 0.609,
+      "n_baskets": 1
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "fetched_at_utc": "2026-05-28T13:16:35Z",
+  "fetched_at_uk": "2026-05-28 14:16 BST",
+  "market_status": "pre_market",
+  "market_note": "US pre-market",
+  "delay_warning": "Prices may be 15-min delayed (yfinance)",
+  "baskets": [
+    {
+      "paper_id": "hp_20260528_5afa37",
+      "basket_name": "AI Infrastructure \u2014 cooling_power",
+      "tickers": [
+        "VRT",
+        "SMCI"
+      ],
+      "entry_prices": {
+        "VRT": 319.7799987792969,
+        "SMCI": 38.189998626708984
+      },
+      "entry_date": "2026-05-28",
+      "last_prices": {
+        "VRT": 319.78,
+        "SMCI": 38.19
+      },
+      "prev_closes": {
+        "VRT": 318.17,
+        "SMCI": 37.92
+      },
+      "day_changes": {
+        "VRT": 0.506,
+        "SMCI": 0.712
+      },
+      "returns": {
+        "VRT": 0.0,
+        "SMCI": 0.0
+      },
+      "basket_return_pct": 0.0,
+      "basket_today_pct": 0.609,
+      "benchmark": "QQQ",
+      "benchmark_entry_price": 729.45,
+      "benchmark_last_price": 729.45,
+      "benchmark_return_pct": 0.0,
+      "benchmark_today_pct": 0.224,
+      "alpha_vs_benchmark_pct": 0.0,
+      "n_priced": 2,
+      "stale": false
+    }
+  ],
+  "portfolio_return_pct": 0.0,
+  "portfolio_today_pct": 0.609,
+  "n_baskets": 1,
+  "n_priced": 1,
+  "source": "yfinance",
+  "stale_warning": false,
+  "error": null
+}

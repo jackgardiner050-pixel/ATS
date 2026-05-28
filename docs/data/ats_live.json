@@ -1,0 +1,153 @@
+{
+  "fetched_at_utc": "2026-05-28T13:16:35Z",
+  "fetched_at_uk": "2026-05-28 14:16 BST",
+  "market_status": "pre_market",
+  "market_note": "US pre-market",
+  "delay_warning": "Prices may be 15-min delayed (yfinance)",
+  "positions": [
+    {
+      "ticker": "ACM",
+      "entry_date": "2026-05-25",
+      "entry_price": 72.04,
+      "spy_entry_price": 745.64,
+      "last_price": 71.66,
+      "prev_close": 71.81,
+      "day_change_pct": -0.209,
+      "return_pct": -0.527,
+      "stale": false
+    },
+    {
+      "ticker": "AMAT",
+      "entry_date": "2026-05-25",
+      "entry_price": 432.16,
+      "spy_entry_price": 745.64,
+      "last_price": 448.25,
+      "prev_close": 446.34,
+      "day_change_pct": 0.428,
+      "return_pct": 3.723,
+      "stale": false
+    },
+    {
+      "ticker": "DY",
+      "entry_date": "2026-05-25",
+      "entry_price": 411.2,
+      "spy_entry_price": 745.64,
+      "last_price": 529.13,
+      "prev_close": 529.5943,
+      "day_change_pct": -0.088,
+      "return_pct": 28.679,
+      "stale": false
+    },
+    {
+      "ticker": "EMR",
+      "entry_date": "2026-05-25",
+      "entry_price": 136.42,
+      "spy_entry_price": 745.64,
+      "last_price": 139.72,
+      "prev_close": 139.94,
+      "day_change_pct": -0.157,
+      "return_pct": 2.419,
+      "stale": false
+    },
+    {
+      "ticker": "GD",
+      "entry_date": "2026-05-25",
+      "entry_price": 342.89,
+      "spy_entry_price": 745.64,
+      "last_price": 342.69,
+      "prev_close": 343.88,
+      "day_change_pct": -0.346,
+      "return_pct": -0.058,
+      "stale": false
+    },
+    {
+      "ticker": "GNRC",
+      "entry_date": "2026-05-25",
+      "entry_price": 270.14,
+      "spy_entry_price": 745.64,
+      "last_price": 280.53,
+      "prev_close": 280.567,
+      "day_change_pct": -0.013,
+      "return_pct": 3.846,
+      "stale": false
+    },
+    {
+      "ticker": "HUBB",
+      "entry_date": "2026-05-25",
+      "entry_price": 475.01,
+      "spy_entry_price": 745.64,
+      "last_price": 484.25,
+      "prev_close": 485.8713,
+      "day_change_pct": -0.334,
+      "return_pct": 1.945,
+      "stale": false
+    },
+    {
+      "ticker": "J",
+      "entry_date": "2026-05-25",
+      "entry_price": 114.69,
+      "spy_entry_price": 745.64,
+      "last_price": 115.9,
+      "prev_close": 116.0,
+      "day_change_pct": -0.086,
+      "return_pct": 1.055,
+      "stale": false
+    },
+    {
+      "ticker": "KMI",
+      "entry_date": "2026-05-25",
+      "entry_price": 33.79,
+      "spy_entry_price": 745.64,
+      "last_price": 32.22,
+      "prev_close": 32.35,
+      "day_change_pct": -0.402,
+      "return_pct": -4.646,
+      "stale": false
+    },
+    {
+      "ticker": "LDOS",
+      "entry_date": "2026-05-25",
+      "entry_price": 126.01,
+      "spy_entry_price": 745.64,
+      "last_price": 130.62,
+      "prev_close": 131.15,
+      "day_change_pct": -0.404,
+      "return_pct": 3.658,
+      "stale": false
+    },
+    {
+      "ticker": "SPGI",
+      "entry_date": "2026-05-25",
+      "entry_price": 417.6,
+      "spy_entry_price": 745.64,
+      "last_price": 415.8,
+      "prev_close": 418.68,
+      "day_change_pct": -0.688,
+      "return_pct": -0.431,
+      "stale": false
+    },
+    {
+      "ticker": "TRGP",
+      "entry_date": "2026-05-25",
+      "entry_price": 276.75,
+      "spy_entry_price": 745.64,
+      "last_price": 263.65,
+      "prev_close": 263.65,
+      "day_change_pct": 0.0,
+      "return_pct": -4.734,
+      "stale": false
+    }
+  ],
+  "portfolio_return_pct": 2.911,
+  "portfolio_today_pct": -0.192,
+  "spy_entry_price": 745.64,
+  "spy_last_price": 750.46,
+  "spy_return_pct": 0.646,
+  "spy_today_pct": 0.055,
+  "alpha_vs_spy_pct": 2.265,
+  "n_positions": 12,
+  "n_priced": 12,
+  "source": "yfinance",
+  "stale_warning": false,
+  "error": null
+}
