@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hermes v2 Learning Lab — 2026-05-28</title>
+<style>
+:root{--bg:#0d0f1a;--card:#11131f;--border:#1e2133;--accent:#3949ab;
+--text:#c5cae9;--muted:#5c6080;--green:#26a69a;--red:#ef5350;--amber:#ffa726;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:14px;}
+.lab-nav{background:var(--card);border-bottom:1px solid var(--border);padding:.55rem 0;}
+.lab-nav .container{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;}
+.lab-nav-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.lab-nav-card{display:flex;flex-direction:column;padding:.35rem .85rem;
+background:var(--bg);border:1px solid var(--border);border-radius:6px;
+text-decoration:none;transition:border-color .15s;}
+.lab-nav-card:hover{border-color:var(--accent);}
+.lab-nav-active{border-color:var(--accent)!important;}
+.lab-nav-title{font-size:.82rem;font-weight:700;color:var(--text);}
+.lab-nav-sub{font-size:.7rem;color:var(--muted);}
+.container{max-width:1100px;margin:0 auto;padding:0 1.25rem;}
+.header{padding:1.5rem 0 1rem;border-bottom:1px solid var(--border);}
+.header h1{font-size:1.4rem;font-weight:700;}
+.header .sub{font-size:.8rem;color:var(--muted);margin-top:.25rem;}
+.section{padding:1.5rem 0;border-bottom:1px solid var(--border);}
+.section h2{font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--text);}
+.section h3{font-size:.85rem;font-weight:600;margin-bottom:.5rem;color:var(--muted);}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.75rem;margin-bottom:1rem;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.85rem 1rem;}
+.card .val{font-size:1.6rem;font-weight:700;}
+.card .lbl{font-size:.7rem;color:var(--muted);margin-top:.15rem;}
+.card.green .val{color:var(--green);}
+.card.amber .val{color:var(--amber);}
+.card.red .val{color:var(--red);}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{text-align:left;padding:.5rem .75rem;color:var(--muted);border-bottom:1px solid var(--border);font-weight:600;}
+td{padding:.45rem .75rem;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600;}
+.badge-green{background:#1b3a37;color:var(--green);}
+.badge-amber{background:#3a2d1a;color:var(--amber);}
+.badge-red{background:#3a1a1a;color:var(--red);}
+.badge-blue{background:#1a2040;color:#7986cb;}
+.obs-banner{background:#1a2040;border:1px solid var(--accent);border-radius:6px;
+padding:.6rem 1rem;margin-bottom:1rem;font-size:.78rem;color:#9fa8da;}
+.proposal-card{background:var(--card);border:1px solid var(--border);border-radius:8px;
+padding:1rem 1.25rem;margin-bottom:.75rem;}
+.proposal-card .title{font-weight:700;margin-bottom:.35rem;}
+.proposal-card .rationale{font-size:.78rem;color:var(--muted);margin-bottom:.5rem;}
+.proposal-card .risk{font-size:.75rem;color:var(--amber);}
+footer{padding:.75rem 0;text-align:center;font-size:.7rem;color:var(--muted);}
+</style>
+</head>
+<body>
+<nav class="lab-nav">
+  <div class="container">
+    <span class="lab-nav-label">Labs</span>
+    <a class="lab-nav-card" href="../">
+      <span class="lab-nav-title">ATS</span>
+      <span class="lab-nav-sub">Main dashboard</span>
+    </a>
+    <a class="lab-nav-card" href="../scai/">
+      <span class="lab-nav-title">SCAI-II</span>
+      <span class="lab-nav-sub">Structural monitor</span>
+    </a>
+    <a class="lab-nav-card" href="../hermes/">
+      <span class="lab-nav-title">Hermes v1</span>
+      <span class="lab-nav-sub">Observation phase</span>
+    </a>
+    <a class="lab-nav-card lab-nav-active" href="#">
+      <span class="lab-nav-title">Hermes v2</span>
+      <span class="lab-nav-sub">Learning lab</span>
+    </a>
+  </div>
+</nav>
+<div class="container">
+  <div class="header">
+    <h1>Hermes v2 Learning Lab</h1>
+    <div class="sub">Week of 2026-05-28 · Generated 2026-05-28 12:55 UTC</div>
+  </div>
+  <div class='obs-banner'>⚗ Hermes v2 Learning Lab — read-only · No rule changes applied · Proposals are observations only</div>
+  
+<div class="cards">
+  <div class="card amber"><div class="val">12</div><div class="lbl">Convergent blocked</div></div>
+  <div class="card amber"><div class="val">1</div><div class="lbl">Near-misses</div></div>
+  <div class="card green"><div class="val">5</div><div class="lbl">Draft proposals</div></div>
+  <div class="card"><div class="val">6</div><div class="lbl">Pass @ threshold 2.0</div></div>
+</div>
+  
+<div class="section">
+  <h2>Cross-system comparison — Hermes v1 vs SCAI-II</h2>
+  <table><thead><tr><th>Cluster</th><th>Status</th><th>Hermes score</th><th>SCAI score</th><th>Delta</th></tr></thead><tbody><tr><td>clean_power</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-1.521</td><td>0.000</td><td>-1.521</td></tr><tr><td>datacenter_reit</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-1.304</td><td>-0.500</td><td>-0.804</td></tr><tr><td>domestic_semis</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>3.843</td><td>2.619</td><td>+1.224</td></tr><tr><td>networking</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>0.910</td><td>0.927</td><td>-0.017</td></tr><tr><td>power_equip</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>3.849</td><td>3.319</td><td>+0.530</td></tr><tr><td>reshoring_infra</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-3.718</td><td>1.317</td><td>-5.035</td></tr><tr><td>semicon_equipment</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-1.558</td><td>2.096</td><td>-3.655</td></tr><tr><td>semis</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>1.018</td><td>1.328</td><td>-0.309</td></tr><tr><td>test_equipment</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-0.435</td><td>4.694</td><td>-5.128</td></tr><tr><td>transformers</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>1.436</td><td>-0.500</td><td>+1.936</td></tr><tr><td>utilities_dc</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-3.229</td><td>0.000</td><td>-3.229</td></tr><tr><td>utility_capex</td><td><span class="badge badge-amber">BOTH BLOCKED</span></td><td>-0.340</td><td>0.000</td><td>-0.340</td></tr></tbody></table>
+  <h3 style='margin-top:1rem'>Convergent selections</h3><table><thead><tr><th>Cluster</th><th>Status</th></tr></thead><tbody><tr><td>cooling_power</td><td><span class="badge badge-green">Both selected</span></td></tr></tbody></table>
+</div>
+  
+<div class="section">
+  <h2>Critique — near-misses & patterns</h2>
+  <h3>Near-misses (within 0.75 of threshold)</h3>
+  <table><thead><tr><th>Cluster</th><th>System</th><th>Score</th><th>Gap</th><th>Reason</th></tr></thead><tbody><tr><td>semicon_equipment</td><td><span class="badge badge-blue">both</span></td><td>2.096</td><td>+0.404</td><td style='max-width:300px;font-size:.75rem'>high saturation (high) — saturation governance blocks entry until saturation normalises; selection_score 2.096 < threshold 2.5 — insufficient composite strength</td></tr></tbody></table>
+  <h3 style='margin-top:1rem'>Persistently blocked (≥2 weeks)</h3><table><thead><tr><th>Cluster</th><th>Weeks</th><th>Score</th></tr></thead><tbody><tr><td>power_equip</td><td>3w</td><td>3.849</td></tr><tr><td>domestic_semis</td><td>3w</td><td>3.843</td></tr><tr><td>transformers</td><td>3w</td><td>1.436</td></tr><tr><td>semis</td><td>3w</td><td>1.018</td></tr><tr><td>networking</td><td>3w</td><td>0.910</td></tr><tr><td>utility_capex</td><td>3w</td><td>-0.340</td></tr><tr><td>test_equipment</td><td>3w</td><td>-0.435</td></tr><tr><td>datacenter_reit</td><td>3w</td><td>-1.304</td></tr><tr><td>clean_power</td><td>3w</td><td>-1.521</td></tr><tr><td>semicon_equipment</td><td>3w</td><td>-1.558</td></tr><tr><td>utilities_dc</td><td>3w</td><td>-3.229</td></tr><tr><td>reshoring_infra</td><td>3w</td><td>-3.718</td></tr><tr><td>test_equipment</td><td>3w</td><td>4.694</td></tr><tr><td>power_equip</td><td>3w</td><td>3.319</td></tr><tr><td>domestic_semis</td><td>3w</td><td>2.619</td></tr><tr><td>semicon_equipment</td><td>3w</td><td>2.096</td></tr><tr><td>semis</td><td>3w</td><td>1.328</td></tr><tr><td>reshoring_infra</td><td>3w</td><td>1.317</td></tr><tr><td>networking</td><td>3w</td><td>0.927</td></tr><tr><td>utilities_dc</td><td>3w</td><td>0.000</td></tr><tr><td>utility_capex</td><td>3w</td><td>0.000</td></tr><tr><td>clean_power</td><td>3w</td><td>0.000</td></tr><tr><td>datacenter_reit</td><td>3w</td><td>-0.500</td></tr><tr><td>transformers</td><td>3w</td><td>-0.500</td></tr></tbody></table>
+</div>
+  
+<div class="section">
+  <h2>Simulation — hypothetical param changes</h2>
+  <table><thead><tr><th>Scenario</th><th>ID</th><th>Threshold</th><th>Passing</th><th>Clusters</th></tr></thead><tbody><tr><td>Lower selection threshold from 2.5 → 2.0</td><td style='color:var(--muted);font-size:.75rem'>lower_threshold_2.0</td><td>2.0</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr><tr><td>Lower selection threshold from 2.5 → 1.5</td><td style='color:var(--muted);font-size:.75rem'>lower_threshold_1.5</td><td>1.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr><tr><td>Weight persistence 50% higher (reward consistent trends)</td><td style='color:var(--muted);font-size:.75rem'>boost_persistence</td><td>2.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr><tr><td>Halve saturation penalty (allow more crowded narratives)</td><td style='color:var(--muted);font-size:.75rem'>reduce_saturation_penalty</td><td>2.5</td><td><span class="badge badge-green">7</span></td><td style='max-width:280px;font-size:.75rem'>semicon_equipment, power_equip, domestic_semis, semis, test_equipment</td></tr><tr><td>Increase RS weight 25% (prioritise price action)</td><td style='color:var(--muted);font-size:.75rem'>rs_heavy</td><td>2.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr></tbody></table>
+</div>
+  
+<div class="section">
+  <h2>Proposals (draft — no action taken)</h2>
+  
+<div class="proposal-card">
+  <div class="title">Consider: Lower selection threshold from 2.5 → 2.0</div>
+  <div class="rationale">Under scenario 'lower_threshold_2.0', 6 currently-blocked cluster(s) would pass (threshold=2.0). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Lowering threshold allows lower-conviction candidates. Monitor: increased false positives, more blocked-then-dropped positions.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Weight persistence 50% higher (reward consistent trends)</div>
+  <div class="rationale">Under scenario 'boost_persistence', 6 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Rewards sustained trends but may over-weight momentum at regime turns. Review if market rotates quickly.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Halve saturation penalty (allow more crowded narratives)</div>
+  <div class="rationale">Under scenario 'reduce_saturation_penalty', 7 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, semis, test_equipment.</div>
+  <div class="risk">⚠ Allows crowded narratives through. Increases narrative-saturation risk. Review if crowded trades underperform.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Increase RS weight 25% (prioritise price action)</div>
+  <div class="rationale">Under scenario 'rs_heavy', 6 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Increases weight on price-only signal. May select tickers with strong RS but weak fundamentals or narrative.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Lower selection threshold from 2.5 → 1.5</div>
+  <div class="rationale">Under scenario 'lower_threshold_1.5', 6 currently-blocked cluster(s) would pass (threshold=1.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Aggressive threshold reduction. High risk of low-quality selections. Only appropriate if RS quality improves across the board.</div>
+</div>
+</div>
+</div>
+<footer>
+  <div class="container">
+    Hermes v2 Learning Lab · Read-only · No live trading · No rule changes
+  </div>
+</footer>
+</body>
+</html>
