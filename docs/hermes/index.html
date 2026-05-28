@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hermes Structural Monitor — 2026-05-28</title>
+  <title>Hermes Experimental Paper Lab — 2026-05-28</title>
   <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
     background: #0d1117; color: #c9d1d9;
-    max-width: 1040px; margin: 0 auto; padding: 1.5rem 1rem 4rem;
+    max-width: 1040px; margin: 0 auto; padding: 0 1rem 4rem;
     font-size: 14px; line-height: 1.6;
   }
   h1 { font-size: 1.5rem; color: #58a6ff; border-bottom: 1px solid #21262d;
@@ -30,20 +30,97 @@
   td { padding: 0.3rem 0.6rem; border-bottom: 1px solid #21262d; }
   tr:hover td { background: #161b22; }
   .banner { background: #161b22; border: 1px solid #30363d; border-radius: 6px;
-            padding: 0.6rem 1rem; margin-bottom: 1rem; font-size: 0.82em;
+            padding: 0.6rem 1rem; margin: 0.8rem 0; font-size: 0.82em;
             color: #8b949e; display: flex; gap: 1.5rem; flex-wrap: wrap; }
   .banner span { color: #58a6ff; }
   .warn { color: #d29922; }
   footer { margin-top: 3rem; font-size: 0.75em; color: #484f58; text-align: center; }
+  /* lab nav */
+  .lab-nav { background: #11131f; border-bottom: 1px solid #2a2d45;
+    padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.7rem;
+    flex-wrap: wrap; margin: 0 -1rem 1.5rem; }
+  .lab-nav-label { font-size: 0.72rem; color: #5c6080; text-transform: uppercase;
+    letter-spacing: 0.08em; margin-right: 0.25rem; }
+  .lab-nav-card { display: inline-flex; flex-direction: column; padding: 0.3rem 0.75rem;
+    border-radius: 5px; border: 1px solid #2a2d45; text-decoration: none;
+    background: #1a1d2e; }
+  .lab-nav-card:hover { border-color: #5c6bc0; background: #1e2235; }
+  .lab-nav-active { border-color: #3949ab !important; background: #1e2235 !important; }
+  .lab-nav-title { font-size: 0.82rem; font-weight: 700; color: #c5cae9; }
+  .lab-nav-sub   { font-size: 0.7rem; color: #6c7a9c; margin-top: 0.1rem; }
+  /* metric cards */
+  .metric-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 0.55rem; margin: 1rem 0 1.5rem; }
+  .metric-card { background: #161b22; border: 1px solid #21262d;
+    border-radius: 6px; padding: 0.65rem 0.9rem; }
+  .mc-label { font-size: 0.72rem; color: #6c7a9c; text-transform: uppercase;
+    letter-spacing: 0.05em; }
+  .mc-value { font-size: 1.1rem; font-weight: 700; color: #c5cae9; margin-top: 0.15rem; }
+  .mc-sub   { font-size: 0.7rem; color: #5c6080; margin-top: 0.12rem; }
+  .mc-na    { color: #484f58 !important; font-size: 0.82rem !important; font-weight: normal !important; }
+  /* observation banner */
+  .obs-banner { background: #1c1a0a; border: 1px solid #5a4a00; border-radius: 6px;
+    padding: 0.5rem 1rem; margin: 0.6rem 0 1rem; font-size: 0.8rem; color: #d29922; }
 </style>
 </head>
 <body>
+<nav class="lab-nav">
+  <span class="lab-nav-label">Dashboards</span>
+  <a href="../" class="lab-nav-card">
+    <span class="lab-nav-title">ATS</span>
+    <span class="lab-nav-sub">Main Dashboard</span>
+  </a>
+  <a href="../scai/" class="lab-nav-card">
+    <span class="lab-nav-title">SCAI-II</span>
+    <span class="lab-nav-sub">Structural Monitor</span>
+  </a>
+  <a href="./" class="lab-nav-card lab-nav-active">
+    <span class="lab-nav-title">Hermes</span>
+    <span class="lab-nav-sub">Experimental Paper Lab</span>
+  </a>
+</nav>
+<div style="padding: 1.5rem 0 0">
+<div class="obs-banner">
+  ⚠ Observation phase — v1 · No rule changes · No learning · No self-modification · Data collection only
+</div>
 <div class="banner">
-  <span>Hermes / SCAI-III</span>
+  <span>Hermes / Experimental Paper Lab</span>
   <span>Week of 2026-05-28</span>
   <span>Open baskets: 1 / 5</span>
   <span>Blocked: 12</span>
   <span class="warn">PAPER-ONLY · NO REAL ORDERS · NOT INVESTMENT ADVICE</span>
+</div>
+<div class="metric-cards">
+  <div class="metric-card">
+    <div class="mc-label">Open Baskets</div>
+    <div class="mc-value">1 / 5</div>
+    <div class="mc-sub">max 5 positions</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Blocked This Run</div>
+    <div class="mc-value">12</div>
+    <div class="mc-sub">governance filtered</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Return Since Entry</div>
+    <div class="mc-value"><span class="mc-na">Not enough history</span></div>
+    <div class="mc-sub">first week of tracking</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Market Breadth</div>
+    <div class="mc-value">38.5%</div>
+    <div class="mc-sub">clusters beating BM</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Phase</div>
+    <div class="mc-value" style="font-size:0.82rem;color:#d29922">Observation v1</div>
+    <div class="mc-sub">no learning / no rules</div>
+  </div>
+  <div class="metric-card">
+    <div class="mc-label">Last Updated</div>
+    <div class="mc-value" style="font-size:0.82rem">2026-05-28 12:13</div>
+    <div class="mc-sub">UTC</div>
+  </div>
 </div>
 <h1>Hermes Prospective Structural Monitor — 2026-05-28</h1>
 <p>&gt; <em>Paper-only · No real orders · No broker connection · Hermes v1</em></p>
@@ -98,7 +175,7 @@
 
 <h1>Hermes Paper Portfolio Summary</h1>
 <p>&gt; <em>Paper-only · No real orders · No broker connection · Hermes v1</em></p>
-<p>&gt; <em>Generated: 2026-05-28 11:40 UTC</em></p>
+<p>&gt; <em>Generated: 2026-05-28 12:13 UTC</em></p>
 
 <h2>Open Baskets (1 / 5 max)</h2>
 
@@ -160,8 +237,9 @@
 
 <p>&gt; <strong>Independent convergence</strong>: Both Hermes and SCAI-II selected <code>AI Infrastructure — cooling_power</code> independently. This is a validation signal — two separate systems, same universe, same conclusion.</p>
 
+</div>
 <footer>
-  Generated 2026-05-28 11:40 UTC &nbsp;·&nbsp;
+  Generated 2026-05-28 12:13 UTC &nbsp;·&nbsp;
   PAPER-ONLY · NO REAL ORDERS · NO BROKER CONNECTION · ATS ISOLATED · HERMES ISOLATED ·
   NOT INVESTMENT ADVICE
 </footer>
