@@ -24,6 +24,7 @@ _HERMES_POSITIONS = (
     Path.home() / "trading" / "hermes_lab" / "data" / "paper" / "positions.jsonl"
 )
 _ATS_POSITIONS = _AGENT / "data" / "paper_positions.yaml"
+_HERMES_V3_VARIANTS_DIR = Path.home() / "trading" / "hermes_v3_lab" / "data" / "variants"
 
 _ALWAYS_FETCH = ["SPY", "QQQ", "SMH"]
 
@@ -460,6 +461,123 @@ def _build_lab_json(
     }
 
 
+def _read_hermes_v3_open_positions() -> list[dict]:
+    """Read all open positions across Hermes v3 variants (read-only)."""
+    if not _HERMES_V3_VARIANTS_DIR.exists():
+        return []
+    positions = []
+    for f in sorted(_HERMES_V3_VARIANTS_DIR.glob("*_positions.jsonl")):
+        if f.name == "variant_summary.json":
+            continue
+        for line in f.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+                if rec.get("is_open"):
+                    positions.append(rec)
+            except json.JSONDecodeError:
+                pass
+    return positions
+
+
+def _build_hermes_v3_json(
+    open_positions: list[dict],
+    prices: dict[str, dict],
+    now: datetime,
+) -> dict:
+    status, note = _market_status(now)
+
+    # Load variant summary for current pots/returns
+    summary_file = _HERMES_V3_VARIANTS_DIR / "variant_summary.json"
+    variant_summary: list[dict] = []
+    if summary_file.exists():
+        try:
+            variant_summary = json.loads(summary_file.read_text())["variants"]
+        except Exception:
+            pass
+
+    # Build positions by variant
+    by_variant: dict[str, list[dict]] = {}
+    for pos in open_positions:
+        vid = pos.get("variant_id", "unknown")
+        by_variant.setdefault(vid, []).append(pos)
+
+    spy_prices = prices.get("SPY", {})
+    spy_lp = spy_prices.get("last_price")
+    spy_pc = spy_prices.get("prev_close")
+    spy_today = round((spy_lp - spy_pc) / spy_pc * 100, 3) if spy_lp and spy_pc and spy_pc > 0 else None
+    qqq_prices = prices.get("QQQ", {})
+    qqq_lp = qqq_prices.get("last_price")
+
+    variants_out = []
+    for vs in variant_summary:
+        vid = vs["variant_id"]
+        pot = vs.get("current_pot", 5000.0)
+        ret = vs.get("net_return_pct", 0.0)
+        starting = 5000.0
+
+        # Attach live position data
+        pos_list = []
+        for pos in by_variant.get(vid, []):
+            ticker = pos["ticker"]
+            entry = pos.get("entry_price_net", pos.get("entry_price_raw"))
+            pd_ = prices.get(ticker, {})
+            lp = pd_.get("last_price")
+            shares = pos.get("shares", 0)
+            unrealised = round((lp - entry) * shares, 2) if lp and entry and shares else None
+            pos_return = round((lp - entry) / entry * 100, 3) if lp and entry and entry > 0 else None
+            pos_list.append({
+                "ticker": ticker,
+                "entry_price": entry,
+                "last_price": lp,
+                "return_pct": pos_return,
+                "unrealised_pnl": unrealised,
+            })
+
+        # SPY alpha since inception of variant
+        spy_return_pct = vs.get("spy_return_pct")
+        alpha = round(ret - spy_return_pct, 3) if ret is not None and spy_return_pct is not None else None
+
+        variants_out.append({
+            "variant_id": vid,
+            "starting_pot": starting,
+            "current_pot": pot,
+            "net_return_pct": ret,
+            "net_dollar_pnl": round(pot - starting, 2),
+            "spy_return_pct": spy_return_pct,
+            "alpha_vs_spy_pct": alpha,
+            "open_positions": vs.get("open_positions", 0),
+            "closed_trades": vs.get("closed_trades", 0),
+            "positions": pos_list,
+        })
+
+    # Best/worst variants
+    ranked = sorted(variants_out, key=lambda v: v["net_return_pct"] or 0, reverse=True)
+    best = ranked[0] if ranked else None
+    worst = ranked[-1] if ranked else None
+
+    return {
+        "fetched_at_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "fetched_at_uk": _uk_time_str(now),
+        "market_status": status,
+        "market_note": note,
+        "delay_warning": "Prices may be 15-min delayed (yfinance)",
+        "spy_return_pct": None,
+        "spy_today_pct": spy_today,
+        "qqq_return_pct": None,
+        "best_variant_id": best["variant_id"] if best else None,
+        "best_variant_return_pct": best["net_return_pct"] if best else None,
+        "worst_variant_id": worst["variant_id"] if worst else None,
+        "worst_variant_return_pct": worst["net_return_pct"] if worst else None,
+        "variants": variants_out,
+        "n_variants": len(variants_out),
+        "source": "yfinance",
+        "error": None,
+    }
+
+
 def _build_summary_json(
     ats_j: dict,
     scai_j: dict,
@@ -497,6 +615,23 @@ def _build_summary_json(
     }
 
 
+def _build_summary_json_v2(
+    ats_j: dict,
+    scai_j: dict,
+    hermes_j: dict,
+    hermes_v3_j: dict,
+    now: datetime,
+) -> dict:
+    base = _build_summary_json(ats_j, scai_j, hermes_j, now)
+    base["systems"]["hermes_v3"] = {
+        "best_variant_id": hermes_v3_j.get("best_variant_id"),
+        "best_variant_return_pct": hermes_v3_j.get("best_variant_return_pct"),
+        "worst_variant_return_pct": hermes_v3_j.get("worst_variant_return_pct"),
+        "n_variants": hermes_v3_j.get("n_variants"),
+    }
+    return base
+
+
 # ─── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> int:
@@ -506,18 +641,21 @@ def main() -> int:
     ats_pos = _read_ats()
     scai_pos = _read_scai()
     hermes_pos = _read_hermes()
+    hermes_v3_pos = _read_hermes_v3_open_positions()
 
     print(f"  ATS: {len(ats_pos)} positions", file=sys.stderr)
     print(f"  SCAI: {len(scai_pos)} baskets", file=sys.stderr)
     print(f"  Hermes: {len(hermes_pos)} baskets", file=sys.stderr)
+    print(f"  Hermes v3: {len(hermes_v3_pos)} open positions across variants", file=sys.stderr)
 
     # Collect all tickers
     ats_tickers = [p["ticker"] for p in ats_pos if "ticker" in p]
     lab_tickers: list[str] = []
     for b in scai_pos + hermes_pos:
         lab_tickers.extend(b.get("tickers", []))
+    v3_tickers = [p["ticker"] for p in hermes_v3_pos if "ticker" in p]
     benchmarks = list({b.get("benchmark", "QQQ") for b in scai_pos + hermes_pos}) + _ALWAYS_FETCH
-    all_tickers = list(set(ats_tickers + lab_tickers + benchmarks))
+    all_tickers = list(set(ats_tickers + lab_tickers + v3_tickers + benchmarks))
 
     print(f"  Fetching {len(all_tickers)} tickers...", file=sys.stderr)
     prices, had_error = _fetch_prices(all_tickers)
@@ -529,12 +667,14 @@ def main() -> int:
     ats_j = _build_ats_json(ats_pos, prices, now)
     scai_j = _build_lab_json(scai_pos, prices, now, "scai")
     hermes_j = _build_lab_json(hermes_pos, prices, now, "hermes")
-    summary_j = _build_summary_json(ats_j, scai_j, hermes_j, now)
+    hermes_v3_j = _build_hermes_v3_json(hermes_v3_pos, prices, now)
+    summary_j = _build_summary_json_v2(ats_j, scai_j, hermes_j, hermes_v3_j, now)
 
     files = {
         "ats_live.json": ats_j,
         "scai_live.json": scai_j,
         "hermes_live.json": hermes_j,
+        "hermes_v3_live.json": hermes_v3_j,
         "system_summary_live.json": summary_j,
     }
     for fname, data in files.items():

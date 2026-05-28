@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Hermes v3 — Shadow Rotation Lab</title>
+  <style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--green:#3fb950;--red:#f85149;--yellow:#e3b341;--blue:#58a6ff;--purple:#bc8cff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;}
+.top-nav{background:#161b22;border-bottom:1px solid var(--border);padding:0.5rem 1.5rem;display:flex;gap:1.5rem;}
+.top-nav a{color:var(--muted);text-decoration:none;font-size:0.85rem;}
+.top-nav a.active,.top-nav a:hover{color:var(--blue);}
+.container{max-width:1400px;margin:0 auto;padding:1.5rem;}
+h1{font-size:1.4rem;font-weight:600;margin-bottom:0.25rem;}
+h2{font-size:1rem;font-weight:600;color:var(--blue);margin:1.5rem 0 0.75rem;}
+.subtitle{color:var(--muted);font-size:0.8rem;margin-bottom:1.5rem;}
+.live-strip{background:#161b22;border:1px solid var(--border);border-radius:6px;padding:0.6rem 1rem;display:flex;gap:2rem;align-items:center;font-size:0.8rem;color:var(--muted);margin-bottom:1.5rem;flex-wrap:wrap;}
+.live-strip .val{font-weight:600;color:var(--text);}
+.green{color:var(--green)!important;} .red{color:var(--red)!important;} .yellow{color:var(--yellow)!important;}
+table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+th{color:var(--muted);font-weight:500;text-align:right;padding:0.4rem 0.6rem;border-bottom:1px solid var(--border);}
+th:first-child{text-align:left;}
+td{padding:0.4rem 0.6rem;border-bottom:1px solid #21262d;text-align:right;}
+td:first-child{text-align:left;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:1rem;}
+.badge{display:inline-block;font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:600;}
+.badge-paper{background:#1a2a3a;color:#58a6ff;}
+.badge-shadow{background:#2a1a3a;color:#bc8cff;}
+.notice{background:#161b22;border:1px solid var(--border);border-radius:4px;padding:0.4rem 0.75rem;font-size:0.75rem;color:var(--muted);margin-bottom:1rem;}
+.mono{font-family:monospace;}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html">ATS</a>
+  <a href="../scai/index.html">SCAI-II</a>
+  <a href="../hermes/index.html">Hermes v1/v2</a>
+  <a href="index.html" class="active">Hermes v3</a>
+</nav>
+<div class="container">
+  <h1>Hermes v3 — Shadow Rotation Lab &amp; Proposal Variant Arena</h1>
+  <div class="subtitle">
+    Paper-only execution research lab &nbsp;|&nbsp;
+    Tests whether Hermes v2 proposals survive execution realism &nbsp;|&nbsp;
+    No live trading &middot; No broker &middot; No real orders &middot; No automatic rule promotion
+  </div>
+
+  <div class="live-strip">
+    <span>SPY: <span class="val" id="v3-spy-return">—</span></span>
+    <span>QQQ: <span class="val" id="v3-qqq-return">—</span></span>
+    <span>Best: <span class="val" id="v3-best-variant">—</span> <span class="val" id="v3-best-return">—</span></span>
+    <span>Worst: <span class="val" id="v3-worst-variant">—</span> <span class="val" id="v3-worst-return">—</span></span>
+    <span style="margin-left:auto;font-size:0.72rem" id="v3-live-ts">Live prices loading…</span>
+  </div>
+
+  <div class="notice">
+    📷 Static snapshot — generated 2026-05-28 18:26 UTC &nbsp;|&nbsp; Live data overlaid above via JS every 5 min
+  </div>
+
+  <h2>Variant Comparison</h2>
+  <div class="card">
+    <table>
+      <thead><tr>
+        <th style="text-align:left">Variant</th>
+        <th>Starting pot</th>
+        <th>Current pot</th>
+        <th>Return %</th>
+        <th>Dollar G/L</th>
+        <th>Alpha vs SPY</th>
+        <th>Open</th>
+        <th>Closed</th>
+        <th>Max DD</th>
+        <th>Win rate</th>
+        <th>Status</th>
+      </tr></thead>
+      <tbody><tr>
+          <td><span class="mono" style="font-size:0.75rem">baseline_current_governance</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-baseline_current_governance">$5,000</td>
+          <td id="v3-ret-baseline_current_governance" class="green">+0.0%</td>
+          <td id="v3-pnl-baseline_current_governance" class="green">+$0</td>
+          <td id="v3-alpha-baseline_current_governance">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">reduced_saturation_penalty</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-reduced_saturation_penalty">$5,000</td>
+          <td id="v3-ret-reduced_saturation_penalty" class="green">+0.0%</td>
+          <td id="v3-pnl-reduced_saturation_penalty" class="green">+$0</td>
+          <td id="v3-alpha-reduced_saturation_penalty">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">rs_heavy</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-rs_heavy">$5,000</td>
+          <td id="v3-ret-rs_heavy" class="green">+0.0%</td>
+          <td id="v3-pnl-rs_heavy" class="green">+$0</td>
+          <td id="v3-alpha-rs_heavy">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">persistence_heavy</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-persistence_heavy">$5,000</td>
+          <td id="v3-ret-persistence_heavy" class="green">+0.0%</td>
+          <td id="v3-pnl-persistence_heavy" class="green">+$0</td>
+          <td id="v3-alpha-persistence_heavy">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">lower_threshold_2_0</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-lower_threshold_2_0">$5,000</td>
+          <td id="v3-ret-lower_threshold_2_0" class="green">+0.0%</td>
+          <td id="v3-pnl-lower_threshold_2_0" class="green">+$0</td>
+          <td id="v3-alpha-lower_threshold_2_0">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">fixed_profit_take_6pct</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-fixed_profit_take_6pct">$5,000</td>
+          <td id="v3-ret-fixed_profit_take_6pct" class="green">+0.0%</td>
+          <td id="v3-pnl-fixed_profit_take_6pct" class="green">+$0</td>
+          <td id="v3-alpha-fixed_profit_take_6pct">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">fixed_profit_take_10pct</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-fixed_profit_take_10pct">$5,000</td>
+          <td id="v3-ret-fixed_profit_take_10pct" class="green">+0.0%</td>
+          <td id="v3-pnl-fixed_profit_take_10pct" class="green">+$0</td>
+          <td id="v3-alpha-fixed_profit_take_10pct">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">trailing_stop_atr</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-trailing_stop_atr">$5,000</td>
+          <td id="v3-ret-trailing_stop_atr" class="green">+0.0%</td>
+          <td id="v3-pnl-trailing_stop_atr" class="green">+$0</td>
+          <td id="v3-alpha-trailing_stop_atr">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">fast_rotation</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-fast_rotation">$5,000</td>
+          <td id="v3-ret-fast_rotation" class="green">+0.0%</td>
+          <td id="v3-pnl-fast_rotation" class="green">+$0</td>
+          <td id="v3-alpha-fast_rotation">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr><tr>
+          <td><span class="mono" style="font-size:0.75rem">buy_and_hold_structural</span></td>
+          <td>$5,000</td>
+          <td id="v3-pot-buy_and_hold_structural">$5,000</td>
+          <td id="v3-ret-buy_and_hold_structural" class="green">+0.0%</td>
+          <td id="v3-pnl-buy_and_hold_structural" class="green">+$0</td>
+          <td id="v3-alpha-buy_and_hold_structural">—</td>
+          <td>0</td>
+          <td>0</td>
+          <td>—</td>
+          <td>—</td>
+          <td><span class="badge badge-paper">PAPER</span> <span class="badge badge-shadow">SHADOW</span></td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <h2>Active Positions by Variant</h2>
+  <p style="color:var(--muted);font-size:0.85rem">No open positions.</p>
+
+  <h2>Closed Trades</h2>
+  <div class="card">
+    <p style="color:var(--muted);font-size:0.85rem">No closed trades yet.</p>
+  </div>
+
+  <h2>Shadow Hypothesis Ledger</h2>
+  <div class="notice" style="margin-bottom:0.75rem">
+    All entries have <strong>promoted_status = never_auto_promote</strong>.
+    No hypothesis is automatically promoted to any production system.
+  </div>
+  <div class="card">
+    <p style="color:var(--muted);font-size:0.85rem">No ledger entries yet.</p>
+  </div>
+
+</div>
+<script>
+(function(){
+  var URL='../data/hermes_v3_live.json', INTERVAL=5*60*1000, STALE_MINS=20;
+  function fmt(v,sign){if(v===null||v===undefined)return'—';return(sign&&v>=0?'+':'')+v.toFixed(1)+'%';}
+  function fmtD(v){if(v===null||v===undefined)return'—';var s=(v>=0?'+$':'-$')+Math.abs(v).toFixed(0);return s;}
+  function fmtP(v){if(v===null||v===undefined)return'—';return'$'+parseFloat(v).toFixed(2);}
+  function color(v){if(v===null||v===undefined)return'';return v>=0?'var(--green)':'var(--red)';}
+  function setEl(id,html,col){var e=document.getElementById(id);if(!e)return;e.innerHTML=html;if(col)e.style.color=col;}
+  function isMarketHours(){var n=new Date(),d=n.getUTCDay();if(d===0||d===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
+  function render(d){
+    setEl('v3-spy-return',fmt(d.spy_return_pct,true),color(d.spy_return_pct));
+    setEl('v3-qqq-return',fmt(d.qqq_return_pct,true),color(d.qqq_return_pct));
+    setEl('v3-best-variant',d.best_variant_id||'—');
+    setEl('v3-best-return',fmt(d.best_variant_return_pct,true),color(d.best_variant_return_pct));
+    setEl('v3-worst-variant',d.worst_variant_id||'—');
+    setEl('v3-worst-return',fmt(d.worst_variant_return_pct,true),color(d.worst_variant_return_pct));
+    (d.variants||[]).forEach(function(v){
+      var vid=v.variant_id;
+      var ret=v.net_return_pct;
+      var pnl=(v.current_pot||5000)-5000;
+      setEl('v3-pot-'+vid,'$'+(v.current_pot||5000).toFixed(0));
+      setEl('v3-ret-'+vid,fmt(ret,true),color(ret));
+      setEl('v3-pnl-'+vid,fmtD(pnl),color(pnl));
+      setEl('v3-alpha-'+vid,fmt(v.alpha_vs_spy_pct,true),color(v.alpha_vs_spy_pct));
+      (v.positions||[]).forEach(function(p){
+        var t=p.ticker;
+        setEl('v3-pos-'+vid+'-'+t+'-price',fmtP(p.last_price));
+        setEl('v3-pos-'+vid+'-'+t+'-ret',fmt(p.return_pct,true),color(p.return_pct));
+        setEl('v3-pos-'+vid+'-'+t+'-pnl',fmtD(p.unrealised_pnl));
+      });
+    });
+    var tsEl=document.getElementById('v3-live-ts');
+    if(tsEl){
+      var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
+      var warn=isMarketHours()&&age>STALE_MINS?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
+      tsEl.innerHTML='Live prices as of '+(d.fetched_at_uk||'—')+warn;
+    }
+  }
+  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(e){var el=document.getElementById('v3-live-ts');if(el)el.textContent='Live data unavailable';});}
+  load();setInterval(load,INTERVAL);
+})();
+</script>
+</body>
+</html>
