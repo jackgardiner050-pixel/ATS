@@ -1510,38 +1510,53 @@ def _live_cards_js() -> str:
     return """<script>
 (function(){
   var URL='data/ats_live.json', INTERVAL=5*60*1000, STALE_MINS=20, BAR_SCALE=0.30;
+  var NA_HTML='<span style="color:#5c6080;font-size:0.72em">unavailable</span>';
   function fmtPct(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
   function fmtPrice(v){if(v===null||v===undefined)return'—';return'$'+parseFloat(v).toFixed(2);}
-  function posColor(v){return v>=0?'var(--green)':'var(--red)';}
+  /* posColor: null/undefined → muted grey so blanks don't flash green */
+  function posColor(v){if(v===null||v===undefined)return'#8b949e';return v>=0?'var(--green)':'var(--red)';}
   function isMarketHours(){var n=new Date(),d=n.getUTCDay();if(d===0||d===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
+  /* setLivePct: uses innerHTML so we can show styled "unavailable" when value is null */
+  function setLivePct(id,v){
+    var el=document.getElementById(id);if(!el)return;
+    if(v===null||v===undefined){el.innerHTML=NA_HTML;el.style.color='';}
+    else{el.textContent=(v>=0?'+':'')+v.toFixed(1)+'%';el.style.color=v>=0?'var(--green)':'var(--red)';}
+  }
   function render(d){
-    var portEl=document.getElementById('live-port-return');
-    if(portEl){portEl.textContent=fmtPct(d.portfolio_return_pct);portEl.style.color=posColor(d.portfolio_return_pct);}
-    var spyEl=document.getElementById('live-spy-return');
-    if(spyEl){spyEl.textContent=fmtPct(d.spy_return_pct);spyEl.style.color=posColor(d.spy_return_pct);}
+    var pricesOk=d.n_priced&&d.n_priced>0;
+    setLivePct('live-port-return',d.portfolio_return_pct);
+    setLivePct('live-spy-return',d.spy_return_pct);
     var alphaEl=document.getElementById('live-alpha-value');
-    if(alphaEl){alphaEl.textContent='Alpha: '+fmtPct(d.alpha_vs_spy_pct);alphaEl.style.color=posColor(d.alpha_vs_spy_pct);}
+    if(alphaEl){
+      if(d.alpha_vs_spy_pct===null||d.alpha_vs_spy_pct===undefined){alphaEl.innerHTML='Alpha: '+NA_HTML;alphaEl.style.color='';}
+      else{alphaEl.textContent='Alpha: '+fmtPct(d.alpha_vs_spy_pct);alphaEl.style.color=posColor(d.alpha_vs_spy_pct);}
+    }
     (d.positions||[]).forEach(function(p){
       var t=p.ticker, ret=p.return_pct, day=p.day_change_pct;
+      var hasRet=ret!==null&&ret!==undefined;
       var fillEl=document.getElementById('pos-fill-'+t);
-      if(fillEl){fillEl.style.width=Math.min(100,Math.abs(ret)/BAR_SCALE).toFixed(1)+'%';fillEl.className='bar-fill '+(ret>=0?'bar-green':'bar-red');}
+      if(fillEl){fillEl.style.width=(hasRet?Math.min(100,Math.abs(ret)/BAR_SCALE):0).toFixed(1)+'%';fillEl.className='bar-fill '+(hasRet&&ret>=0?'bar-green':'bar-red');}
       var valEl=document.getElementById('pos-val-'+t);
-      if(valEl){valEl.textContent=fmtPct(ret);valEl.style.color=posColor(ret);}
+      if(valEl){valEl.innerHTML=hasRet?fmtPct(ret):NA_HTML;valEl.style.color=posColor(ret);}
       var prEl=document.getElementById('pos-price-'+t);
       if(prEl)prEl.textContent=fmtPrice(p.last_price);
       var tdEl=document.getElementById('pos-today-'+t);
       if(tdEl){tdEl.textContent=fmtPct(day);tdEl.style.color=posColor(day);}
       var rtEl=document.getElementById('pos-return-'+t);
-      if(rtEl){rtEl.textContent=fmtPct(ret);rtEl.style.color=posColor(ret);}
+      if(rtEl){rtEl.innerHTML=hasRet?fmtPct(ret):NA_HTML;rtEl.style.color=posColor(ret);}
     });
     var tsEl=document.getElementById('live-cards-ts');
     if(tsEl){
-      var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
-      var warn=isMarketHours()&&age>STALE_MINS?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
-      tsEl.innerHTML='Live prices as of '+d.fetched_at_uk+warn;
+      if(!pricesOk){
+        tsEl.innerHTML='<span style="color:#ffa726;font-weight:600">&#9888; Prices unavailable — market may be closed or data delayed</span>';
+      } else {
+        var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
+        var warn=isMarketHours()&&age>STALE_MINS?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
+        tsEl.innerHTML='Live prices as of '+d.fetched_at_uk+warn;
+      }
     }
   }
-  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var e=document.getElementById('live-cards-ts');if(e)e.textContent='Live data unavailable';});}
+  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var e=document.getElementById('live-cards-ts');if(e)e.innerHTML='<span style="color:#ffa726">&#9888; Live data unavailable</span>';});}
   load();setInterval(load,INTERVAL);
 })();
 </script>"""

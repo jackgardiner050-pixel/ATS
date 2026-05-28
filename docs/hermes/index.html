@@ -119,8 +119,10 @@
 <script>
 (function(){
   var URL='../data/hermes_live.json', INTERVAL=5*60*1000;
-  function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
+  var NA='<span style="color:#5c6080;font-size:0.78rem">unavailable</span>';
+  function fmt(v){if(v===null||v===undefined)return NA;return(v>=0?'+':'')+v.toFixed(1)+'%';}
   function fmtPrice(v){if(v===null||v===undefined)return'—';return'$'+v.toFixed(2);}
+  /* colorClass: null → '' so unavailable text uses default color not green/red */
   function colorClass(v){if(v===null||v===undefined)return'';return v>=0?'mc-pos':'mc-neg';}
   function pill(s){var m={open:['live-open','● OPEN'],closed:['live-closed','● CLOSED'],pre_market:['live-pre','◐ PRE'],after_hours:['live-ah','◐ AH']};var p=m[s]||['live-pre',s||'?'];return'<span class="live-pill '+p[0]+'">'+p[1]+'</span>';}
   function setEl(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;}
@@ -147,7 +149,7 @@
     var pr=d.portfolio_return_pct;
     setEl('mc-port-ret','<span class="'+colorClass(pr)+'">'+fmt(pr)+'</span>');
     setEl('mc-port-ret-sub',pr!==null&&pr!==undefined?'equal-weight avg':(d.n_baskets>0?'prices unavailable':'no open baskets'));
-    var spyLabel=d.spy_return_pct!==null&&d.spy_return_pct!==undefined?fmt(d.spy_return_pct):(d.spy_baseline_status==='unavailable'?'<span style="color:#6c7a9c;font-size:0.78rem">baseline unavailable</span>':'—');
+    var spyLabel=d.spy_return_pct!==null&&d.spy_return_pct!==undefined?fmt(d.spy_return_pct):(d.spy_baseline_status==='unavailable'?'<span style="color:#6c7a9c;font-size:0.78rem">baseline unavailable</span>':NA);
     setEl('mc-spy-ret','<span class="'+colorClass(d.spy_return_pct)+'">'+spyLabel+'</span>');
     var spyNote=d.spy_baseline_status==='same_day_estimated'?'estimated (prev close)':'since earliest entry';
     setEl('mc-spy-ret-sub',spyNote);
@@ -159,10 +161,14 @@
     setEl('mc-updated',d.fetched_at_uk||'—');
     var tsEl=document.getElementById('live-cards-ts');
     if(tsEl){
-      function isMarketHoursH(){var n=new Date(),dw=n.getUTCDay();if(dw===0||dw===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
-      var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
-      var staleW=isMarketHoursH()&&age>20?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
-      tsEl.innerHTML='Live prices as of '+(d.fetched_at_uk||'—')+staleW;
+      if(!d.n_priced||d.n_priced===0){
+        tsEl.innerHTML='<span style="color:#ffa726;font-weight:600">&#9888; Prices unavailable — market may be closed</span>';
+      } else {
+        function isMarketHoursH(){var n=new Date(),dw=n.getUTCDay();if(dw===0||dw===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
+        var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
+        var staleW=isMarketHoursH()&&age>20?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
+        tsEl.innerHTML='Live prices as of '+(d.fetched_at_uk||'—')+staleW;
+      }
     }
     // Basket cells
     if(d.baskets){
@@ -178,7 +184,7 @@
       });
     }
   }
-  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var el=document.getElementById('live-strip');if(el)el.innerHTML='<div class="live-inner" style="color:#5c6080">Live data unavailable</div>';});}
+  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var el=document.getElementById('live-strip');if(el)el.innerHTML='<div class="live-inner" style="color:#ffa726">&#9888; Live data unavailable</div>';});}
   load();setInterval(load,INTERVAL);
 })();
 </script>
