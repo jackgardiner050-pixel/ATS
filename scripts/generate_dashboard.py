@@ -1191,6 +1191,28 @@ def _position_detail_page(pos: dict, rec: Optional[dict]) -> str:
 
 # ─── Index page ───────────────────────────────────────────────────────────────
 
+def _lab_nav() -> str:
+    """Navigation bar linking to sub-dashboards (SCAI-II and Hermes)."""
+    return """
+<nav class="lab-nav">
+  <div class="container">
+    <span class="lab-nav-label">Dashboards</span>
+    <a href="." class="lab-nav-card lab-nav-active">
+      <span class="lab-nav-title">ATS</span>
+      <span class="lab-nav-sub">Main Dashboard</span>
+    </a>
+    <a href="scai/" class="lab-nav-card">
+      <span class="lab-nav-title">SCAI-II</span>
+      <span class="lab-nav-sub">Structural Monitor</span>
+    </a>
+    <a href="hermes/" class="lab-nav-card">
+      <span class="lab-nav-title">Hermes</span>
+      <span class="lab-nav-sub">Experimental Paper Lab</span>
+    </a>
+  </div>
+</nav>"""
+
+
 def build_index(
     positions: list[dict],
     trades: list[dict],
@@ -1209,10 +1231,13 @@ def build_index(
     returns_chart = _position_returns_chart(positions, prices)
     health = _health_bar(positions, regime, exposure, signal, generated_at)
 
+    lab_nav = _lab_nav()
+
     body = f"""
 {header}
 {perf}
 {health}
+{lab_nav}
 <main>
 <div class="container">
   {returns_chart}

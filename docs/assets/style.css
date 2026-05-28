@@ -60,6 +60,29 @@ body {
 .page-header .back-link { font-size: 0.85rem; color: #9fa8da; text-decoration: none; }
 .page-header .back-link:hover { color: #e8eaf6; }
 
+/* ── Lab Nav ── */
+.lab-nav {
+  background: #11131f;
+  border-bottom: 1px solid #2a2d45;
+  padding: 0.55rem 0;
+}
+.lab-nav .container { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.lab-nav-label { font-size: 0.72rem; color: #5c6080; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 0.25rem; }
+.lab-nav-card {
+  display: flex; flex-direction: column;
+  padding: 0.35rem 0.85rem;
+  border-radius: 5px;
+  border: 1px solid #2a2d45;
+  text-decoration: none;
+  background: #1a1d2e;
+  transition: border-color 0.15s, background 0.15s;
+  min-width: 110px;
+}
+.lab-nav-card:hover { border-color: #5c6bc0; background: #1e2235; }
+.lab-nav-active { border-color: #3949ab !important; background: #1e2235 !important; }
+.lab-nav-title { font-size: 0.82rem; font-weight: 700; color: #c5cae9; letter-spacing: 0.02em; }
+.lab-nav-sub   { font-size: 0.7rem; color: #6c7a9c; margin-top: 0.1rem; }
+
 /* ── Health Bar ── */
 .health-bar {
   background: #fff;
