@@ -64,6 +64,41 @@
 </style>
 </head>
 <body>
+<div id="live-strip"><div class="live-inner" style="color:#5c6080;font-size:.78rem;padding:.4rem 1.25rem">Loading live data…</div></div>
+<style>
+#live-strip{background:#080a12;border-bottom:1px solid #1a1d2e;padding:.45rem 0;font-size:.78rem;}
+.live-inner{max-width:1100px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;}
+.live-item{color:#9fa8da;}.live-item strong{color:#c5cae9;}
+.live-pill{display:inline-block;padding:.1rem .55rem;border-radius:4px;font-weight:700;font-size:.75rem;}
+.live-open{background:#1b3a37;color:#26a69a;}.live-closed{background:#2a1a1a;color:#ef5350;}
+.live-pre{background:#3a2d1a;color:#ffa726;}.live-ah{background:#3a2d1a;color:#ffa726;}
+.live-stale{color:#ffa726;font-weight:600;}.live-ts{margin-left:auto;color:#5c6080;font-size:.72rem;cursor:default;}
+</style>
+<script>
+(function(){
+  var URL='../data/hermes_live.json', INTERVAL=5*60*1000;
+  function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
+  function pill(s){var m={open:['live-open','● OPEN'],closed:['live-closed','● CLOSED'],pre_market:['live-pre','◐ PRE'],after_hours:['live-ah','◐ AH']};var p=m[s]||['live-pre',s||'?'];return'<span class="live-pill '+p[0]+'">'+p[1]+'</span>';}
+  function render(d){
+    var el=document.getElementById('live-strip');if(!el)return;
+    var b=d.baskets&&d.baskets[0]?d.baskets[0]:null;
+    var bm=b?b.benchmark:'QQQ';
+    var bm_ret=b?b.benchmark_return_pct:null;
+    var alpha=b?b.alpha_vs_benchmark_pct:null;
+    var stale=d.stale_warning?'<span class="live-stale">⚠ stale</span>':'';
+    el.innerHTML='<div class="live-inner">'+pill(d.market_status)
+      +'<span class="live-item">Portfolio <strong>'+fmt(d.portfolio_return_pct)+'</strong></span>'
+      +'<span class="live-item">Today <strong>'+fmt(d.portfolio_today_pct)+'</strong></span>'
+      +'<span class="live-item">'+bm+' <strong>'+fmt(bm_ret)+'</strong></span>'
+      +(alpha!==null&&alpha!==undefined?'<span class="live-item">Alpha <strong>'+fmt(alpha)+'</strong></span>':'')
+      +stale
+      +'<span class="live-ts" title="'+(d.delay_warning||'')+'">Updated '+d.fetched_at_uk+'</span>'
+      +'</div>';
+  }
+  function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var el=document.getElementById('live-strip');if(el)el.innerHTML='<div class="live-inner" style="color:#5c6080">Live data unavailable</div>';});}
+  load();setInterval(load,INTERVAL);
+})();
+</script>
 <nav class="lab-nav">
   <span class="lab-nav-label">Dashboards</span>
   <a href="../" class="lab-nav-card">
@@ -118,7 +153,7 @@
   </div>
   <div class="metric-card">
     <div class="mc-label">Last Updated</div>
-    <div class="mc-value" style="font-size:0.82rem">2026-05-28 12:13</div>
+    <div class="mc-value" style="font-size:0.82rem">2026-05-28 13:15</div>
     <div class="mc-sub">UTC</div>
   </div>
 </div>
@@ -175,7 +210,7 @@
 
 <h1>Hermes Paper Portfolio Summary</h1>
 <p>&gt; <em>Paper-only · No real orders · No broker connection · Hermes v1</em></p>
-<p>&gt; <em>Generated: 2026-05-28 12:13 UTC</em></p>
+<p>&gt; <em>Generated: 2026-05-28 13:15 UTC</em></p>
 
 <h2>Open Baskets (1 / 5 max)</h2>
 
@@ -239,7 +274,7 @@
 
 </div>
 <footer>
-  Generated 2026-05-28 12:13 UTC &nbsp;·&nbsp;
+  Generated 2026-05-28 13:15 UTC &nbsp;·&nbsp;
   PAPER-ONLY · NO REAL ORDERS · NO BROKER CONNECTION · ATS ISOLATED · HERMES ISOLATED ·
   NOT INVESTMENT ADVICE
 </footer>
