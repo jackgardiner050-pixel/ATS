@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-05-28T16:49:31Z",
-  "fetched_at_uk": "2026-05-28 17:49 BST",
+  "fetched_at_utc": "2026-05-28T18:20:52Z",
+  "fetched_at_uk": "2026-05-28 19:20 BST",
   "market_status": "open",
   "market_note": "US market open",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
@@ -18,43 +18,43 @@
       },
       "entry_date": "2026-05-28",
       "last_prices": {
-        "VRT": 318.45,
-        "SMCI": 42.175
+        "VRT": 316.885,
+        "SMCI": 41.74
       },
       "prev_closes": {
         "VRT": 318.17,
         "SMCI": 37.92
       },
       "day_changes": {
-        "VRT": 0.088,
-        "SMCI": 11.221
+        "VRT": -0.404,
+        "SMCI": 10.074
       },
       "returns": {
-        "VRT": -0.416,
-        "SMCI": 10.435
+        "VRT": -0.905,
+        "SMCI": 9.296
       },
-      "basket_return_pct": 5.01,
-      "basket_today_pct": 5.654,
+      "basket_return_pct": 4.196,
+      "basket_today_pct": 4.835,
       "benchmark": "QQQ",
-      "benchmark_entry_price": 735.81,
-      "benchmark_last_price": 735.81,
-      "benchmark_return_pct": 0.0,
-      "benchmark_today_pct": 1.098,
-      "alpha_vs_benchmark_pct": 5.01,
-      "spy_entry_price": 754.3799,
-      "spy_last_price": 754.3799,
+      "benchmark_entry_price": 735.63,
+      "benchmark_last_price": 735.615,
+      "benchmark_return_pct": -0.002,
+      "benchmark_today_pct": 1.071,
+      "alpha_vs_benchmark_pct": 4.197,
+      "spy_entry_price": 754.5799,
+      "spy_last_price": 754.5799,
       "spy_return_pct": 0.0,
-      "spy_today_pct": 0.577,
-      "alpha_vs_spy_pct": 5.01,
+      "spy_today_pct": 0.604,
+      "alpha_vs_spy_pct": 4.196,
       "n_priced": 2,
       "stale": false
     }
   ],
-  "portfolio_return_pct": 5.01,
-  "portfolio_today_pct": 5.654,
+  "portfolio_return_pct": 4.196,
+  "portfolio_today_pct": 4.835,
   "spy_return_pct": 0.0,
-  "spy_today_pct": 0.577,
-  "alpha_vs_spy_pct": 5.01,
+  "spy_today_pct": 0.604,
+  "alpha_vs_spy_pct": 4.196,
   "n_baskets": 1,
   "n_priced": 1,
   "source": "yfinance",
