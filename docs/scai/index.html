@@ -148,7 +148,7 @@
     // Metric cards
     var pr=d.portfolio_return_pct;
     setEl('mc-port-ret','<span class="'+colorClass(pr)+'">'+fmt(pr)+'</span>');
-    setEl('mc-port-ret-sub',pr!==null&&pr!==undefined?'equal-weight avg':'no open baskets');
+    setEl('mc-port-ret-sub',pr!==null&&pr!==undefined?'equal-weight avg':(d.n_baskets>0?'prices unavailable':'no open baskets'));
     setEl('mc-spy-ret','<span class="'+colorClass(d.spy_return_pct)+'">'+fmt(d.spy_return_pct)+'</span>');
     setEl('mc-alpha','<span class="'+colorClass(d.alpha_vs_spy_pct)+'">'+fmt(d.alpha_vs_spy_pct)+'</span>');
     setEl('mc-today','<span class="'+colorClass(d.portfolio_today_pct)+'">'+fmt(d.portfolio_today_pct)+'</span>');
@@ -156,6 +156,13 @@
     var msColors={open:'#26a69a',closed:'#ef5350',pre_market:'#ffa726',after_hours:'#ffa726'};
     setEl('mc-market','<span style="color:'+(msColors[ms]||'#c5cae9')+';font-size:0.82rem">'+(d.market_note||ms||'—')+'</span>');
     setEl('mc-updated',d.fetched_at_uk||'—');
+    var tsEl=document.getElementById('live-cards-ts');
+    if(tsEl){
+      function isMarketHoursS(){var n=new Date(),dw=n.getUTCDay();if(dw===0||dw===6)return false;var m=n.getUTCHours()*60+n.getUTCMinutes();return m>=810&&m<1200;}
+      var age=(Date.now()-new Date(d.fetched_at_utc).getTime())/60000;
+      var staleW=isMarketHoursS()&&age>20?' <span style="color:#ffa726;font-weight:600">&#9888; stale ('+Math.round(age)+'min old)</span>':'';
+      tsEl.innerHTML='Live prices as of '+(d.fetched_at_uk||'—')+staleW;
+    }
     // Basket cells
     if(d.baskets){
       d.baskets.forEach(function(b){
@@ -250,6 +257,7 @@
 </div>
 <section>
 <h2>Active Paper Baskets</h2>
+<div id="live-cards-ts" style="font-size:0.72rem;color:#6c7a9c;margin-bottom:0.35rem">Live prices loading…</div>
 <p style="font-size:0.78rem;color:#6c7a9c;margin-bottom:0.6rem">Returns updated live every 5 min · Entry data static (weekly build)</p>
 <div class="basket-card">
   <div class="basket-header">
@@ -298,6 +306,9 @@
 <div style="font-size:0.75rem;color:#484f58;margin-top:0.5rem">PAPER-ONLY · NO REAL ORDERS · NO BROKER · ATS ISOLATED</div>
 </div>
 <hr>
+<div style="background:#161b22;border:1px solid #30363d;border-radius:4px;padding:0.4rem 0.75rem;margin:0.5rem 0 1rem;font-size:0.75rem;color:#6c7a9c">
+  &#128249; Static weekly snapshot &mdash; generated 2026-05-28 14:14 UTC &middot; Live basket data and current prices are in the cards above
+</div>
 <h1>Prospective Weekly Structural Monitor</h1>
 
 <p><strong>Week of</strong>: 2026-05-28</p>
