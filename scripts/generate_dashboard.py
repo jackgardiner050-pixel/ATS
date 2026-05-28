@@ -1293,6 +1293,81 @@ def _factor_alpha_section() -> str:
 </section>"""
 
 
+def _backtest_section() -> str:
+    """Walk-forward backtest card — reads docs/data/backtest_walk_forward.json."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    bk_path = _Path(__file__).parent.parent / "docs" / "data" / "backtest_walk_forward.json"
+    data: dict = {}
+    if bk_path.exists():
+        try:
+            data = _json.loads(bk_path.read_text())
+        except Exception:
+            pass
+
+    status = data.get("status", "insufficient_data")
+    reason = data.get("status_reason", "")
+    run_date = data.get("run_date", "")
+    n_variants = data.get("n_variants", 0)
+    n_folds = data.get("n_folds", 0)
+    prereg_ver = data.get("preregistration_version", "—")
+    dist = data.get("oos_sharpe_distribution") or []
+    mean_oos = data.get("mean_oos_sharpe")
+    median_oos = data.get("median_oos_sharpe")
+    pct_pos = data.get("pct_positive_oos")
+    purge = data.get("purge_days", 5)
+    embargo = data.get("embargo_days", 3)
+    min_train = data.get("min_train_days", 30)
+    test_days = data.get("test_days", 30)
+
+    STATUS_COLORS = {
+        "ok": "#3fb950",
+        "insufficient_data": "#e3b341",
+    }
+    color = STATUS_COLORS.get(status, "#e3b341")
+    status_label = "OK" if status == "ok" else "Accumulating"
+
+    def _fmt(v, digits=3):
+        return f"{v:.{digits}f}" if v is not None else "—"
+
+    if dist:
+        dist_html = f"""<table style="font-size:0.8rem;margin-top:0.5rem">
+      <thead><tr>
+        <th style="text-align:left">Folds</th>
+        <th style="text-align:right">Mean OOS Sharpe</th>
+        <th style="text-align:right">Median</th>
+        <th style="text-align:right">% Positive Folds</th>
+      </tr></thead>
+      <tbody><tr>
+        <td>{len(dist)}</td>
+        <td style="text-align:right;{'color:#3fb950' if mean_oos and mean_oos > 0 else 'color:#f85149'}">{_fmt(mean_oos)}</td>
+        <td style="text-align:right">{_fmt(median_oos)}</td>
+        <td style="text-align:right">{_fmt(pct_pos, 1)}%</td>
+      </tr></tbody>
+    </table>"""
+    else:
+        dist_html = f'<p style="color:#8b949e;font-size:0.8rem;margin-top:0.5rem">{reason or "No OOS data yet — accumulating closed trades."}</p>'
+
+    ts_str = f" · Run {run_date}" if run_date else ""
+
+    return f"""<section>
+<h2 class="section-title">Walk-Forward Validation</h2>
+<div class="card">
+  <p style="font-size:0.78rem;color:#8b949e;margin-bottom:0.75rem">
+    Expanding-window walk-forward with purge={purge}d / embargo={embargo}d gaps.
+    Parameters locked from preregistration v{prereg_ver} before OOS scoring.
+    Output is a distribution of OOS Sharpes, not a single number.
+    {n_variants} variants · {n_folds} folds · min_train={min_train}d · test={test_days}d{ts_str}.
+  </p>
+  <div style="margin-bottom:0.5rem">
+    <span style="color:{color};font-weight:600;font-size:0.85rem">{status_label}</span>
+  </div>
+  {dist_html}
+</div>
+</section>"""
+
+
 # ─── Index page ───────────────────────────────────────────────────────────────
 
 def _systems_overview() -> str:
@@ -1694,6 +1769,7 @@ def build_index(
   {_open_positions_table(positions)}
   {systems}
   {_factor_alpha_section()}
+  {_backtest_section()}
   {_regime_section(regime)}
   {_concentration_section(exposure)}
   {_signal_section(signal)}

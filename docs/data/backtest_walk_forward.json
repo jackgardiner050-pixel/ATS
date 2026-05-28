@@ -1,0 +1,17 @@
+{
+  "run_date": "2026-05-28",
+  "preregistration_version": "v1",
+  "n_variants": 10,
+  "n_folds": 0,
+  "purge_days": 5,
+  "embargo_days": 3,
+  "min_train_days": 30,
+  "test_days": 30,
+  "oos_sharpe_distribution": [],
+  "mean_oos_sharpe": null,
+  "median_oos_sharpe": null,
+  "pct_positive_oos": null,
+  "status": "insufficient_data",
+  "status_reason": "No closed positions with realised returns found. Walk-forward requires completed trades to compute OOS Sharpe ratios.",
+  "folds": []
+}

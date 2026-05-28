@@ -61,7 +61,7 @@
   <span class="health-pill yellow" title="49.0% confidence"><span class="dot"></span>Regime: Risk On Growth</span>
   <span class="health-pill yellow"><span class="dot"></span>2 Watches</span>
   <span class="health-pill yellow"><span class="dot"></span>Signal Decay</span>
-<span class="health-last-run">Last run: 2026-05-28 21:04 UTC</span>
+<span class="health-last-run">Last run: 2026-05-28 21:15 UTC</span>
   </div>
 </div>
 
@@ -433,6 +433,21 @@
           <td style="font-size:0.72rem;color:#8b949e">rf=0</td>
         </tr></tbody>
   </table>
+</div>
+</section>
+  <section>
+<h2 class="section-title">Walk-Forward Validation</h2>
+<div class="card">
+  <p style="font-size:0.78rem;color:#8b949e;margin-bottom:0.75rem">
+    Expanding-window walk-forward with purge=5d / embargo=3d gaps.
+    Parameters locked from preregistration vv1 before OOS scoring.
+    Output is a distribution of OOS Sharpes, not a single number.
+    10 variants · 0 folds · min_train=30d · test=30d · Run 2026-05-28.
+  </p>
+  <div style="margin-bottom:0.5rem">
+    <span style="color:#e3b341;font-weight:600;font-size:0.85rem">Accumulating</span>
+  </div>
+  <p style="color:#8b949e;font-size:0.8rem;margin-top:0.5rem">No closed positions with realised returns found. Walk-forward requires completed trades to compute OOS Sharpe ratios.</p>
 </div>
 </section>
   
@@ -834,7 +849,7 @@
 <footer>
   <div class="container">
     ATS Research · Paper portfolio only · Diagnostic read-only layer ·
-    Generated 2026-05-28 21:04 UTC · Not investment advice
+    Generated 2026-05-28 21:15 UTC · Not investment advice
   </div>
 </footer><script>
 (function(){
