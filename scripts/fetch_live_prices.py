@@ -734,6 +734,15 @@ def main() -> int:
     }
     for fname, data in files.items():
         out = _DOCS_DATA / fname
+        new_priced = data.get("n_priced", 0) or 0
+        if new_priced == 0 and out.exists():
+            try:
+                existing = json.loads(out.read_text())
+                if (existing.get("n_priced") or 0) > 0:
+                    print(f"  Skipped {fname} (new n_priced=0, keeping last good data)", file=sys.stderr)
+                    continue
+            except Exception:
+                pass
         out.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
         print(f"  Wrote {out}", file=sys.stderr)
 
