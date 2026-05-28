@@ -294,7 +294,13 @@ def _build_ats_json(positions: list[dict], prices: dict[str, dict], now: datetim
     }
 
 
-def _build_basket_json(basket: dict, prices: dict[str, dict], now: datetime, sys_name: str) -> dict:
+def _build_basket_json(
+    basket: dict,
+    prices: dict[str, dict],
+    now: datetime,
+    sys_name: str,
+    spy_entry_price: "float | None" = None,
+) -> dict:
     tickers: list[str] = basket.get("tickers", [])
     weights: dict[str, float] = basket.get("weights", {})
     entry_prices: dict[str, float] = {k: float(v) for k, v in basket.get("entry_prices", {}).items()}
@@ -344,6 +350,26 @@ def _build_basket_json(basket: dict, prices: dict[str, dict], now: datetime, sys
     bm_today = round((bm_lp - bm_pc) / bm_pc * 100, 3) if bm_lp and bm_pc and bm_pc > 0 else None
     alpha = round(basket_return - bm_return, 3) if n_priced == len(tickers) and bm_return is not None else None
 
+    # SPY comparison since entry
+    spy_prices = prices.get("SPY", {})
+    spy_lp = spy_prices.get("last_price")
+    spy_pc = spy_prices.get("prev_close")
+    spy_ret = (
+        round((spy_lp - spy_entry_price) / spy_entry_price * 100, 3)
+        if spy_lp and spy_entry_price and spy_entry_price > 0
+        else None
+    )
+    spy_today_v = (
+        round((spy_lp - spy_pc) / spy_pc * 100, 3)
+        if spy_lp and spy_pc and spy_pc > 0
+        else None
+    )
+    alpha_spy = (
+        round(basket_return - spy_ret, 3)
+        if n_priced == len(tickers) and spy_ret is not None
+        else None
+    )
+
     return {
         "paper_id": basket.get("paper_id", ""),
         "basket_name": basket.get("basket_name", ""),
@@ -362,6 +388,11 @@ def _build_basket_json(basket: dict, prices: dict[str, dict], now: datetime, sys
         "benchmark_return_pct": bm_return,
         "benchmark_today_pct": bm_today,
         "alpha_vs_benchmark_pct": alpha,
+        "spy_entry_price": spy_entry_price,
+        "spy_last_price": spy_lp,
+        "spy_return_pct": spy_ret,
+        "spy_today_pct": spy_today_v,
+        "alpha_vs_spy_pct": alpha_spy,
         "n_priced": n_priced,
         "stale": n_priced < len(tickers),
     }
@@ -374,10 +405,40 @@ def _build_lab_json(
     sys_name: str,
 ) -> dict:
     status, note = _market_status(now)
-    baskets = [_build_basket_json(b, prices, now, sys_name) for b in positions]
+
+    # Pre-compute SPY entry prices per unique basket entry date (one API call per date)
+    unique_dates: set[str] = set()
+    for b in positions:
+        ed = b.get("entry_price_fill_date") or b.get("entry_date") or b.get("created_at", "")[:10]
+        if ed:
+            unique_dates.add(ed)
+    spy_by_date: dict[str, "float | None"] = {ed: _hist_entry_price("SPY", ed) for ed in unique_dates}
+
+    baskets = []
+    for b in positions:
+        ed = b.get("entry_price_fill_date") or b.get("entry_date") or b.get("created_at", "")[:10]
+        spy_ep = spy_by_date.get(ed) if ed else None
+        baskets.append(_build_basket_json(b, prices, now, sys_name, spy_entry_price=spy_ep))
 
     returns = [b["basket_return_pct"] for b in baskets if b["basket_return_pct"] is not None]
     todays = [b["basket_today_pct"] for b in baskets if b["basket_today_pct"] is not None]
+    spy_rets = [b["spy_return_pct"] for b in baskets if b.get("spy_return_pct") is not None]
+
+    spy_prices = prices.get("SPY", {})
+    spy_lp = spy_prices.get("last_price")
+    spy_pc = spy_prices.get("prev_close")
+    spy_today_pct = (
+        round((spy_lp - spy_pc) / spy_pc * 100, 3)
+        if spy_lp and spy_pc and spy_pc > 0
+        else None
+    )
+    spy_return_avg = round(sum(spy_rets) / len(spy_rets), 3) if spy_rets else None
+    port_ret = round(sum(returns) / len(returns), 3) if returns else None
+    alpha_spy = (
+        round(port_ret - spy_return_avg, 3)
+        if port_ret is not None and spy_return_avg is not None
+        else None
+    )
 
     return {
         "fetched_at_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -386,8 +447,11 @@ def _build_lab_json(
         "market_note": note,
         "delay_warning": "Prices may be 15-min delayed (yfinance)",
         "baskets": baskets,
-        "portfolio_return_pct": round(sum(returns) / len(returns), 3) if returns else None,
+        "portfolio_return_pct": port_ret,
         "portfolio_today_pct": round(sum(todays) / len(todays), 3) if todays else None,
+        "spy_return_pct": spy_return_avg,
+        "spy_today_pct": spy_today_pct,
+        "alpha_vs_spy_pct": alpha_spy,
         "n_baskets": len(positions),
         "n_priced": len(returns),
         "source": "yfinance",
@@ -418,11 +482,15 @@ def _build_summary_json(
             "scai": {
                 "portfolio_return_pct": scai_j.get("portfolio_return_pct"),
                 "portfolio_today_pct": scai_j.get("portfolio_today_pct"),
+                "spy_return_pct": scai_j.get("spy_return_pct"),
+                "alpha_vs_spy_pct": scai_j.get("alpha_vs_spy_pct"),
                 "n_baskets": scai_j.get("n_baskets"),
             },
             "hermes": {
                 "portfolio_return_pct": hermes_j.get("portfolio_return_pct"),
                 "portfolio_today_pct": hermes_j.get("portfolio_today_pct"),
+                "spy_return_pct": hermes_j.get("spy_return_pct"),
+                "alpha_vs_spy_pct": hermes_j.get("alpha_vs_spy_pct"),
                 "n_baskets": hermes_j.get("n_baskets"),
             },
         },
