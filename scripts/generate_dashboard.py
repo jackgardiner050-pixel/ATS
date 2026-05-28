@@ -1195,6 +1195,104 @@ def _position_detail_page(pos: dict, rec: Optional[dict]) -> str:
     return _page_wrap(f"{ticker} — ATS Research", body, depth=1)
 
 
+# ─── Factor alpha section ─────────────────────────────────────────────────────
+
+def _factor_alpha_section() -> str:
+    """Factor-adjusted alpha card — reads docs/data/factor_alpha.json (pre-computed)."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    fa_path = _Path(__file__).parent.parent / "docs" / "data" / "factor_alpha.json"
+    data: dict = {}
+    if fa_path.exists():
+        try:
+            data = _json.loads(fa_path.read_text())
+        except Exception:
+            pass
+
+    computed_at = (data.get("computed_at") or "")[:16].replace("T", " ")
+    systems = data.get("systems", {})
+
+    STATUS_COLORS = {
+        "insufficient": "#e3b341",
+        "preliminary":  "#58a6ff",
+        "ok":           "#3fb950",
+    }
+    STATUS_LABELS = {
+        "insufficient": "Accumulating (< 20 obs)",
+        "preliminary":  "Preliminary (20–59 obs)",
+        "ok":           "OK (≥ 60 obs)",
+    }
+
+    def _fmt_alpha(sys_data: dict) -> str:
+        alpha = sys_data.get("alpha_pct_per_day")
+        ci_lo = sys_data.get("alpha_ci_lo")
+        ci_hi = sys_data.get("alpha_ci_hi")
+        status = sys_data.get("status", "insufficient")
+        if alpha is None or status == "insufficient":
+            return "—"
+        color = "#3fb950" if alpha > 0 else "#f85149"
+        # Annualise for readability: alpha_annual = alpha * 252
+        ann = alpha * 252
+        sign = "+" if ann >= 0 else ""
+        ci_str = ""
+        if ci_lo is not None and ci_hi is not None:
+            ci_lo_ann = ci_lo * 252
+            ci_hi_ann = ci_hi * 252
+            ci_str = f' <span style="color:#8b949e;font-size:0.72rem">95% CI [{ci_lo_ann:+.1f}%, {ci_hi_ann:+.1f}%]</span>'
+        return f'<span style="color:{color};font-weight:600">{sign}{ann:.1f}% ann.</span>{ci_str}'
+
+    def _fmt_loadings(sys_data: dict) -> str:
+        loadings = sys_data.get("factor_loadings") or {}
+        if not loadings:
+            return "—"
+        parts = [f"{k}: {v:+.2f}" for k, v in list(loadings.items())[:3]]
+        return ", ".join(parts)
+
+    rows = ""
+    display_order = [("ats", "ATS"), ("scai", "SCAI-II"), ("hermes", "Hermes v1"), ("hermes_v2", "Hermes v2")]
+    for sys_id, sys_label in display_order:
+        sd = systems.get(sys_id, {})
+        status = sd.get("status", "insufficient")
+        n_obs = sd.get("n_obs", 0) or 0
+        color = STATUS_COLORS.get(status, "#e3b341")
+        label = STATUS_LABELS.get(status, status)
+        rf_str = "^IRX" if sd.get("rf_used") else "rf=0"
+        rows += f"""<tr>
+          <td style="font-weight:600">{sys_label}</td>
+          <td><span style="color:{color};font-size:0.75rem">{label}</span></td>
+          <td style="text-align:right">{n_obs}</td>
+          <td>{_fmt_alpha(sd)}</td>
+          <td style="font-size:0.72rem;color:#8b949e">{_fmt_loadings(sd)}</td>
+          <td style="font-size:0.72rem;color:#8b949e">{rf_str}</td>
+        </tr>"""
+
+    note = data.get("note", "")
+    ts_str = f" · Computed {computed_at} UTC" if computed_at else ""
+
+    return f"""<section>
+<h2 class="section-title">Factor-Adjusted Alpha</h2>
+<div class="card">
+  <p style="font-size:0.78rem;color:#8b949e;margin-bottom:0.75rem">
+    OLS intercept from regression on SPY + SMH + MTUM + IWM + QUAL with Newey-West HAC 95% CI.
+    Replaces SPY-relative as the primary metric once any system reaches "ok" status (≥ 60 daily obs).
+    Dollar-weighted portfolio returns (start-of-day MV weights, not 1/N){ts_str}.
+  </p>
+  <table style="font-size:0.8rem">
+    <thead><tr>
+      <th style="text-align:left">System</th>
+      <th style="text-align:left">Status</th>
+      <th style="text-align:right">Obs</th>
+      <th style="text-align:left">Factor Alpha (annualised)</th>
+      <th style="text-align:left">Top loadings</th>
+      <th style="text-align:left">rf</th>
+    </tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+</div>
+</section>"""
+
+
 # ─── Index page ───────────────────────────────────────────────────────────────
 
 def _systems_overview() -> str:
@@ -1595,6 +1693,7 @@ def build_index(
   {_portfolio_overview(positions, trades)}
   {_open_positions_table(positions)}
   {systems}
+  {_factor_alpha_section()}
   {_regime_section(regime)}
   {_concentration_section(exposure)}
   {_signal_section(signal)}

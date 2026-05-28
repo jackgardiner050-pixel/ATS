@@ -1,0 +1,62 @@
+{
+  "computed_at": "2026-05-28T00:00:00Z",
+  "note": "Factor-adjusted alpha (SPY, SMH, MTUM, IWM, QUAL regression with Newey-West HAC SE). Status: insufficient < 20 daily obs, preliminary 20-59, ok >= 60. Risk-free rate: rf=0 until ok, then ^IRX.",
+  "systems": {
+    "ats": {
+      "status": "insufficient",
+      "n_obs": 0,
+      "alpha_pct_per_day": null,
+      "alpha_ci_lo": null,
+      "alpha_ci_hi": null,
+      "alpha_se": null,
+      "alpha_t_stat": null,
+      "nw_bandwidth": 0,
+      "rf_used": false,
+      "rf_rate_annual_pct": null,
+      "ci_includes_zero": true,
+      "factor_loadings": {}
+    },
+    "scai": {
+      "status": "insufficient",
+      "n_obs": 0,
+      "alpha_pct_per_day": null,
+      "alpha_ci_lo": null,
+      "alpha_ci_hi": null,
+      "alpha_se": null,
+      "alpha_t_stat": null,
+      "nw_bandwidth": 0,
+      "rf_used": false,
+      "rf_rate_annual_pct": null,
+      "ci_includes_zero": true,
+      "factor_loadings": {}
+    },
+    "hermes": {
+      "status": "insufficient",
+      "n_obs": 0,
+      "alpha_pct_per_day": null,
+      "alpha_ci_lo": null,
+      "alpha_ci_hi": null,
+      "alpha_se": null,
+      "alpha_t_stat": null,
+      "nw_bandwidth": 0,
+      "rf_used": false,
+      "rf_rate_annual_pct": null,
+      "ci_includes_zero": true,
+      "factor_loadings": {}
+    },
+    "hermes_v2": {
+      "status": "insufficient",
+      "n_obs": 0,
+      "alpha_pct_per_day": null,
+      "alpha_ci_lo": null,
+      "alpha_ci_hi": null,
+      "alpha_se": null,
+      "alpha_t_stat": null,
+      "nw_bandwidth": 0,
+      "rf_used": false,
+      "rf_rate_annual_pct": null,
+      "ci_includes_zero": true,
+      "factor_loadings": {}
+    }
+  }
+}
