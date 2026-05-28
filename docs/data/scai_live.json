@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-05-28T16:34:25Z",
-  "fetched_at_uk": "2026-05-28 17:34 BST",
+  "fetched_at_utc": "2026-05-28T16:49:31Z",
+  "fetched_at_uk": "2026-05-28 17:49 BST",
   "market_status": "open",
   "market_note": "US market open",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
@@ -18,43 +18,43 @@
       },
       "entry_date": "2026-05-28",
       "last_prices": {
-        "VRT": 319.52,
-        "SMCI": 41.865
+        "VRT": 318.45,
+        "SMCI": 42.175
       },
       "prev_closes": {
         "VRT": 318.17,
         "SMCI": 37.92
       },
       "day_changes": {
-        "VRT": 0.424,
-        "SMCI": 10.403
+        "VRT": 0.088,
+        "SMCI": 11.221
       },
       "returns": {
-        "VRT": -0.081,
-        "SMCI": 9.623
+        "VRT": -0.416,
+        "SMCI": 10.435
       },
-      "basket_return_pct": 4.771,
-      "basket_today_pct": 5.413,
+      "basket_return_pct": 5.01,
+      "basket_today_pct": 5.654,
       "benchmark": "QQQ",
-      "benchmark_entry_price": 735.2115,
-      "benchmark_last_price": 735.2115,
+      "benchmark_entry_price": 735.81,
+      "benchmark_last_price": 735.81,
       "benchmark_return_pct": 0.0,
-      "benchmark_today_pct": 1.016,
-      "alpha_vs_benchmark_pct": 4.771,
-      "spy_entry_price": 754.26,
-      "spy_last_price": 754.26,
+      "benchmark_today_pct": 1.098,
+      "alpha_vs_benchmark_pct": 5.01,
+      "spy_entry_price": 754.3799,
+      "spy_last_price": 754.3799,
       "spy_return_pct": 0.0,
-      "spy_today_pct": 0.561,
-      "alpha_vs_spy_pct": 4.771,
+      "spy_today_pct": 0.577,
+      "alpha_vs_spy_pct": 5.01,
       "n_priced": 2,
       "stale": false
     }
   ],
-  "portfolio_return_pct": 4.771,
-  "portfolio_today_pct": 5.413,
+  "portfolio_return_pct": 5.01,
+  "portfolio_today_pct": 5.654,
   "spy_return_pct": 0.0,
-  "spy_today_pct": 0.561,
-  "alpha_vs_spy_pct": 4.771,
+  "spy_today_pct": 0.577,
+  "alpha_vs_spy_pct": 5.01,
   "n_baskets": 1,
   "n_priced": 1,
   "source": "yfinance",
