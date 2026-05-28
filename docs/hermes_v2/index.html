@@ -53,6 +53,9 @@ footer{padding:.75rem 0;text-align:center;font-size:.7rem;color:var(--muted);}
 </style>
 </head>
 <body>
+<div id="live-strip"><div class="live-inner" style="color:#5c6080;font-size:.78rem;padding:.4rem 1.25rem">Loading live data…</div></div>
+<style>#live-strip{background:#080a12;border-bottom:1px solid #1a1d2e;padding:.45rem 0;font-size:.78rem;}.live-inner{max-width:1100px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;gap:1.1rem;flex-wrap:wrap;}.live-item{color:#9fa8da;}.live-item strong{color:#c5cae9;}.live-pill{display:inline-block;padding:.1rem .55rem;border-radius:4px;font-weight:700;font-size:.75rem;}.live-open{background:#1b3a37;color:#26a69a;}.live-closed{background:#2a1a1a;color:#ef5350;}.live-pre{background:#3a2d1a;color:#ffa726;}.live-ah{background:#3a2d1a;color:#ffa726;}.live-stale{color:#ffa726;font-weight:600;}.live-ts{margin-left:auto;color:#5c6080;font-size:.72rem;cursor:default;}</style>
+<script>(function(){var URL='../data/hermes_live.json',INTERVAL=5*60*1000;function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}function pill(s){var m={open:['live-open','● OPEN'],closed:['live-closed','● CLOSED'],pre_market:['live-pre','◐ PRE'],after_hours:['live-ah','◐ AH']};var p=m[s]||['live-pre',s||'?'];return'<span class="live-pill '+p[0]+'">'+p[1]+'</span>';}function render(d){var el=document.getElementById('live-strip');if(!el)return;var b=d.baskets&&d.baskets[0]?d.baskets[0]:null;var bm=b?b.benchmark:'QQQ';var bm_ret=b?b.benchmark_return_pct:null;var alpha=b?b.alpha_vs_benchmark_pct:null;var stale=d.stale_warning?'<span class="live-stale">⚠ stale</span>':'';el.innerHTML='<div class="live-inner">'+pill(d.market_status)+'<span class="live-item">Portfolio <strong>'+fmt(d.portfolio_return_pct)+'</strong></span>'+'<span class="live-item">Today <strong>'+fmt(d.portfolio_today_pct)+'</strong></span>'+'<span class="live-item">'+bm+' <strong>'+fmt(bm_ret)+'</strong></span>'+(alpha!==null&&alpha!==undefined?'<span class="live-item">Alpha <strong>'+fmt(alpha)+'</strong></span>':'')+stale+'<span class="live-ts" title="'+(d.delay_warning||'')+'">Updated '+d.fetched_at_uk+'</span>'+'</div>';}function load(){fetch(URL+'?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject(r.status);}).then(render).catch(function(){var el=document.getElementById('live-strip');if(el)el.innerHTML='<div class="live-inner" style="color:#5c6080">Live data unavailable</div>';});}load();setInterval(load,INTERVAL);})();</script>
 <nav class="lab-nav">
   <div class="container">
     <span class="lab-nav-label">Labs</span>
@@ -77,14 +80,14 @@ footer{padding:.75rem 0;text-align:center;font-size:.7rem;color:var(--muted);}
 <div class="container">
   <div class="header">
     <h1>Hermes v2 Learning Lab</h1>
-    <div class="sub">Week of 2026-05-28 · Generated 2026-05-28 12:55 UTC</div>
+    <div class="sub">Week of 2026-05-28 · Generated 2026-05-28 13:15 UTC</div>
   </div>
   <div class='obs-banner'>⚗ Hermes v2 Learning Lab — read-only · No rule changes applied · Proposals are observations only</div>
   
 <div class="cards">
   <div class="card amber"><div class="val">12</div><div class="lbl">Convergent blocked</div></div>
   <div class="card amber"><div class="val">1</div><div class="lbl">Near-misses</div></div>
-  <div class="card green"><div class="val">5</div><div class="lbl">Draft proposals</div></div>
+  <div class="card green"><div class="val">10</div><div class="lbl">Draft proposals</div></div>
   <div class="card"><div class="val">6</div><div class="lbl">Pass @ threshold 2.0</div></div>
 </div>
   
@@ -103,7 +106,7 @@ footer{padding:.75rem 0;text-align:center;font-size:.7rem;color:var(--muted);}
   
 <div class="section">
   <h2>Simulation — hypothetical param changes</h2>
-  <table><thead><tr><th>Scenario</th><th>ID</th><th>Threshold</th><th>Passing</th><th>Clusters</th></tr></thead><tbody><tr><td>Lower selection threshold from 2.5 → 2.0</td><td style='color:var(--muted);font-size:.75rem'>lower_threshold_2.0</td><td>2.0</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr><tr><td>Lower selection threshold from 2.5 → 1.5</td><td style='color:var(--muted);font-size:.75rem'>lower_threshold_1.5</td><td>1.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr><tr><td>Weight persistence 50% higher (reward consistent trends)</td><td style='color:var(--muted);font-size:.75rem'>boost_persistence</td><td>2.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr><tr><td>Halve saturation penalty (allow more crowded narratives)</td><td style='color:var(--muted);font-size:.75rem'>reduce_saturation_penalty</td><td>2.5</td><td><span class="badge badge-green">7</span></td><td style='max-width:280px;font-size:.75rem'>semicon_equipment, power_equip, domestic_semis, semis, test_equipment</td></tr><tr><td>Increase RS weight 25% (prioritise price action)</td><td style='color:var(--muted);font-size:.75rem'>rs_heavy</td><td>2.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, semicon_equipment, domestic_semis, power_equip</td></tr></tbody></table>
+  <table><thead><tr><th>Scenario</th><th>ID</th><th>Threshold</th><th>Passing</th><th>Clusters</th></tr></thead><tbody><tr><td>Lower selection threshold from 2.5 → 2.0</td><td style='color:var(--muted);font-size:.75rem'>lower_threshold_2.0</td><td>2.0</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, domestic_semis, semicon_equipment, power_equip</td></tr><tr><td>Lower selection threshold from 2.5 → 1.5</td><td style='color:var(--muted);font-size:.75rem'>lower_threshold_1.5</td><td>1.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, domestic_semis, semicon_equipment, power_equip</td></tr><tr><td>Weight persistence 50% higher (reward consistent trends)</td><td style='color:var(--muted);font-size:.75rem'>boost_persistence</td><td>2.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, domestic_semis, semicon_equipment, power_equip</td></tr><tr><td>Halve saturation penalty (allow more crowded narratives)</td><td style='color:var(--muted);font-size:.75rem'>reduce_saturation_penalty</td><td>2.5</td><td><span class="badge badge-green">7</span></td><td style='max-width:280px;font-size:.75rem'>domestic_semis, power_equip, test_equipment, semicon_equipment, semis</td></tr><tr><td>Increase RS weight 25% (prioritise price action)</td><td style='color:var(--muted);font-size:.75rem'>rs_heavy</td><td>2.5</td><td><span class="badge badge-green">6</span></td><td style='max-width:280px;font-size:.75rem'>test_equipment, domestic_semis, semicon_equipment, power_equip</td></tr></tbody></table>
 </div>
   
 <div class="section">
@@ -113,6 +116,16 @@ footer{padding:.75rem 0;text-align:center;font-size:.7rem;color:var(--muted);}
   <div class="title">Consider: Lower selection threshold from 2.5 → 2.0</div>
   <div class="rationale">Under scenario 'lower_threshold_2.0', 6 currently-blocked cluster(s) would pass (threshold=2.0). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
   <div class="risk">⚠ Lowering threshold allows lower-conviction candidates. Monitor: increased false positives, more blocked-then-dropped positions.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Lower selection threshold from 2.5 → 1.5</div>
+  <div class="rationale">Under scenario 'lower_threshold_1.5', 6 currently-blocked cluster(s) would pass (threshold=1.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Aggressive threshold reduction. High risk of low-quality selections. Only appropriate if RS quality improves across the board.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Halve saturation penalty (allow more crowded narratives)</div>
+  <div class="rationale">Under scenario 'reduce_saturation_penalty', 7 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, semis, test_equipment.</div>
+  <div class="risk">⚠ Allows crowded narratives through. Increases narrative-saturation risk. Review if crowded trades underperform.</div>
 </div>
 <div class="proposal-card">
   <div class="title">Consider: Weight persistence 50% higher (reward consistent trends)</div>
@@ -125,9 +138,24 @@ footer{padding:.75rem 0;text-align:center;font-size:.7rem;color:var(--muted);}
   <div class="risk">⚠ Allows crowded narratives through. Increases narrative-saturation risk. Review if crowded trades underperform.</div>
 </div>
 <div class="proposal-card">
+  <div class="title">Consider: Weight persistence 50% higher (reward consistent trends)</div>
+  <div class="rationale">Under scenario 'boost_persistence', 6 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Rewards sustained trends but may over-weight momentum at regime turns. Review if market rotates quickly.</div>
+</div>
+<div class="proposal-card">
   <div class="title">Consider: Increase RS weight 25% (prioritise price action)</div>
   <div class="rationale">Under scenario 'rs_heavy', 6 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
   <div class="risk">⚠ Increases weight on price-only signal. May select tickers with strong RS but weak fundamentals or narrative.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Increase RS weight 25% (prioritise price action)</div>
+  <div class="rationale">Under scenario 'rs_heavy', 6 currently-blocked cluster(s) would pass (threshold=2.5). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Increases weight on price-only signal. May select tickers with strong RS but weak fundamentals or narrative.</div>
+</div>
+<div class="proposal-card">
+  <div class="title">Consider: Lower selection threshold from 2.5 → 2.0</div>
+  <div class="rationale">Under scenario 'lower_threshold_2.0', 6 currently-blocked cluster(s) would pass (threshold=2.0). Near-misses that would be unlocked: semicon_equipment. These candidates are domestic_semis, power_equip, semicon_equipment, test_equipment.</div>
+  <div class="risk">⚠ Lowering threshold allows lower-conviction candidates. Monitor: increased false positives, more blocked-then-dropped positions.</div>
 </div>
 <div class="proposal-card">
   <div class="title">Consider: Lower selection threshold from 2.5 → 1.5</div>
