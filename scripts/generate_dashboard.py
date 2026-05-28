@@ -1279,10 +1279,36 @@ def _systems_overview() -> str:
 
     rows.append(
         "<tr>"
-        + _td("Hermes", href="hermes/")
+        + _td("Hermes v1", href="hermes/")
         + _td(f'Experimental paper lab · breadth {hermes_breadth}')
         + _td("Observation v1", color="#d29922")
         + _td(hermes_open) + _td(hermes_ret) + _td(hermes_baskets) + _td(hermes_updated)
+        + "</tr>"
+    )
+
+    # Hermes v2 Learning Lab row
+    v2_rep_dir = _home / "trading" / "hermes_learning_lab" / "data" / "reports"
+    v2_open, v2_proposals, v2_near_miss, v2_updated = "—", "—", "—", "—"
+    try:
+        v2_files = sorted(v2_rep_dir.glob("*.json")) if v2_rep_dir.exists() else []
+        # read latest comparison
+        v2_comp_dir = _home / "trading" / "hermes_learning_lab" / "data" / "comparisons"
+        comp_files = sorted(v2_comp_dir.glob("comparison_*.json")) if v2_comp_dir.exists() else []
+        if comp_files:
+            cdata = _json.loads(comp_files[-1].read_text())
+            v2_updated = comp_files[-1].stem.replace("comparison_", "")
+            v2_open = str(cdata.get("summary", {}).get("n_convergent_selected", "—"))
+            v2_near_miss = str(cdata.get("summary", {}).get("n_convergent_blocked", "—")) + " conv. blocked"
+        prop_dir = _home / "trading" / "hermes_learning_lab" / "data" / "proposals"
+        v2_proposals = str(len(list(prop_dir.glob("p2_*.json")))) if prop_dir.exists() else "—"
+    except Exception:
+        pass
+    rows.append(
+        "<tr>"
+        + _td("Hermes v2", href="hermes_v2/")
+        + _td(f'Learning lab · {v2_proposals} proposals · {v2_near_miss}')
+        + _td("Learning", color="#58a6ff")
+        + _td(v2_open) + _td("—") + _td("Read-only") + _td(v2_updated)
         + "</tr>"
     )
 
@@ -1340,8 +1366,12 @@ def _lab_nav() -> str:
       <span class="lab-nav-sub">Structural Monitor</span>
     </a>
     <a href="hermes/" class="lab-nav-card">
-      <span class="lab-nav-title">Hermes</span>
+      <span class="lab-nav-title">Hermes v1</span>
       <span class="lab-nav-sub">Experimental Paper Lab</span>
+    </a>
+    <a href="hermes_v2/" class="lab-nav-card">
+      <span class="lab-nav-title">Hermes v2</span>
+      <span class="lab-nav-sub">Learning Lab</span>
     </a>
   </div>
 </nav>"""
