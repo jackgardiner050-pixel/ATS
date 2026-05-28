@@ -149,7 +149,10 @@
     var pr=d.portfolio_return_pct;
     setEl('mc-port-ret','<span class="'+colorClass(pr)+'">'+fmt(pr)+'</span>');
     setEl('mc-port-ret-sub',pr!==null&&pr!==undefined?'equal-weight avg':(d.n_baskets>0?'prices unavailable':'no open baskets'));
-    setEl('mc-spy-ret','<span class="'+colorClass(d.spy_return_pct)+'">'+fmt(d.spy_return_pct)+'</span>');
+    var spyLabel=d.spy_return_pct!==null&&d.spy_return_pct!==undefined?fmt(d.spy_return_pct):(d.spy_baseline_status==='unavailable'?'<span style="color:#6c7a9c;font-size:0.78rem">baseline unavailable</span>':'—');
+    setEl('mc-spy-ret','<span class="'+colorClass(d.spy_return_pct)+'">'+spyLabel+'</span>');
+    var spyNote=d.spy_baseline_status==='same_day_estimated'?'estimated (prev close)':'since earliest entry';
+    setEl('mc-spy-ret-sub',spyNote);
     setEl('mc-alpha','<span class="'+colorClass(d.alpha_vs_spy_pct)+'">'+fmt(d.alpha_vs_spy_pct)+'</span>');
     setEl('mc-today','<span class="'+colorClass(d.portfolio_today_pct)+'">'+fmt(d.portfolio_today_pct)+'</span>');
     var ms=d.market_status||'';
@@ -199,6 +202,10 @@
     <span class="lab-nav-title">Hermes v2</span>
     <span class="lab-nav-sub">Critique &amp; Learning</span>
   </a>
+  <a href="../hermes_v3/" class="lab-nav-card">
+    <span class="lab-nav-title">Hermes v3</span>
+    <span class="lab-nav-sub">Shadow Lab</span>
+  </a>
 </nav>
 <div style="padding: 1.5rem 0 0">
 <div class="banner">
@@ -217,7 +224,7 @@
   <div class="metric-card">
     <div class="mc-label">SPY Return</div>
     <div class="mc-value" id="mc-spy-ret"><span class="mc-na">—</span></div>
-    <div class="mc-sub">since earliest entry</div>
+    <div class="mc-sub" id="mc-spy-ret-sub">since earliest entry</div>
   </div>
   <div class="metric-card">
     <div class="mc-label">Alpha vs SPY</div>

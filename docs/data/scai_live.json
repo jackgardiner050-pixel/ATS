@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-05-28T18:20:52Z",
-  "fetched_at_uk": "2026-05-28 19:20 BST",
+  "fetched_at_utc": "2026-05-28T18:35:57Z",
+  "fetched_at_uk": "2026-05-28 19:35 BST",
   "market_status": "open",
   "market_note": "US market open",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
@@ -18,46 +18,46 @@
       },
       "entry_date": "2026-05-28",
       "last_prices": {
-        "VRT": 316.885,
-        "SMCI": 41.74
+        "VRT": null,
+        "SMCI": null
       },
       "prev_closes": {
-        "VRT": 318.17,
-        "SMCI": 37.92
+        "VRT": null,
+        "SMCI": null
       },
       "day_changes": {
-        "VRT": -0.404,
-        "SMCI": 10.074
+        "VRT": null,
+        "SMCI": null
       },
       "returns": {
-        "VRT": -0.905,
-        "SMCI": 9.296
+        "VRT": null,
+        "SMCI": null
       },
-      "basket_return_pct": 4.196,
-      "basket_today_pct": 4.835,
+      "basket_return_pct": null,
+      "basket_today_pct": null,
       "benchmark": "QQQ",
-      "benchmark_entry_price": 735.63,
-      "benchmark_last_price": 735.615,
-      "benchmark_return_pct": -0.002,
-      "benchmark_today_pct": 1.071,
-      "alpha_vs_benchmark_pct": 4.197,
-      "spy_entry_price": 754.5799,
-      "spy_last_price": 754.5799,
-      "spy_return_pct": 0.0,
-      "spy_today_pct": 0.604,
-      "alpha_vs_spy_pct": 4.196,
-      "n_priced": 2,
-      "stale": false
+      "benchmark_entry_price": null,
+      "benchmark_last_price": null,
+      "benchmark_return_pct": null,
+      "benchmark_today_pct": null,
+      "alpha_vs_benchmark_pct": null,
+      "spy_entry_price": null,
+      "spy_last_price": null,
+      "spy_return_pct": null,
+      "spy_today_pct": null,
+      "alpha_vs_spy_pct": null,
+      "n_priced": 0,
+      "stale": true
     }
   ],
-  "portfolio_return_pct": 4.196,
-  "portfolio_today_pct": 4.835,
-  "spy_return_pct": 0.0,
-  "spy_today_pct": 0.604,
-  "alpha_vs_spy_pct": 4.196,
+  "portfolio_return_pct": null,
+  "portfolio_today_pct": null,
+  "spy_return_pct": null,
+  "spy_today_pct": null,
+  "alpha_vs_spy_pct": null,
   "n_baskets": 1,
-  "n_priced": 1,
+  "n_priced": 0,
   "source": "yfinance",
-  "stale_warning": false,
+  "stale_warning": true,
   "error": null
 }

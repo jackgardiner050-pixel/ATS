@@ -184,18 +184,41 @@ def _fetch_prices(tickers: list[str]) -> tuple[dict[str, dict], bool]:
 
 def _hist_entry_price(ticker: str, entry_date_str: str) -> float | None:
     """
-    Get benchmark price closest to entry_date from history.
-    Prefers date on or after entry_date; falls back to closest date before.
+    Return the benchmark price to use as the entry baseline.
+
+    For same-day entries (entry_date == today): today's close hasn't happened yet,
+    so we use previousClose (yesterday's confirmed close). This prevents the bug
+    where both entry and current price reference the same intraday tick → 0.0%.
+
+    For historical entries: find the closest confirmed daily close on or after
+    entry_date, falling back to the closest close before it.
     """
+    today = _now_utc().date()
     try:
         import yfinance as yf
         import pandas as pd
         entry_dt = pd.Timestamp(entry_date_str).date()
+    except Exception:
+        return None
+
+    # Same-day (or future) entry: use previousClose as baseline
+    if entry_dt >= today:
+        try:
+            fi = yf.Ticker(ticker).fast_info
+            pc = fi.get("previousClose")
+            if pc and pc == pc:  # guard against NaN
+                return round(float(pc), 4)
+        except Exception:
+            pass
+        return None
+
+    # Historical entry: find closest confirmed close
+    try:
         hist = yf.Ticker(ticker).history(period="1mo", interval="1d", auto_adjust=True)
         if hist.empty:
             return None
 
-        best_after: tuple[int, float] | None = None   # (days_diff, price)
+        best_after: tuple[int, float] | None = None
         best_before: tuple[int, float] | None = None
 
         for idx, row in hist.iterrows():
@@ -301,6 +324,7 @@ def _build_basket_json(
     now: datetime,
     sys_name: str,
     spy_entry_price: "float | None" = None,
+    spy_baseline_status: str = "unavailable",
 ) -> dict:
     tickers: list[str] = basket.get("tickers", [])
     weights: dict[str, float] = basket.get("weights", {})
@@ -371,6 +395,11 @@ def _build_basket_json(
         else None
     )
 
+    spy_baseline_reason = (
+        "entry is today; using previous close as baseline" if spy_baseline_status == "same_day_estimated"
+        else ("" if spy_baseline_status == "ok" else "SPY entry price unavailable")
+    )
+
     return {
         "paper_id": basket.get("paper_id", ""),
         "basket_name": basket.get("basket_name", ""),
@@ -389,11 +418,15 @@ def _build_basket_json(
         "benchmark_return_pct": bm_return,
         "benchmark_today_pct": bm_today,
         "alpha_vs_benchmark_pct": alpha,
+        "spy_entry_date": entry_date,
         "spy_entry_price": spy_entry_price,
+        "spy_latest_price": spy_lp,
         "spy_last_price": spy_lp,
         "spy_return_pct": spy_ret,
         "spy_today_pct": spy_today_v,
         "alpha_vs_spy_pct": alpha_spy,
+        "spy_baseline_status": spy_baseline_status,
+        "spy_baseline_reason": spy_baseline_reason,
         "n_priced": n_priced,
         "stale": n_priced < len(tickers),
     }
@@ -415,11 +448,23 @@ def _build_lab_json(
             unique_dates.add(ed)
     spy_by_date: dict[str, "float | None"] = {ed: _hist_entry_price("SPY", ed) for ed in unique_dates}
 
+    today_str = now.date().isoformat()
+    spy_status_by_date: dict[str, str] = {}
+    for ed in unique_dates:
+        price = spy_by_date.get(ed)
+        if price is None:
+            spy_status_by_date[ed] = "unavailable"
+        elif ed >= today_str:
+            spy_status_by_date[ed] = "same_day_estimated"
+        else:
+            spy_status_by_date[ed] = "ok"
+
     baskets = []
     for b in positions:
         ed = b.get("entry_price_fill_date") or b.get("entry_date") or b.get("created_at", "")[:10]
         spy_ep = spy_by_date.get(ed) if ed else None
-        baskets.append(_build_basket_json(b, prices, now, sys_name, spy_entry_price=spy_ep))
+        spy_status = spy_status_by_date.get(ed, "unavailable") if ed else "unavailable"
+        baskets.append(_build_basket_json(b, prices, now, sys_name, spy_entry_price=spy_ep, spy_baseline_status=spy_status))
 
     returns = [b["basket_return_pct"] for b in baskets if b["basket_return_pct"] is not None]
     todays = [b["basket_today_pct"] for b in baskets if b["basket_today_pct"] is not None]
@@ -441,6 +486,14 @@ def _build_lab_json(
         else None
     )
 
+    earliest_entry_date = min(unique_dates) if unique_dates else None
+    spy_baseline_statuses = list(spy_status_by_date.values())
+    top_spy_status = (
+        "ok" if all(s == "ok" for s in spy_baseline_statuses)
+        else "same_day_estimated" if any(s == "same_day_estimated" for s in spy_baseline_statuses)
+        else "unavailable"
+    ) if spy_baseline_statuses else "unavailable"
+
     return {
         "fetched_at_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "fetched_at_uk": _uk_time_str(now),
@@ -450,9 +503,11 @@ def _build_lab_json(
         "baskets": baskets,
         "portfolio_return_pct": port_ret,
         "portfolio_today_pct": round(sum(todays) / len(todays), 3) if todays else None,
+        "spy_entry_date": earliest_entry_date,
         "spy_return_pct": spy_return_avg,
         "spy_today_pct": spy_today_pct,
         "alpha_vs_spy_pct": alpha_spy,
+        "spy_baseline_status": top_spy_status,
         "n_baskets": len(positions),
         "n_priced": len(returns),
         "source": "yfinance",

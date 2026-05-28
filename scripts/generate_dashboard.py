@@ -1198,7 +1198,7 @@ def _position_detail_page(pos: dict, rec: Optional[dict]) -> str:
 # ─── Index page ───────────────────────────────────────────────────────────────
 
 def _systems_overview() -> str:
-    """Cross-system comparison card — reads SCAI-II and Hermes summary JSON read-only."""
+    """Cross-system comparison card — reads SCAI-II, Hermes, and Hermes v3 summary JSON read-only."""
     from pathlib import Path as _Path
     import json as _json
 
@@ -1207,35 +1207,38 @@ def _systems_overview() -> str:
     hermes_path = _home / "trading" / "hermes_lab" / "data" / "paper" / "summary.json"
     hermes_jrnl = _home / "trading" / "hermes_lab" / "data" / "paper" / "journal.jsonl"
     hermes_reg  = _home / "trading" / "hermes_lab" / "data" / "learning" / "regime_memory.jsonl"
+    h3_summary  = _home / "trading" / "hermes_v3_lab" / "data" / "variants" / "variant_summary.json"
 
-    def _td(val, href=None, color=None):
+    def _td(val, href=None, color=None, elem_id=None):
         inner = f'<a href="{href}" style="color:#58a6ff">{val}</a>' if href else str(val)
         style = f' style="color:{color}"' if color else ""
-        return f"<td{style}>{inner}</td>"
+        id_attr = f' id="{elem_id}"' if elem_id else ""
+        return f"<td{style}{id_attr}>{inner}</td>"
 
     rows = []
 
-    # ATS row — placeholder, main content is above
+    # ATS row
     rows.append(
         "<tr>"
         + _td("ATS", href="./")
         + _td("Long-term paper portfolio")
         + _td("Active", color="#3fb950")
-        + _td("—") + _td("—") + _td("See portfolio above") + _td("—")
+        + _td("$5,000")
+        + _td('<span id="sys-pot-ats">—</span>')
+        + _td('<span id="sys-ret-ats">see above</span>')
+        + _td('<span id="sys-spy-ats">—</span>')
+        + _td("—") + _td("See portfolio above") + _td("—")
         + "</tr>"
     )
 
     # SCAI-II row
-    scai_open, scai_ret, scai_baskets, scai_updated = "—", "—", "—", "—"
+    scai_open, scai_baskets, scai_updated = "—", "—", "—"
     if scai_path.exists():
         try:
             s = _json.loads(scai_path.read_text())
             scai_open    = str(s.get("n_open", 0))
             scai_updated = (s.get("mark_date") or s.get("last_updated", "")[:10])
-            marks = s.get("marks", [])
-            rets = [m["current_return"] for m in marks if m.get("current_return") is not None]
-            scai_ret = f"{sum(rets)/len(rets):+.2f}%" if rets else '<span style="color:#484f58">Not enough history</span>'
-            names = [m["basket_name"].split("—")[-1].strip() for m in marks if m.get("status") == "open"]
+            names = [m["basket_name"].split("—")[-1].strip() for m in s.get("marks", []) if m.get("status") == "open"]
             scai_baskets = ", ".join(names) if names else "none"
         except Exception:
             pass
@@ -1244,12 +1247,16 @@ def _systems_overview() -> str:
         + _td("SCAI-II", href="scai/")
         + _td("Structural rotation monitor")
         + _td("Paper-only", color="#3fb950")
-        + _td(scai_open) + _td(scai_ret) + _td(scai_baskets) + _td(scai_updated)
+        + _td("$5,000")
+        + _td('<span id="sys-pot-scai">—</span>')
+        + _td('<span id="sys-ret-scai">—</span>')
+        + _td('<span id="sys-spy-scai">—</span>')
+        + _td(scai_open) + _td(scai_baskets) + _td(scai_updated)
         + "</tr>"
     )
 
-    # Hermes row
-    hermes_open, hermes_ret, hermes_baskets, hermes_updated = "—", "—", "—", "—"
+    # Hermes v1 row
+    hermes_open, hermes_baskets, hermes_updated = "—", "—", "—"
     hermes_breadth = "—"
     if hermes_path.exists():
         try:
@@ -1266,8 +1273,6 @@ def _systems_overview() -> str:
                     d = _json.loads(line)
                     if "paper_id" in d:
                         seen[d["paper_id"]] = d
-            rets = [d["basket_return"] for d in seen.values() if d.get("basket_return") is not None]
-            hermes_ret = f"{sum(rets)/len(rets):+.2f}%" if rets else '<span style="color:#484f58">Not enough history</span>'
             names = [d["basket_name"].split("—")[-1].strip() for d in seen.values() if d.get("status") == "open"]
             hermes_baskets = ", ".join(names) if names else "none"
         except Exception:
@@ -1282,22 +1287,23 @@ def _systems_overview() -> str:
                     hermes_breadth = f"{bp:.1f}%"
         except Exception:
             pass
-
     rows.append(
         "<tr>"
         + _td("Hermes v1", href="hermes/")
         + _td(f'Experimental paper lab · breadth {hermes_breadth}')
         + _td("Observation v1", color="#d29922")
-        + _td(hermes_open) + _td(hermes_ret) + _td(hermes_baskets) + _td(hermes_updated)
+        + _td("$5,000")
+        + _td('<span id="sys-pot-hermes">—</span>')
+        + _td('<span id="sys-ret-hermes">—</span>')
+        + _td('<span id="sys-spy-hermes">—</span>')
+        + _td(hermes_open) + _td(hermes_baskets) + _td(hermes_updated)
         + "</tr>"
     )
 
-    # Hermes v2 Learning Lab row
+    # Hermes v2 row (critique-only — no pot)
     v2_rep_dir = _home / "trading" / "hermes_learning_lab" / "data" / "reports"
     v2_open, v2_proposals, v2_near_miss, v2_updated = "—", "—", "—", "—"
     try:
-        v2_files = sorted(v2_rep_dir.glob("*.json")) if v2_rep_dir.exists() else []
-        # read latest comparison
         v2_comp_dir = _home / "trading" / "hermes_learning_lab" / "data" / "comparisons"
         comp_files = sorted(v2_comp_dir.glob("comparison_*.json")) if v2_comp_dir.exists() else []
         if comp_files:
@@ -1314,7 +1320,39 @@ def _systems_overview() -> str:
         + _td("Hermes v2", href="hermes_v2/")
         + _td(f'Learning lab · {v2_proposals} proposals · {v2_near_miss}')
         + _td("Learning", color="#58a6ff")
-        + _td(v2_open) + _td("—") + _td("Read-only") + _td(v2_updated)
+        + _td('<span style="color:#484f58">critique-only</span>')
+        + _td('<span style="color:#484f58">no pot</span>')
+        + _td("—")
+        + _td("—")
+        + _td(v2_open) + _td("Read-only") + _td(v2_updated)
+        + "</tr>"
+    )
+
+    # Hermes v3 row
+    h3_open, h3_best_ret, h3_updated = "—", "—", "—"
+    h3_n_variants = "10"
+    if h3_summary.exists():
+        try:
+            d3 = _json.loads(h3_summary.read_text())
+            variants = d3.get("variants", [])
+            h3_n_variants = str(len(variants))
+            if variants:
+                rets = [v.get("net_return_pct", 0) or 0 for v in variants]
+                h3_best_ret = f'{max(rets):+.1f}%'
+                h3_open = str(sum(v.get("open_positions", 0) for v in variants))
+            h3_updated = d3.get("as_of_date", "—")
+        except Exception:
+            pass
+    rows.append(
+        "<tr>"
+        + _td("Hermes v3", href="hermes_v3/")
+        + _td(f'Shadow rotation lab · {h3_n_variants} variants · paper only')
+        + _td("PAPER / SHADOW", color="#bc8cff")
+        + _td(f"$5k × {h3_n_variants}")
+        + _td('<span id="sys-pot-h3">—</span>')
+        + _td(f'<span id="sys-ret-h3">best: {h3_best_ret}</span>')
+        + _td('<span id="sys-spy-h3">—</span>')
+        + _td(h3_open) + _td("10 variants") + _td(h3_updated)
         + "</tr>"
     )
 
@@ -1339,11 +1377,12 @@ def _systems_overview() -> str:
     rows_html = "\n      ".join(rows)
     return f"""<section>
 <h2 class="section-title">Research Systems</h2>
-<div class="card">
+<div class="card" style="overflow-x:auto">
   <table>
     <thead><tr>
       <th>System</th><th>Role</th><th>Status</th>
-      <th>Open</th><th>Return</th><th>Active Basket(s)</th><th>Updated</th>
+      <th>Start Pot</th><th>Curr Pot</th><th>Return</th><th>SPY</th>
+      <th>Open</th><th>Notes</th><th>Updated</th>
     </tr></thead>
     <tbody>
       {rows_html}
@@ -1351,7 +1390,8 @@ def _systems_overview() -> str:
   </table>
   {convergence_html}
   <p style="margin-top:0.5rem;font-size:0.72rem;color:#484f58">
-    Paper-only · No real orders · No broker connection · Diagnostic only
+    Paper-only · No real orders · No broker connection · Diagnostic only ·
+    Pot values live-updated from lab JSONs every 5 min
   </p>
 </div>
 </section>"""
@@ -1398,7 +1438,7 @@ def _live_strip_html(data_url: str, benchmark_label: str = "SPY") -> str:
 
 
 def _lab_nav() -> str:
-    """Navigation bar linking to sub-dashboards (SCAI-II and Hermes)."""
+    """Navigation bar linking to all sub-dashboards."""
     return """
 <nav class="lab-nav">
   <div class="container">
@@ -1419,8 +1459,50 @@ def _lab_nav() -> str:
       <span class="lab-nav-title">Hermes v2</span>
       <span class="lab-nav-sub">Learning Lab</span>
     </a>
+    <a href="hermes_v3/" class="lab-nav-card">
+      <span class="lab-nav-title">Hermes v3</span>
+      <span class="lab-nav-sub">Shadow Lab</span>
+    </a>
   </div>
 </nav>"""
+
+
+def _systems_live_js() -> str:
+    """JS that reads lab live JSONs and updates the systems overview pot/return/SPY cells."""
+    return """<script>
+(function(){
+  var INTERVAL=5*60*1000;
+  function fmt(v){if(v===null||v===undefined)return'—';return(v>=0?'+':'')+v.toFixed(1)+'%';}
+  function pot(ret,start){if(ret===null||ret===undefined)return'$'+(start||5000).toFixed(0);return'$'+(start*(1+ret/100)).toFixed(0);}
+  function setEl(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;}
+  function loadScai(){fetch('data/scai_live.json?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+    setEl('sys-pot-scai',pot(d.portfolio_return_pct,5000));
+    setEl('sys-ret-scai',fmt(d.portfolio_return_pct));
+    setEl('sys-spy-scai',fmt(d.spy_return_pct));
+  }).catch(function(){});}
+  function loadHermes(){fetch('data/hermes_live.json?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+    setEl('sys-pot-hermes',pot(d.portfolio_return_pct,5000));
+    setEl('sys-ret-hermes',fmt(d.portfolio_return_pct));
+    setEl('sys-spy-hermes',fmt(d.spy_return_pct));
+  }).catch(function(){});}
+  function loadH3(){fetch('data/hermes_v3_live.json?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+    var vs=d.variants||[];
+    var totalStart=vs.length*5000;
+    var totalCurr=vs.reduce(function(s,v){return s+(v.current_pot||5000);},0);
+    var bestRet=d.best_variant_return_pct;
+    setEl('sys-pot-h3','$'+totalCurr.toFixed(0)+' total');
+    setEl('sys-ret-h3','best: '+fmt(bestRet));
+    setEl('sys-spy-h3',fmt(d.spy_return_pct));
+  }).catch(function(){});}
+  function loadAts(){fetch('data/ats_live.json?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+    setEl('sys-pot-ats',pot(d.portfolio_return_pct,5000));
+    setEl('sys-ret-ats',fmt(d.portfolio_return_pct));
+    setEl('sys-spy-ats',fmt(d.spy_return_pct));
+  }).catch(function(){});}
+  function loadAll(){loadScai();loadHermes();loadH3();loadAts();}
+  loadAll();setInterval(loadAll,INTERVAL);
+})();
+</script>"""
 
 
 def _live_cards_js() -> str:
@@ -1514,7 +1596,7 @@ def build_index(
   </div>
 </footer>"""
 
-    return _page_wrap("ATS Research Dashboard", body + _live_cards_js())
+    return _page_wrap("ATS Research Dashboard", body + _live_cards_js() + _systems_live_js())
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
