@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-"""Static HTML dashboard generator for ATS Research.
+"""Static HTML dashboard generator for Olympus / ATS Research.
 
 Reads all data sources and writes docs/index.html + docs/positions/{TICKER}.html.
 No Plotly dependency — uses pure CSS/SVG charts.
+
+Pantheon display names (rendered labels only — code/data paths unchanged):
+  SCAI → Apollo (SCAI) · Hermes v2 → Athena · Hermes v3 → Hermes (execution)
+  ATS → Themis · attribution → Mnemosyne · council → Zeus · Mercury → Kairos
+  valuation → Demeter · crash → Hades
 
 Usage:
   python scripts/generate_dashboard.py           # full run
@@ -20,6 +25,26 @@ from pathlib import Path
 from typing import Optional
 
 import yaml
+
+# Olympus display-layer — fail-soft; rest of dashboard still renders if unavailable
+try:
+    from _olympus import (
+        kill_switch_card as _oly_kill_switch_card,
+        status_banner as _oly_status_banner,
+        olympus_lab_nav as _oly_lab_nav,
+        pantheon_roster_section as _oly_roster,
+        mnemosyne_independence_card as _oly_independence,
+        mnemosyne_reconciliation_card as _oly_reconciliation,
+    )
+    _OLYMPUS_AVAILABLE = True
+except Exception:
+    _OLYMPUS_AVAILABLE = False
+    def _oly_kill_switch_card(): return ""
+    def _oly_status_banner(validated_count=None): return ""
+    def _oly_lab_nav(): return ""
+    def _oly_roster(): return ""
+    def _oly_independence(): return ""
+    def _oly_reconciliation(): return ""
 
 _ROOT = Path(__file__).parent.parent
 _DOCS = _ROOT / "docs"
@@ -361,7 +386,7 @@ def _page_wrap(title: str, body: str, depth: int = 0) -> str:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>{title} — ATS Research</title>
+  <title>{title} — Olympus</title>
   <link rel="stylesheet" href="{css_path}">
 </head>
 <body>
@@ -1190,9 +1215,9 @@ def _position_detail_page(pos: dict, rec: Optional[dict]) -> str:
 
 </div>
 </main>
-<footer><div class="container">ATS Research · Paper portfolio · Diagnostic only · Not investment advice</div></footer>"""
+<footer><div class="container">Olympus · Paper portfolio · Diagnostic only · Not investment advice</div></footer>"""
 
-    return _page_wrap(f"{ticker} — ATS Research", body, depth=1)
+    return _page_wrap(f"{ticker} — Olympus", body, depth=1)
 
 
 # ─── Factor alpha section ─────────────────────────────────────────────────────
@@ -1600,7 +1625,7 @@ def _systems_overview() -> str:
     # ATS row
     rows.append(
         "<tr>"
-        + _td("ATS", href="./")
+        + _td("Themis (ATS)", href="./")
         + _td("Long-term paper portfolio")
         + _td("Active", color="#3fb950")
         + _td("$5,000")
@@ -1624,7 +1649,7 @@ def _systems_overview() -> str:
             pass
     rows.append(
         "<tr>"
-        + _td("SCAI-II", href="scai/")
+        + _td("Apollo (SCAI)", href="scai/")
         + _td("Structural rotation monitor")
         + _td("Paper-only", color="#3fb950")
         + _td("$5,000")
@@ -1669,7 +1694,7 @@ def _systems_overview() -> str:
             pass
     rows.append(
         "<tr>"
-        + _td("Hermes v1", href="hermes/")
+        + _td("Hermes v1 → Apollo", href="hermes/")
         + _td(f'Experimental paper lab · breadth {hermes_breadth}')
         + _td("Observation v1", color="#d29922")
         + _td("$5,000")
@@ -1697,7 +1722,7 @@ def _systems_overview() -> str:
         pass
     rows.append(
         "<tr>"
-        + _td("Hermes v2", href="hermes_v2/")
+        + _td("Athena (Hermes v2)", href="hermes_v2/")
         + _td(f'Learning lab · {v2_proposals} proposals · {v2_near_miss}')
         + _td("Learning", color="#58a6ff")
         + _td('<span style="color:#484f58">critique-only</span>')
@@ -1725,7 +1750,7 @@ def _systems_overview() -> str:
             pass
     rows.append(
         "<tr>"
-        + _td("Hermes v3", href="hermes_v3/")
+        + _td("Hermes (execution)", href="hermes_v3/")
         + _td(f'Shadow rotation lab · {h3_n_variants} variants · paper only')
         + _td("PAPER / SHADOW", color="#bc8cff")
         + _td(f"$5k × {h3_n_variants}")
@@ -1756,7 +1781,7 @@ def _systems_overview() -> str:
             pass
     rows.append(
         "<tr>"
-        + _td("Hermes v3-N", href="hermes_v3/")
+        + _td("Hermes v3-N (Hermes)", href="hermes_v3/")
         + _td(f'Market-neutral spread · paper only · spread return {h3n_spread_ret}')
         + _td("PAPER / SHADOW", color="#bc8cff")
         + _td("$5k (spread)")
@@ -1767,12 +1792,12 @@ def _systems_overview() -> str:
         + "</tr>"
     )
 
-    # Cross-system overlap (mechanical — not a validation signal)
+    # Cross-system overlap (mechanical — shared governance, not independent signal)
     overlap_html = _compute_overlap_html(scai_path, hermes_jrnl)
 
     rows_html = "\n      ".join(rows)
     return f"""<section>
-<h2 class="section-title">Research Systems</h2>
+<h2 class="section-title">Olympus — Research Systems</h2>
 <div class="card" style="overflow-x:auto">
   <table>
     <thead><tr>
@@ -1969,26 +1994,31 @@ def build_index(
     screen_state: list[dict],
     generated_at: str,
 ) -> str:
-    header = _page_header("ATS Research", "Anti-Delusion Dashboard · Paper portfolio · Diagnostic only")
+    header = _page_header("Olympus", "Evidence phase · Paper portfolio · Diagnostic only")
     pos_tickers = [p["ticker"] for p in positions if "ticker" in p]
     prices = _fetch_live_prices(pos_tickers + ["SPY"])
     perf = _perf_banner(positions, prices)
     returns_chart = _position_returns_chart(positions, prices)
     health = _health_bar(positions, regime, exposure, signal, generated_at)
 
-    lab_nav = _lab_nav()
-    systems = _systems_overview()
+    lab_nav  = _oly_lab_nav() or _lab_nav()   # Olympus nav, fallback to original
+    systems  = _systems_overview()
     heartbeat = _hermes_v3_heartbeat_badge()
 
     body = f"""
+{_oly_status_banner()}
 {_live_strip_html("data/ats_live.json", "SPY")}
 {header}
+{_oly_kill_switch_card()}
 {perf}
 {health}
 {heartbeat}
 {lab_nav}
 <main>
 <div class="container">
+  {_oly_roster()}
+  {_oly_independence()}
+  {_oly_reconciliation()}
   {returns_chart}
   {_portfolio_overview(positions, trades)}
   {_open_positions_table(positions)}
@@ -2006,12 +2036,12 @@ def build_index(
 </main>
 <footer>
   <div class="container">
-    ATS Research · Paper portfolio only · Diagnostic read-only layer ·
+    Olympus · Paper portfolio only · Diagnostic read-only layer ·
     Generated {generated_at} · Not investment advice
   </div>
 </footer>"""
 
-    return _page_wrap("ATS Research Dashboard", body + _live_cards_js() + _systems_live_js())
+    return _page_wrap("Olympus Dashboard", body + _live_cards_js() + _systems_live_js())
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────

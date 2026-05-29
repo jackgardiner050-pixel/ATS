@@ -4,11 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>ATS Research Dashboard — ATS Research</title>
+  <title>Olympus Dashboard — Olympus</title>
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 
+<div style="background:#0d1117;border-bottom:1px solid #21262d;
+padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
+  <span style="margin:0 1rem">
+    <span style="color:#e3b341;font-weight:600">● PAPER ONLY</span> · No real orders ·
+    No broker connection · NOT investment advice
+  </span>
+  <span style="margin:0 1rem;color:#484f58">|</span>
+  <span style="margin:0 1rem">
+    <span style="color:#e3b341;font-weight:600">0 of 2 members validated</span>
+     — evidence phase · no durable edge claimed
+  </span>
+</div>
 <div id="live-strip"><div class="live-inner" style="color:#5c6080;font-size:.78rem;padding:.4rem 1.25rem">Loading live data…</div></div>
 <style>
 #live-strip{background:#080a12;border-bottom:1px solid #1a1d2e;padding:.45rem 0;font-size:.78rem;}
@@ -48,12 +60,29 @@
 
 <header class="page-header">
   <div class="container">
-    <h1>ATS Research</h1>
-    <span class="subtitle">Anti-Delusion Dashboard · Paper portfolio · Diagnostic only</span>
+    <h1>Olympus</h1>
+    <span class="subtitle">Evidence phase · Paper portfolio · Diagnostic only</span>
     
   </div>
 </header>
-<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+3.2%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.2%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +2.0%</div></div>
+<section>
+<div class="card" style="border-left:4px solid #e3b341;padding:0.75rem 1rem 0.6rem">
+  <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.3rem">
+    <span style="color:#e3b341;font-size:1rem;font-weight:700">⚠ APPROACHING</span>
+    <span style="color:#c9d1d9;font-size:.85rem;font-weight:600">Zeus (Council) Kill Switch</span>
+    <span style="margin-left:auto;font-size:.72rem;color:#484f58">v2.0 · hash-locked</span>
+  </div>
+  <p style="margin:0 0 .25rem 0;font-size:.82rem;color:#c9d1d9">
+    <strong>0/2</strong> members validated ·
+    <strong>365 days remaining</strong> (deadline 2027-05-29)
+  </p>
+  <p style="margin:0;font-size:.75rem;color:#8b949e">
+    Validated = positive forward alpha point estimate + decorrelated (|r|&lt;0.4) + Mnemosyne-clean.
+    At deadline with &lt;2 legs: STOP — inconclusive is not a state that permits continuation.
+  </p>
+</div>
+</section>
+<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+2.8%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.4%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +1.4%</div></div>
 
 <div class="health-bar">
   <div class="container">
@@ -61,42 +90,142 @@
   <span class="health-pill yellow" title="49.0% confidence"><span class="dot"></span>Regime: Risk On Growth</span>
   <span class="health-pill yellow"><span class="dot"></span>2 Watches</span>
   <span class="health-pill yellow"><span class="dot"></span>Signal Decay</span>
-<span class="health-last-run">Last run: 2026-05-28 21:15 UTC</span>
+<span class="health-last-run">Last run: 2026-05-29 17:39 UTC</span>
   </div>
 </div>
+<div class="hb-banner hb-stale">&#9888; No Hermes v3 run recorded yet</div>
 
 <nav class="lab-nav">
   <div class="container">
-    <span class="lab-nav-label">Dashboards</span>
+    <span class="lab-nav-label" style="color:#bc8cff;font-weight:700">Olympus</span>
     <a href="." class="lab-nav-card lab-nav-active">
-      <span class="lab-nav-title">ATS</span>
-      <span class="lab-nav-sub">Main Dashboard</span>
+      <span class="lab-nav-title">Themis</span>
+      <span class="lab-nav-sub">ATS · Main</span>
     </a>
     <a href="scai/" class="lab-nav-card">
-      <span class="lab-nav-title">SCAI-II</span>
-      <span class="lab-nav-sub">Structural Monitor</span>
+      <span class="lab-nav-title">Apollo</span>
+      <span class="lab-nav-sub">SCAI-II</span>
     </a>
     <a href="hermes/" class="lab-nav-card">
       <span class="lab-nav-title">Hermes v1</span>
-      <span class="lab-nav-sub">Experimental Paper Lab</span>
+      <span class="lab-nav-sub">→ Apollo</span>
     </a>
     <a href="hermes_v2/" class="lab-nav-card">
-      <span class="lab-nav-title">Hermes v2</span>
-      <span class="lab-nav-sub">Learning Lab</span>
+      <span class="lab-nav-title">Athena</span>
+      <span class="lab-nav-sub">Hermes v2</span>
     </a>
     <a href="hermes_v3/" class="lab-nav-card">
-      <span class="lab-nav-title">Hermes v3</span>
-      <span class="lab-nav-sub">Shadow Lab</span>
+      <span class="lab-nav-title">Hermes</span>
+      <span class="lab-nav-sub">Hermes v3</span>
+    </a>
+    <a href="council/" class="lab-nav-card">
+      <span class="lab-nav-title">Zeus</span>
+      <span class="lab-nav-sub">Council</span>
+    </a>
+    <a href="council/mnemosyne.html" class="lab-nav-card">
+      <span class="lab-nav-title">Mnemosyne</span>
+      <span class="lab-nav-sub">Attribution</span>
     </a>
   </div>
 </nav>
 <main>
 <div class="container">
+  <section>
+<h2 class="section-title">Olympus — Pantheon Roster</h2>
+<div class="card" style="overflow-x:auto">
+  <table style="width:100%;border-collapse:collapse">
+    <thead><tr>
+      <th style="text-align:left;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Member</th>
+      <th style="text-align:left;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Function</th>
+      <th style="text-align:left;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Status</th>
+    </tr></thead>
+    <tbody><tr>
+<td style="padding:.4rem .6rem"><a href="./" style="color:#bc8cff;font-weight:600;text-decoration:none">Themis (ATS)</a><br><span style="color:#8b949e;font-size:.75rem">ATS</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Top-level paper portfolio — position tracking, governance, constitutional checks.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><a href="scai/" style="color:#bc8cff;font-weight:600;text-decoration:none">Apollo (SCAI)</a><br><span style="color:#8b949e;font-size:.75rem">SCAI-II</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Structural/thematic AI-infrastructure monitor — selects baskets by regime signals.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><a href="hermes/" style="color:#bc8cff;font-weight:600;text-decoration:none">Hermes v1 → Apollo</a><br><span style="color:#8b949e;font-size:.75rem">Hermes v1</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Experimental paper lab — original basket-rotation prototype. Folded into Apollo.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><a href="hermes_v2/" style="color:#bc8cff;font-weight:600;text-decoration:none">Athena (Hermes v2)</a><br><span style="color:#8b949e;font-size:.75rem">Hermes v2</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Learning lab — generates and critiques hypotheses. Read-only; no capital.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><a href="hermes_v3/" style="color:#bc8cff;font-weight:600;text-decoration:none">Hermes (execution)</a><br><span style="color:#8b949e;font-size:.75rem">Hermes v3</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Execution / variant arena — tests exit rules and the market-neutral spread (v3-N).</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><span style="color:#bc8cff;font-weight:600">Kairos</span><br><span style="color:#8b949e;font-size:.75rem">Mercury</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Event-timing member — earnings-event decay study.<br><span style="color:#8b949e;font-size:.73rem;font-style:italic">parked — below noise floor</span></td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1c1c1c;color:#8b949e">Parked</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><span style="color:#bc8cff;font-weight:600">Demeter</span><br><span style="color:#8b949e;font-size:.75rem">val_v1</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Cross-sectional value member — trailing earnings-yield spread, sector-neutral.<br><span style="color:#8b949e;font-size:.73rem;font-style:italic">candidate — decorrelation pending ~Oct 2026</span></td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#2a2a1a;color:#e3b341">Candidate</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><a href="council/mnemosyne.html" style="color:#bc8cff;font-weight:600;text-decoration:none">Mnemosyne</a><br><span style="color:#8b949e;font-size:.75rem">attribution</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Attribution / live-vs-backtest reconciliation layer. Cross-cutting; not a trading member.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><a href="council/" style="color:#bc8cff;font-weight:600;text-decoration:none">Zeus (Council)</a><br><span style="color:#8b949e;font-size:.75rem">council</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Council orchestration layer — precondition-gated; inactive until ≥2 validated members.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a1e2e;color:#58a6ff">Designed</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><span style="color:#bc8cff;font-weight:600">Hades</span><br><span style="color:#8b949e;font-size:.75rem">crash</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Crash / tail-hedge member — not yet designed.</td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a1e2e;color:#58a6ff">Designed</span></td>
+</tr></tbody>
+  </table>
+  <p style="margin-top:.5rem;font-size:.72rem;color:#484f58">
+    Active = running · Candidate = evidence accruing · Parked = below noise floor ·
+    Designed = not yet built
+  </p>
+</div>
+</section>
+  <section>
+<h2 class="section-title">Mnemosyne — Independence Check</h2>
+<div class="card">
+  <p style="font-size:.85rem;font-weight:600;color:#e3b341">
+    ⚠ MONOCULTURE — MEMBERS NOT INDEPENDENT — ensemble has no diversity. mean holdings Jaccard (active members) 1.00 > 0.8; max holdings Jaccard (active members) 1.00 > 0.8
+  </p>
+  <p style="font-size:.78rem;color:#8b949e;margin-top:.35rem">
+    Active-member holdings Jaccard: max=1.00 · mean=1.00 ·
+    history records=3
+    (flag trips if max or mean &gt; 0.8 among members with non-empty holdings)
+  </p>
+  <p style="font-size:.75rem;color:#e3b341;margin-top:.3rem">⚠ Current state: SCAI, Hermes v1, and Hermes v3 all hold {VRT, SMCI} — Jaccard=1.0. Three systems, one bet. Not yet independent.</p>
+</div>
+</section>
+  <section>
+<h2 class="section-title">Mnemosyne — Live vs Backtest</h2>
+<div class="card">
+  <p style="font-size:.85rem;font-weight:600;color:#3fb950">✓ No live-vs-backtest divergence detected.</p>
+  <table style="width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.78rem">
+    <thead><tr>
+      <th style="text-align:left;color:#8b949e;padding:.25rem .5rem;border-bottom:1px solid #21262d">Member</th>
+      <th style="text-align:left;color:#8b949e;padding:.25rem .5rem;border-bottom:1px solid #21262d">Metric</th>
+      <th style="text-align:left;color:#8b949e;padding:.25rem .5rem;border-bottom:1px solid #21262d">Backtest</th>
+      <th style="text-align:left;color:#8b949e;padding:.25rem .5rem;border-bottom:1px solid #21262d">Realised</th>
+      <th style="text-align:left;color:#8b949e;padding:.25rem .5rem;border-bottom:1px solid #21262d">Flag</th>
+    </tr></thead>
+    <tbody><tr><td style="padding:.3rem .5rem;color:#c9d1d9">Demeter</td><td style="padding:.3rem .5rem;color:#8b949e;font-size:.75rem">monthly_ic</td><td style="padding:.3rem .5rem">+0.0075</td><td style="padding:.3rem .5rem">accruing (0/12)</td><td style="padding:.3rem .5rem">—</td></tr><tr><td style="padding:.3rem .5rem;color:#c9d1d9">Demeter</td><td style="padding:.3rem .5rem;color:#8b949e;font-size:.75rem">monthly_alpha</td><td style="padding:.3rem .5rem">+0.0133</td><td style="padding:.3rem .5rem">accruing (0/12)</td><td style="padding:.3rem .5rem">—</td></tr></tbody>
+  </table>
+  <p style="font-size:.72rem;color:#484f58;margin-top:.4rem">
+    Divergence flags only after N ≥ min_forward_n observations. "Accruing" = insufficient forward data.
+    <a href="council/mnemosyne.html" style="color:#58a6ff">Full Mnemosyne dashboard →</a>
+  </p>
+</div>
+</section>
   
 <section>
   <h2 class="section-title">Position Returns</h2>
   <div class="card">
-    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:100.0%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+30.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:14.8%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+4.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:13.5%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+4.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:13.1%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+3.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:12.4%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+3.7%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-green" style="width:11.5%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--green)">+3.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-green" style="width:5.9%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--green)">+1.8%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-green" style="width:0.1%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--green)">+0.0%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-red" style="width:0.8%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--red)">-0.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-red" style="width:5.4%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--red)">-1.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:17.6%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-5.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:18.5%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-5.6%</span></div>
+    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:79.7%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+23.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:20.9%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+6.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:18.5%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+5.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:13.2%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+4.0%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:13.0%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+3.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-green" style="width:11.7%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--green)">+3.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-green" style="width:6.9%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--green)">+2.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-green" style="width:6.0%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--green)">+1.8%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-red" style="width:4.2%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--red)">-1.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-red" style="width:5.0%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--red)">-1.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:24.0%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-7.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:24.0%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-7.2%</span></div>
   </div>
 </section>
   
@@ -115,7 +244,7 @@
     <div class="stat-sub">Performance pending</div>
   </div>
   <div class="card stat-card">
-    <div class="stat-value">3d</div>
+    <div class="stat-value">4d</div>
     <div class="stat-label">Days Held</div>
     <div class="stat-sub">Since 2026-05-25</div>
   </div>
@@ -363,7 +492,7 @@
   </div>
 </section>
   <section>
-<h2 class="section-title">Research Systems</h2>
+<h2 class="section-title">Olympus — Research Systems</h2>
 <div class="card" style="overflow-x:auto">
   <table>
     <thead><tr>
@@ -372,14 +501,24 @@
       <th>Open</th><th>Notes</th><th>Updated</th>
     </tr></thead>
     <tbody>
-      <tr><td><a href="./" style="color:#58a6ff">ATS</a></td><td>Long-term paper portfolio</td><td style="color:#3fb950">Active</td><td>$5,000</td><td><span id="sys-pot-ats">—</span></td><td><span id="sys-ret-ats">see above</span></td><td><span id="sys-spy-ats">—</span></td><td>—</td><td>See portfolio above</td><td>—</td></tr>
-      <tr><td><a href="scai/" style="color:#58a6ff">SCAI-II</a></td><td>Structural rotation monitor</td><td style="color:#3fb950">Paper-only</td><td>$5,000</td><td><span id="sys-pot-scai">—</span></td><td><span id="sys-ret-scai">—</span></td><td><span id="sys-spy-scai">—</span></td><td>1</td><td>cooling_power</td><td>2026-05-28</td></tr>
-      <tr><td><a href="hermes/" style="color:#58a6ff">Hermes v1</a></td><td>Experimental paper lab · breadth 38.5%</td><td style="color:#d29922">Observation v1</td><td>$5,000</td><td><span id="sys-pot-hermes">—</span></td><td><span id="sys-ret-hermes">—</span></td><td><span id="sys-spy-hermes">—</span></td><td>1</td><td>cooling_power</td><td>2026-05-28</td></tr>
-      <tr><td><a href="hermes_v2/" style="color:#58a6ff">Hermes v2</a></td><td>Learning lab · 10 proposals · 12 conv. blocked</td><td style="color:#58a6ff">Learning</td><td><span style="color:#484f58">critique-only</span></td><td><span style="color:#484f58">no pot</span></td><td>—</td><td>—</td><td>1</td><td>Read-only</td><td>2026-05-28</td></tr>
-      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes v3</a></td><td>Shadow rotation lab · 10 variants · paper only</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k × 10</td><td><span id="sys-pot-h3">—</span></td><td><span id="sys-ret-h3">best: -0.1%</span></td><td><span id="sys-spy-h3">—</span></td><td>20</td><td>10 variants</td><td>2026-05-28</td></tr>
+      <tr><td><a href="./" style="color:#58a6ff">Themis (ATS)</a></td><td>Long-term paper portfolio</td><td style="color:#3fb950">Active</td><td>$5,000</td><td><span id="sys-pot-ats">—</span></td><td><span id="sys-ret-ats">see above</span></td><td><span id="sys-spy-ats">—</span></td><td>—</td><td>See portfolio above</td><td>—</td></tr>
+      <tr><td><a href="scai/" style="color:#58a6ff">Apollo (SCAI)</a></td><td>Structural rotation monitor</td><td style="color:#3fb950">Paper-only</td><td>$5,000</td><td><span id="sys-pot-scai">—</span></td><td><span id="sys-ret-scai">—</span></td><td><span id="sys-spy-scai">—</span></td><td>1</td><td>cooling_power</td><td>2026-05-28</td></tr>
+      <tr><td><a href="hermes/" style="color:#58a6ff">Hermes v1 → Apollo</a></td><td>Experimental paper lab · breadth 38.5%</td><td style="color:#d29922">Observation v1</td><td>$5,000</td><td><span id="sys-pot-hermes">—</span></td><td><span id="sys-ret-hermes">—</span></td><td><span id="sys-spy-hermes">—</span></td><td>1</td><td>cooling_power</td><td>2026-05-28</td></tr>
+      <tr><td><a href="hermes_v2/" style="color:#58a6ff">Athena (Hermes v2)</a></td><td>Learning lab · 10 proposals · 12 conv. blocked</td><td style="color:#58a6ff">Learning</td><td><span style="color:#484f58">critique-only</span></td><td><span style="color:#484f58">no pot</span></td><td>—</td><td>—</td><td>1</td><td>Read-only</td><td>2026-05-28</td></tr>
+      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes (execution)</a></td><td>Shadow rotation lab · 10 variants · paper only</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k × 10</td><td><span id="sys-pot-h3">—</span></td><td><span id="sys-ret-h3">best: -0.1%</span></td><td><span id="sys-spy-h3">—</span></td><td>20</td><td>10 variants</td><td>2026-05-28</td></tr>
+      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes v3-N (Hermes)</a></td><td>Market-neutral spread · paper only · spread return —</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k (spread)</td><td>—</td><td><span id="sys-ret-h3n">—</span></td><td>n/a — spread only</td><td>—</td><td>Long/short legs</td><td>2026-05-28</td></tr>
     </tbody>
   </table>
-  <p style="margin-top:0.6rem;font-size:0.82rem;color:#484f58">Holdings overlap (Hermes v1 ↔ SCAI-II): ~100% — same watchlist and governance rules; agreement is mechanical, not corroborating. Treat as one bet.</p>
+  <div style="margin-top:0.7rem;padding:0.55rem 0.75rem;border:1px solid #2a2d3e;border-radius:4px;font-size:0.80rem">
+<p style="margin:0 0 0.3rem 0;color:#ffa726;font-weight:600">Holdings overlap (Hermes v1 ↔ SCAI-II): 100% (1/1 clusters)</p>
+<p style="margin:0 0 0.3rem 0"><span style="color:#484f58"> · tickers held by SCAI-II: SMCI, VRT (Hermes journal carries no ticker list)</span></p>
+<p style="margin:0 0 0.4rem 0;color:#ffa726">⚠ High overlap — systems share universe constraints and governance rules; agreement is mechanical, not corroborating. Treat as one bet.</p>
+<p style="margin:0 0 0.3rem 0;color:#484f58">Note: these systems operate on the same watchlist and the same governance block rules. Cluster-level agreement reflects shared constraints, not independent signal.</p>
+<p style="margin:0 0 0.2rem 0;color:#484f58">Shared clusters — differing selection scores (constraint-driven, not independent):</p>
+<table style="border-collapse:collapse;margin:0">
+<tr><td style="padding:0.1rem 0.6rem 0.1rem 0">cooling_power</td><td style="padding:0.1rem 0.6rem 0.1rem 0;color:#d29922">SCAI-II: 5.081</td><td style="padding:0.1rem 0 0.1rem 0;color:#58a6ff">Hermes: 3.117</td></tr>
+</table>
+</div>
   <p style="margin-top:0.5rem;font-size:0.72rem;color:#484f58">
     Paper-only · No real orders · No broker connection · Diagnostic only ·
     Pot values live-updated from lab JSONs every 5 min
@@ -848,8 +987,8 @@
 </main>
 <footer>
   <div class="container">
-    ATS Research · Paper portfolio only · Diagnostic read-only layer ·
-    Generated 2026-05-28 21:15 UTC · Not investment advice
+    Olympus · Paper portfolio only · Diagnostic read-only layer ·
+    Generated 2026-05-29 17:39 UTC · Not investment advice
   </div>
 </footer><script>
 (function(){
