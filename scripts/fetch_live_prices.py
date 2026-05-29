@@ -573,7 +573,9 @@ def _build_hermes_v3_json(
         ret = vs.get("net_return_pct", 0.0)
         starting = 5000.0
 
-        # Attach live position data
+        # Attach live position data — sign-aware for long and short positions.
+        # Short positions profit when the price falls, so return and unrealised P&L
+        # must be computed as (entry - lp) not (lp - entry).
         pos_list = []
         for pos in by_variant.get(vid, []):
             ticker = pos["ticker"]
@@ -581,27 +583,38 @@ def _build_hermes_v3_json(
             pd_ = prices.get(ticker, {})
             lp = pd_.get("last_price")
             shares = pos.get("shares", 0)
-            unrealised = round((lp - entry) * shares, 2) if lp and entry and shares else None
-            pos_return = round((lp - entry) / entry * 100, 3) if lp and entry and entry > 0 else None
+            direction = pos.get("direction", "long")
+            if direction == "short":
+                unrealised = round((entry - lp) * shares, 2) if lp and entry and shares else None
+                pos_return = round((entry - lp) / entry * 100, 3) if lp and entry and entry > 0 else None
+            else:
+                unrealised = round((lp - entry) * shares, 2) if lp and entry and shares else None
+                pos_return = round((lp - entry) / entry * 100, 3) if lp and entry and entry > 0 else None
             pos_list.append({
                 "ticker": ticker,
+                "direction": direction,
                 "entry_price": entry,
                 "last_price": lp,
                 "return_pct": pos_return,
                 "unrealised_pnl": unrealised,
             })
 
-        # SPY alpha since inception of variant
+        # SPY alpha: only meaningful for long-only variants
         spy_return_pct = vs.get("spy_return_pct")
-        alpha = round(ret - spy_return_pct, 3) if ret is not None and spy_return_pct is not None else None
+        is_mn = vid == "market_neutral_spread"
+        alpha = (
+            None if is_mn  # market-neutral is not compared to SPY
+            else round(ret - spy_return_pct, 3) if ret is not None and spy_return_pct is not None
+            else None
+        )
 
-        variants_out.append({
+        entry = {
             "variant_id": vid,
             "starting_pot": starting,
             "current_pot": pot,
             "net_return_pct": ret,
             "net_dollar_pnl": round(pot - starting, 2),
-            "spy_return_pct": spy_return_pct,
+            "spy_return_pct": None if is_mn else spy_return_pct,
             "alpha_vs_spy_pct": alpha,
             "open_positions": vs.get("open_positions", 0),
             "closed_trades": vs.get("closed_trades", 0),
@@ -612,11 +625,17 @@ def _build_hermes_v3_json(
             "dsr_cleared": vs.get("dsr_cleared"),
             "pbo_estimate": vs.get("pbo_estimate"),
             "promotion_gate_cleared": vs.get("promotion_gate_cleared"),
+            "promotion_gate_reason": vs.get("promotion_gate_reason"),
             "positions": pos_list,
-        })
+        }
+        # Pass spread metrics for the market-neutral variant
+        if is_mn:
+            entry["spread_metrics"] = vs.get("spread_metrics")
+        variants_out.append(entry)
 
-    # Best/worst variants
-    ranked = sorted(variants_out, key=lambda v: v["net_return_pct"] or 0, reverse=True)
+    # Best/worst ranking — long-only variants only (market-neutral uses spread alpha, not pot return)
+    lo_variants = [v for v in variants_out if v["variant_id"] != "market_neutral_spread"]
+    ranked = sorted(lo_variants, key=lambda v: v["net_return_pct"] or 0, reverse=True)
     best = ranked[0] if ranked else None
     worst = ranked[-1] if ranked else None
 

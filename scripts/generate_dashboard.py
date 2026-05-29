@@ -1368,6 +1368,131 @@ def _backtest_section() -> str:
 </section>"""
 
 
+# ─── Cross-system overlap ────────────────────────────────────────────────────
+
+def _compute_overlap_html(scai_path, hermes_jrnl) -> str:
+    """Compute and render cross-system holdings overlap.
+
+    Agreement between systems that share the same universe and governance rules
+    is mechanical, not corroborating. This block makes that explicit.
+    """
+    import json as _json
+
+    lines_out: list[str] = []
+
+    try:
+        # --- load SCAI-II open positions ---
+        scai_baskets: dict[str, dict] = {}   # cluster_name → mark record
+        if scai_path.exists():
+            sm = _json.loads(scai_path.read_text())
+            for m in sm.get("marks", []):
+                if m.get("status") == "open":
+                    cluster = m["basket_name"].split("—")[-1].strip()
+                    scai_baskets[cluster] = m
+
+        # --- load Hermes v1 open positions ---
+        hermes_baskets: dict[str, dict] = {}  # cluster_name → journal record
+        if hermes_jrnl.exists():
+            seen: dict = {}
+            for line in hermes_jrnl.read_text().splitlines():
+                if line.strip():
+                    d = _json.loads(line)
+                    if "paper_id" in d:
+                        seen[d["paper_id"]] = d
+            for d in seen.values():
+                if d.get("status") == "open":
+                    cluster = d["basket_name"].split("—")[-1].strip()
+                    hermes_baskets[cluster] = d
+
+        if not scai_baskets and not hermes_baskets:
+            return ""
+
+        # --- Jaccard on basket/cluster names ---
+        s_set = set(scai_baskets.keys())
+        h_set = set(hermes_baskets.keys())
+        union = s_set | h_set
+        intersection = s_set & h_set
+        basket_jaccard = len(intersection) / len(union) if union else 0.0
+        overlap_pct = int(round(basket_jaccard * 100))
+        n_shared = len(intersection)
+        n_total = len(union)
+
+        # --- Jaccard on tickers (SCAI carries tickers; Hermes journal does not) ---
+        s_tickers: set[str] = set()
+        h_tickers: set[str] = set()
+        for m in scai_baskets.values():
+            s_tickers.update(m.get("tickers") or [])
+        # Hermes journal has no tickers field — ticker overlap not computable
+        ticker_line = ""
+        if s_tickers:
+            ticker_line = (
+                f'<span style="color:#484f58"> · tickers held by SCAI-II: '
+                f'{", ".join(sorted(s_tickers))}'
+                f' (Hermes journal carries no ticker list)</span>'
+            )
+
+        # --- high-overlap warning threshold ---
+        high_overlap = basket_jaccard > 0.80
+
+        # --- side-by-side scores for shared clusters ---
+        score_rows: list[str] = []
+        for cluster in sorted(intersection):
+            s_score = scai_baskets[cluster].get("selection_score")
+            h_score = hermes_baskets[cluster].get("selection_score")
+            s_str = f"{s_score:.3f}" if s_score is not None else "—"
+            h_str = f"{h_score:.3f}" if h_score is not None else "—"
+            score_rows.append(
+                f'<tr><td style="padding:0.1rem 0.6rem 0.1rem 0">{cluster}</td>'
+                f'<td style="padding:0.1rem 0.6rem 0.1rem 0;color:#d29922">SCAI-II: {s_str}</td>'
+                f'<td style="padding:0.1rem 0 0.1rem 0;color:#58a6ff">Hermes: {h_str}</td></tr>'
+            )
+
+        # --- build HTML ---
+        overlap_color = "#ffa726" if high_overlap else "#484f58"
+        lines_out.append(
+            f'<div style="margin-top:0.7rem;padding:0.55rem 0.75rem;'
+            f'border:1px solid #2a2d3e;border-radius:4px;font-size:0.80rem">'
+        )
+        lines_out.append(
+            f'<p style="margin:0 0 0.3rem 0;color:{overlap_color};font-weight:600">'
+            f'Holdings overlap (Hermes v1 ↔ SCAI-II): {overlap_pct}% '
+            f'({n_shared}/{n_total} clusters)</p>'
+        )
+        if ticker_line:
+            lines_out.append(f'<p style="margin:0 0 0.3rem 0">{ticker_line}</p>')
+
+        if high_overlap:
+            lines_out.append(
+                f'<p style="margin:0 0 0.4rem 0;color:#ffa726">'
+                f'⚠ High overlap — systems share universe constraints and governance rules; '
+                f'agreement is mechanical, not corroborating. '
+                f'Treat as one bet.</p>'
+            )
+
+        lines_out.append(
+            f'<p style="margin:0 0 0.3rem 0;color:#484f58">'
+            f'Note: these systems operate on the same watchlist and the same governance '
+            f'block rules. Cluster-level agreement reflects shared constraints, '
+            f'not independent signal.</p>'
+        )
+
+        if score_rows:
+            lines_out.append(
+                f'<p style="margin:0 0 0.2rem 0;color:#484f58">'
+                f'Shared clusters — differing selection scores (constraint-driven, not independent):</p>'
+            )
+            lines_out.append('<table style="border-collapse:collapse;margin:0">')
+            lines_out.extend(score_rows)
+            lines_out.append('</table>')
+
+        lines_out.append('</div>')
+
+    except Exception:
+        pass
+
+    return "\n".join(lines_out)
+
+
 # ─── Index page ───────────────────────────────────────────────────────────────
 
 def _systems_overview() -> str:
@@ -1529,23 +1654,39 @@ def _systems_overview() -> str:
         + "</tr>"
     )
 
-    # Convergence check
-    convergence_html = ""
-    if scai_path.exists() and hermes_jrnl.exists():
+    # Hermes v3-N (market-neutral spread) row — additive, fail-soft
+    h3n_spread_ret, h3n_n_trades = "—", "—"
+    if h3_summary.exists():
         try:
-            sm = _json.loads(scai_path.read_text())
-            s_names = {m["basket_name"].split("—")[-1].strip() for m in sm.get("marks", []) if m.get("status") == "open"}
-            hj = {_json.loads(l)["paper_id"]: _json.loads(l) for l in hermes_jrnl.read_text().splitlines() if l.strip()}
-            h_names = {d["basket_name"].split("—")[-1].strip() for d in hj.values() if d.get("status") == "open"}
-            overlap = s_names & h_names
-            if overlap:
-                convergence_html = (
-                    f'<p style="margin-top:0.6rem;font-size:0.82rem;color:#58a6ff">'
-                    f'⚑ Independent convergence: Hermes &amp; SCAI-II both hold '
-                    f'<strong>{", ".join(overlap)}</strong> — validation signal</p>'
-                )
+            d3n = _json.loads(h3_summary.read_text())
+            mn_row = next(
+                (v for v in d3n.get("variants", []) if v.get("variant_id") == "market_neutral_spread"),
+                None,
+            )
+            if mn_row:
+                sm = mn_row.get("spread_metrics") or {}
+                sr = sm.get("spread_return_pct")
+                h3n_spread_ret = f'{sr:+.1f}%' if sr is not None else "—"
+                nl = sm.get("n_long_trades", 0)
+                ns = sm.get("n_short_trades", 0)
+                h3n_n_trades = f"{nl}L/{ns}S"
         except Exception:
             pass
+    rows.append(
+        "<tr>"
+        + _td("Hermes v3-N", href="hermes_v3/")
+        + _td(f'Market-neutral spread · paper only · spread return {h3n_spread_ret}')
+        + _td("PAPER / SHADOW", color="#bc8cff")
+        + _td("$5k (spread)")
+        + _td("—")
+        + _td(f'<span id="sys-ret-h3n">{h3n_spread_ret}</span>')
+        + _td("n/a — spread only")
+        + _td(h3n_n_trades) + _td("Long/short legs") + _td(h3_updated)
+        + "</tr>"
+    )
+
+    # Cross-system overlap (mechanical — not a validation signal)
+    overlap_html = _compute_overlap_html(scai_path, hermes_jrnl)
 
     rows_html = "\n      ".join(rows)
     return f"""<section>
@@ -1561,7 +1702,7 @@ def _systems_overview() -> str:
       {rows_html}
     </tbody>
   </table>
-  {convergence_html}
+  {overlap_html}
   <p style="margin-top:0.5rem;font-size:0.72rem;color:#484f58">
     Paper-only · No real orders · No broker connection · Diagnostic only ·
     Pot values live-updated from lab JSONs every 5 min
