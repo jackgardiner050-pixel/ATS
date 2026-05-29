@@ -15,7 +15,7 @@ import json
 import math
 import os
 import sys
-from datetime import datetime, date, UTC
+from datetime import datetime, date, timedelta, UTC
 from pathlib import Path
 from typing import Optional
 
@@ -1368,6 +1368,88 @@ def _backtest_section() -> str:
 </section>"""
 
 
+# ─── Heartbeat ───────────────────────────────────────────────────────────────
+
+def _most_recent_expected_run_utc(now: Optional[datetime] = None) -> datetime:
+    """Return the most recent weekday at 21:00 UTC at or before *now*."""
+    if now is None:
+        now = datetime.now(UTC)
+    # Start from today's 21:00 UTC and walk backward until we land on a weekday.
+    candidate = now.replace(hour=21, minute=0, second=0, microsecond=0)
+    if candidate > now:
+        candidate -= timedelta(days=1)
+    # weekday(): Mon=0 … Sun=6; skip Sat(5) and Sun(6)
+    while candidate.weekday() >= 5:
+        candidate -= timedelta(days=1)
+    return candidate
+
+
+def _heartbeat_state(hb_path: Path, now: Optional[datetime] = None) -> dict:
+    """Read heartbeat.json and return a status dict.
+
+    Returns:
+        status: "ok" | "stale" | "never_run" | "unreadable"
+        last_run_utc: datetime (tz-aware UTC) or None
+        expected_utc: datetime (the most recent expected run)
+        commit: str or ""
+    """
+    if now is None:
+        now = datetime.now(UTC)
+    expected = _most_recent_expected_run_utc(now)
+
+    if not hb_path.exists():
+        return {"status": "never_run", "last_run_utc": None, "expected_utc": expected, "commit": ""}
+
+    try:
+        raw = json.loads(hb_path.read_text())
+        ts_str = raw.get("last_run_utc", "")
+        commit = raw.get("commit", "")
+        last_run = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+        if last_run.tzinfo is None:
+            last_run = last_run.replace(tzinfo=UTC)
+        status = "ok" if last_run >= expected else "stale"
+        return {"status": status, "last_run_utc": last_run, "expected_utc": expected, "commit": commit}
+    except Exception:
+        return {"status": "unreadable", "last_run_utc": None, "expected_utc": expected, "commit": ""}
+
+
+def _hermes_v3_heartbeat_badge() -> str:
+    """Render an HTML banner showing the last successful Hermes v3 run time."""
+    state = _heartbeat_state(_DOCS / "data" / "heartbeat.json")
+    status = state["status"]
+    commit = state["commit"]
+    expected = state["expected_utc"]
+
+    if status == "ok":
+        ts = state["last_run_utc"].strftime("%Y-%m-%d %H:%M UTC")
+        commit_tag = f" · <code>{commit}</code>" if commit else ""
+        return (
+            f'<div class="hb-banner hb-ok">'
+            f'&#10003; Hermes v3 last run: <strong>{ts}</strong>{commit_tag}'
+            f'</div>'
+        )
+    elif status == "stale":
+        ts = state["last_run_utc"].strftime("%Y-%m-%d %H:%M UTC")
+        exp = expected.strftime("%Y-%m-%d %H:%M UTC")
+        return (
+            f'<div class="hb-banner hb-stale">'
+            f'&#9888; STALE — last run: {ts} · expected by {exp}'
+            f'</div>'
+        )
+    elif status == "never_run":
+        return (
+            f'<div class="hb-banner hb-stale">'
+            f'&#9888; No Hermes v3 run recorded yet'
+            f'</div>'
+        )
+    else:  # unreadable
+        return (
+            f'<div class="hb-banner hb-stale">'
+            f'&#9888; Heartbeat file unreadable'
+            f'</div>'
+        )
+
+
 # ─── Cross-system overlap ────────────────────────────────────────────────────
 
 def _compute_overlap_html(scai_path, hermes_jrnl) -> str:
@@ -1896,12 +1978,14 @@ def build_index(
 
     lab_nav = _lab_nav()
     systems = _systems_overview()
+    heartbeat = _hermes_v3_heartbeat_badge()
 
     body = f"""
 {_live_strip_html("data/ats_live.json", "SPY")}
 {header}
 {perf}
 {health}
+{heartbeat}
 {lab_nav}
 <main>
 <div class="container">
