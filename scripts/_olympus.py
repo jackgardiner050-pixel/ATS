@@ -279,6 +279,10 @@ def olympus_lab_nav() -> str:
       <span class="lab-nav-title">Mnemosyne</span>
       <span class="lab-nav-sub">Attribution</span>
     </a>
+    <a href="olympus_track.html" class="lab-nav-card">
+      <span class="lab-nav-title">Live Track</span>
+      <span class="lab-nav-sub">Nike &amp; Iris OOS</span>
+    </a>
   </div>
 </nav>"""
 
