@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-06-01T13:30:01Z",
-  "fetched_at_uk": "2026-06-01 14:30 BST",
+  "fetched_at_utc": "2026-06-01T13:42:30Z",
+  "fetched_at_uk": "2026-06-01 14:42 BST",
   "market_status": "open",
   "market_note": "US market open",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
@@ -18,48 +18,48 @@
       },
       "entry_date": "2026-05-28",
       "last_prices": {
-        "VRT": 317.409,
-        "SMCI": 45.74
+        "VRT": 326.77,
+        "SMCI": 46.87
       },
       "prev_closes": {
         "VRT": 315.52,
         "SMCI": 45.99
       },
       "day_changes": {
-        "VRT": 0.599,
-        "SMCI": -0.544
+        "VRT": 3.566,
+        "SMCI": 1.913
       },
       "returns": {
-        "VRT": -0.741,
-        "SMCI": 19.77
+        "VRT": 2.186,
+        "SMCI": 22.728
       },
-      "basket_return_pct": 9.514,
-      "basket_today_pct": 0.027,
+      "basket_return_pct": 12.457,
+      "basket_today_pct": 2.74,
       "benchmark": "QQQ",
       "benchmark_entry_price": 735.6,
-      "benchmark_last_price": 737.23,
-      "benchmark_return_pct": 0.222,
-      "benchmark_today_pct": -0.102,
-      "alpha_vs_benchmark_pct": 9.293,
+      "benchmark_last_price": 738.855,
+      "benchmark_return_pct": 0.442,
+      "benchmark_today_pct": 0.119,
+      "alpha_vs_benchmark_pct": 12.015,
       "spy_entry_date": "2026-05-28",
       "spy_entry_price": 754.6,
-      "spy_latest_price": 755.58,
-      "spy_last_price": 755.58,
-      "spy_return_pct": 0.13,
-      "spy_today_pct": -0.024,
-      "alpha_vs_spy_pct": 9.384,
+      "spy_latest_price": 756.17,
+      "spy_last_price": 756.17,
+      "spy_return_pct": 0.208,
+      "spy_today_pct": 0.054,
+      "alpha_vs_spy_pct": 12.249,
       "spy_baseline_status": "ok",
       "spy_baseline_reason": "",
       "n_priced": 2,
       "stale": false
     }
   ],
-  "portfolio_return_pct": 9.514,
-  "portfolio_today_pct": 0.027,
+  "portfolio_return_pct": 12.457,
+  "portfolio_today_pct": 2.74,
   "spy_entry_date": "2026-05-28",
-  "spy_return_pct": 0.13,
-  "spy_today_pct": -0.024,
-  "alpha_vs_spy_pct": 9.384,
+  "spy_return_pct": 0.208,
+  "spy_today_pct": 0.054,
+  "alpha_vs_spy_pct": 12.249,
   "spy_baseline_status": "ok",
   "n_baskets": 1,
   "n_priced": 1,
