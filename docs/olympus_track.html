@@ -1,0 +1,50 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Olympus — Nike &amp; Iris live track</title>
+<style>
+ body{font-family:-apple-system,system-ui,sans-serif;background:#0d1117;color:#c9d1d9;margin:0;padding:1.5rem;}
+ h1{font-size:1.2rem} h2{margin:1.5rem 0 .3rem;color:#e6edf3} h3{font-size:.85rem;margin:.8rem 0 .3rem;color:#9da7b3}
+ .verdict{font-size:.85rem;color:#adbac7;max-width:60rem}
+ table{border-collapse:collapse;width:100%;font-size:.78rem;margin-bottom:.5rem}
+ th,td{text-align:left;padding:.25rem .5rem;border-bottom:1px solid #21262d}
+ .muted{color:#6e7681} .back{opacity:.7}
+ .badge{font-size:.65rem;padding:.1rem .4rem;border-radius:.3rem;margin-left:.4rem}
+ .badge.live{background:#143b25;color:#7ee2a8} .badge.backfill{background:#3b2a14;color:#e2b87e}
+ .firewall{font-size:.7rem;color:#6e7681;border-top:1px solid #21262d;margin-top:1.5rem;padding-top:.6rem}
+</style></head><body>
+<h1>Olympus — live point-in-time track <span class="muted">(paper / notional · sanitized)</span></h1>
+<p class="muted">Percentages and ratios only — no currency, holdings, or personal data.
+Live out-of-sample track is hash-chained and immutable; in-sample backfill is shown
+separately and is <b>not</b> a live record.</p>
+<p><b>Mnemosyne (read-only)</b> — Nike~Iris return correlation: <b>n/a</b>
+<span class="muted">(insufficient overlapping live history — correlation pending; n=0)</span></p>
+
+<section class="engine">
+  <h2>Iris <span class="muted">(experimental_pot_signal_engine)</span></h2>
+  <p class="verdict">Fair-weather event satellite. In-sample (net of cost, survivorship-flattered): bull ≈ +14% cumulative vs all-passive; bear −10.0% vs index −7.1%. Two periods is not statistical proof. Live out-of-sample track begins 2026-06-01.</p>
+
+  <h3>Live point-in-time track <span class="badge live">OOS · hash-chained ✓</span></h3>
+  <table><thead><tr><th>Date</th><th>Kind</th><th>Ticker</th><th>Cum. return</th><th>Detail</th></tr></thead>
+  <tbody><tr><td>2026-06-01</td><td>GENESIS</td><td></td><td>+0.00%</td><td class='muted'>note=Iris live out-of-sample track start, rules=restore-only ESE backtest BUY/exit rules</td></tr></tbody></table>
+
+  <h3>In-sample backfill <span class="badge backfill">NOT A LIVE RECORD</span></h3>
+  <table class="back"><thead><tr><th>Date</th><th>Kind</th><th>Ticker</th><th>Cum. return</th><th>Detail</th></tr></thead>
+  <tbody><tr><td>2022-12-31</td><td>MARK</td><td>(bear-2022)</td><td>-10.00%</td><td class='muted'>note=bear stress: strategy -10.0% vs index -7.1% (survivorship-flattered)</td></tr>
+<tr><td>2024-05-22</td><td>BUY</td><td>(bull-window)</td><td>+0.00%</td><td class='muted'>window=2024-05-22..2026-05-21, note=ESE bull core+satellite backtest</td></tr>
+<tr><td>2026-05-21</td><td>MARK</td><td>(bull-window)</td><td>+14.40%</td><td class='muted'>note=cumulative vs all-passive, net of cost, survivorship-flattered</td></tr></tbody></table>
+</section>
+<section class="engine">
+  <h2>Nike <span class="muted">(experimental_pot_engine)</span></h2>
+  <p class="verdict">Momentum satellite — marginal, regime-dependent edge (~+6pp/yr in-sample; survivorship ~10×; bull-window). Live out-of-sample track begins at the 2026-06-30 rebalance.</p>
+
+  <h3>Live point-in-time track <span class="badge live">OOS · hash-chained ✓</span></h3>
+  <table><thead><tr><th>Date</th><th>Kind</th><th>Ticker</th><th>Cum. return</th><th>Detail</th></tr></thead>
+  <tbody><tr><td colspan='5' class='muted'>(no entries yet)</td></tr></tbody></table>
+
+  <h3>In-sample backfill <span class="badge backfill">NOT A LIVE RECORD</span></h3>
+  <table class="back"><thead><tr><th>Date</th><th>Kind</th><th>Ticker</th><th>Cum. return</th><th>Detail</th></tr></thead>
+  <tbody><tr><td>2018-01-01</td><td>BUY</td><td>(walk-forward)</td><td>+0.00%</td><td class='muted'>window=2018..2026, note=MOM_TOP5 walk-forward (10x 3y windows)</td></tr>
+<tr><td>2026-01-01</td><td>MARK</td><td>(walk-forward)</td><td>+6.00%</td><td class='muted'>note=~+6pp/yr satellite vs passive DCA; survivorship ~10x; bull window</td></tr></tbody></table>
+</section>
+<p class="firewall">Firewall: read-only display of immutable ledgers. No discovery
+signal feeds selection, sizing, or timing. Nothing here places an order.</p>
+</body></html>
