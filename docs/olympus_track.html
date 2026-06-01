@@ -19,11 +19,12 @@ separately and is <b>not</b> a live record.</p>
 <span class="muted">(insufficient overlapping live history — correlation pending; n=0)</span></p>
 
 <section class="leaderboard">
-  <h2>Live OOS leaderboard <span class="muted">(paper / notional · ranked by cumulative return)</span></h2>
-  <table><thead><tr><th>#</th><th>Engine</th><th>Status</th><th>Live entries</th><th>Open</th><th>Cum. return</th></tr></thead>
-  <tbody><tr><td>1</td><td>Iris <span class='muted'>(experimental_pot_signal_engine)</span> <span class='muted'>since 2026-06-01</span></td><td><span class='badge live'>live ✓</span></td><td>1</td><td>1</td><td>+0.00%</td></tr><tr><td>2</td><td>Nike <span class='muted'>(experimental_pot_engine)</span></td><td><span class='badge backfill'>awaiting ✓</span></td><td>0</td><td>0</td><td>+0.00%</td></tr></tbody></table>
-  <p class="muted" style="font-size:.72rem">Cumulative return is notional and point-in-time; counts are live
-  (non-genesis) hash-chained ledger entries. Awaiting = live track not yet started by design. No currency, holdings, or personal data.</p>
+  <h2>Live leaderboard <span class="muted">(ranked by edge vs benchmark, net of cost — never raw return)</span></h2>
+  <table><thead><tr><th>#</th><th>System</th><th>Status</th><th>Live entries</th><th>Open</th><th>Edge vs benchmark (net)</th><th>Raw return</th></tr></thead>
+  <tbody><tr><td>1</td><td>Iris <span class='muted'>(experimental_pot_signal_engine)</span> <span class='muted'>since 2026-06-01</span></td><td><span class='badge live'>live ✓</span></td><td>1</td><td>1</td><td><span style="color:#7ee2a8">+0.00%</span></td><td><span class="muted">+0.00% (bull-flattered)</span></td></tr><tr><td>2</td><td>Nike <span class='muted'>(experimental_pot_engine)</span></td><td><span class='badge backfill'>awaiting ✓</span></td><td>0</td><td>0</td><td><span class="muted">pending</span></td><td><span class="muted">+0.00% (bull-flattered)</span></td></tr><tr><td>3</td><td>Caerus <span class='muted'>(caerus_engine)</span></td><td><span class='badge backfill'>awaiting ✓</span></td><td>0</td><td>0</td><td><span class="muted">pending</span></td><td>—</td></tr></tbody></table>
+  <p class="muted" style="font-size:.72rem">Ranked by edge vs each system's own buy-and-hold benchmark, net of cost — not raw
+  return, which the bull market flatters. "pending" = no closed trades yet. Counts are live (non-genesis) hash-chained entries.
+  No currency, holdings, or personal data.</p>
 </section>
 
 <section class="benchmark">
