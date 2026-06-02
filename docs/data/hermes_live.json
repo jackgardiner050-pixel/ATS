@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-06-02T20:06:28Z",
-  "fetched_at_uk": "2026-06-02 21:06 BST",
+  "fetched_at_utc": "2026-06-02T20:30:00Z",
+  "fetched_at_uk": "2026-06-02 21:30 BST",
   "market_status": "after_hours",
   "market_note": "US after-hours",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
@@ -18,7 +18,7 @@
       },
       "entry_date": "2026-05-28",
       "last_prices": {
-        "VRT": 334.5945,
+        "VRT": 334.49,
         "SMCI": 50.17
       },
       "prev_closes": {
@@ -26,40 +26,40 @@
         "SMCI": 49.234
       },
       "day_changes": {
-        "VRT": 2.668,
+        "VRT": 2.636,
         "SMCI": 1.901
       },
       "returns": {
-        "VRT": 4.633,
+        "VRT": 4.6,
         "SMCI": 31.369
       },
-      "basket_return_pct": 18.001,
-      "basket_today_pct": 2.284,
+      "basket_return_pct": 17.985,
+      "basket_today_pct": 2.268,
       "benchmark": "QQQ",
       "benchmark_entry_price": 735.6,
       "benchmark_last_price": 746.16,
       "benchmark_return_pct": 1.436,
       "benchmark_today_pct": 0.794,
-      "alpha_vs_benchmark_pct": 16.565,
+      "alpha_vs_benchmark_pct": 16.549,
       "spy_entry_date": "2026-05-28",
       "spy_entry_price": 754.6,
-      "spy_latest_price": 759.55,
-      "spy_last_price": 759.55,
-      "spy_return_pct": 0.656,
-      "spy_today_pct": 0.377,
-      "alpha_vs_spy_pct": 17.345,
+      "spy_latest_price": 759.57,
+      "spy_last_price": 759.57,
+      "spy_return_pct": 0.659,
+      "spy_today_pct": 0.379,
+      "alpha_vs_spy_pct": 17.326,
       "spy_baseline_status": "ok",
       "spy_baseline_reason": "",
       "n_priced": 2,
       "stale": false
     }
   ],
-  "portfolio_return_pct": 18.001,
-  "portfolio_today_pct": 2.284,
+  "portfolio_return_pct": 17.985,
+  "portfolio_today_pct": 2.268,
   "spy_entry_date": "2026-05-28",
-  "spy_return_pct": 0.656,
-  "spy_today_pct": 0.377,
-  "alpha_vs_spy_pct": 17.345,
+  "spy_return_pct": 0.659,
+  "spy_today_pct": 0.379,
+  "alpha_vs_spy_pct": 17.326,
   "spy_baseline_status": "ok",
   "n_baskets": 1,
   "n_priced": 1,
