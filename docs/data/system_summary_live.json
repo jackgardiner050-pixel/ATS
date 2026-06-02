@@ -1,25 +1,25 @@
 {
-  "fetched_at_utc": "2026-06-01T21:06:40Z",
-  "fetched_at_uk": "2026-06-01 22:06 BST",
-  "market_status": "after_hours",
-  "market_note": "US after-hours",
+  "fetched_at_utc": "2026-06-02T09:08:41Z",
+  "fetched_at_uk": "2026-06-02 10:08 BST",
+  "market_status": "pre_market",
+  "market_note": "US pre-market",
   "systems": {
     "ats": {
       "portfolio_return_pct": 1.872,
-      "portfolio_today_pct": -0.122,
+      "portfolio_today_pct": 0.097,
       "alpha_vs_spy_pct": 0.142,
       "n_positions": 12
     },
     "scai": {
       "portfolio_return_pct": 11.942,
-      "portfolio_today_pct": 2.215,
+      "portfolio_today_pct": -2.776,
       "spy_return_pct": 0.522,
       "alpha_vs_spy_pct": 11.42,
       "n_baskets": 1
     },
     "hermes": {
       "portfolio_return_pct": 11.942,
-      "portfolio_today_pct": 2.215,
+      "portfolio_today_pct": -2.776,
       "spy_return_pct": 0.522,
       "alpha_vs_spy_pct": 11.42,
       "n_baskets": 1
