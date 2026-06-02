@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-06-02T20:30:00Z",
-  "fetched_at_uk": "2026-06-02 21:30 BST",
+  "fetched_at_utc": "2026-06-02T20:52:24Z",
+  "fetched_at_uk": "2026-06-02 21:52 BST",
   "market_status": "after_hours",
   "market_note": "US after-hours",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
