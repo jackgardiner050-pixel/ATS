@@ -526,6 +526,64 @@ def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
     )
 
 
+def _themis_meta(positions: list[dict]) -> dict:
+    """Honestly derive the shared entry-call labels from the data (no hardcoding)."""
+    ratings = {p.get("entry_rating", "") for p in positions}
+    confs = {p.get("entry_confidence", "") for p in positions}
+    entry_dates = {p.get("entry_date", "") for p in positions}
+    entry_date = sorted(entry_dates)[0] if entry_dates else ""
+    days_held = 0
+    try:
+        days_held = (date.today() - date.fromisoformat(entry_date)).days
+    except (ValueError, TypeError):
+        pass
+    one = lambda s: next(iter(s)) if len(s) == 1 else "mixed"
+    nice = ""
+    try:
+        nice = date.fromisoformat(entry_date).strftime("%-d %b %Y")
+    except (ValueError, TypeError):
+        nice = entry_date
+    return {"rating": one(ratings).replace("_", " "), "conf": one(confs),
+            "entry_date": entry_date, "entry_date_nice": nice, "days_held": days_held,
+            "uniform": len(ratings) == 1 and len(confs) == 1 and len(entry_dates) == 1}
+
+
+def _themis_scorecard_note(positions: list[dict]) -> str:
+    """Narrative that explains the section: what these are, who rated them, when, how held, vs what.
+
+    Makes the honesty explicit: the ratings are the ORIGINAL entry calls (a fixed scorecard, not
+    re-rated); only the prices/returns below refresh live. Days-held is computed client-side so it
+    cannot silently freeze between dashboard rebuilds.
+    """
+    if not positions:
+        return ""
+    m = _themis_meta(positions)
+    n = len(positions)
+    rc = (f"all <b>rated {m['rating']} · {m['conf']} confidence</b>" if m["uniform"]
+          else "rated per the table below")
+    return f"""
+<div class="card" style="margin-bottom:0.75rem;font-size:0.82rem;line-height:1.5">
+  <b>Themis (ATS) paper book.</b> {n} equal-weight positions, {rc} by the Themis governance
+  model on <b>{m['entry_date_nice']}</b>. These are the <b>original entry calls — a fixed
+  scorecard, not re-rated.</b> The returns below are <b>live since entry</b> (prices refresh every
+  5&nbsp;min during market hours); the <b>ratings and date do not change</b>, so the call stays
+  honest. Held <b><span id="themis-days-held" data-entry-date="{m['entry_date']}">{m['days_held']}</span>
+  days</b> · benchmark <b>SPY</b> (return-since-entry vs SPY shown in the banner above).
+  <span style="color:var(--text-muted)">Paper-only · diagnostic.</span>
+</div>
+<script>(function(){{
+  function upd(){{
+    /* keep every days-held counter current regardless of when the page was last rebuilt */
+    document.querySelectorAll('[data-entry-date]').forEach(function(el){{
+      var ed=el.getAttribute('data-entry-date');if(!ed)return;
+      var d=Math.floor((Date.now()-new Date(ed+'T00:00:00Z').getTime())/86400000);
+      if(d>=0)el.textContent=d;
+    }});
+  }}
+  if(document.readyState!=='loading')upd();else document.addEventListener('DOMContentLoaded',upd);
+}})();</script>"""
+
+
 def _position_returns_chart(positions: list[dict], prices: dict[str, float]) -> str:
     """Sorted horizontal bar chart: current % return per position, best at top."""
     if not positions or not prices:
@@ -565,6 +623,10 @@ def _position_returns_chart(positions: list[dict], prices: dict[str, float]) -> 
     return f"""
 <section>
   <h2 class="section-title">Position Returns</h2>
+  {_themis_scorecard_note(positions)}
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem">
+    Live return since entry · sorted best-first · rating fixed at entry (see note)
+  </div>
   <div class="card">
     {"".join(bar_rows)}
   </div>
@@ -616,7 +678,7 @@ def _portfolio_overview(positions: list[dict], trades: list[dict]) -> str:
   <div class="card stat-card">
     <div class="stat-value">{n_pos}</div>
     <div class="stat-label">Open Positions</div>
-    <div class="stat-sub">All STRONG_BUY · MED conf</div>
+    <div class="stat-sub">Rated STRONG_BUY · MED on {entry_date} (entry calls — fixed)</div>
   </div>
   <div class="card stat-card">
     <div class="stat-value">{n_closed}</div>
@@ -624,9 +686,9 @@ def _portfolio_overview(positions: list[dict], trades: list[dict]) -> str:
     <div class="stat-sub">Performance pending</div>
   </div>
   <div class="card stat-card">
-    <div class="stat-value">{days_held}d</div>
+    <div class="stat-value"><span id="ov-days-held" data-entry-date="{entry_date}">{days_held}</span>d</div>
     <div class="stat-label">Days Held</div>
-    <div class="stat-sub">Since {entry_date}</div>
+    <div class="stat-sub">Since {entry_date} · updates daily</div>
   </div>
   <div class="card stat-card">
     <div class="stat-value">{fmt_price(spy_entry)}</div>
@@ -683,6 +745,10 @@ def _open_positions_table(positions: list[dict]) -> str:
     return f"""
 <section>
   <h2 class="section-title">Open Positions</h2>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.2rem">
+    Entry / Price Target / Rating / Conf are the <b>original entry call</b> (Themis, fixed) ·
+    Current / Today % / Return refresh live
+  </div>
   <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem" id="live-cards-ts">Live prices loading…</div>
   <div class="table-wrap">
     <table>
@@ -1438,6 +1504,23 @@ def _heartbeat_state(hb_path: Path, now: Optional[datetime] = None) -> dict:
         return {"status": "unreadable", "last_run_utc": None, "expected_utc": expected, "commit": ""}
 
 
+def _hermes_v3_last_variant_run() -> str:
+    """Honest fallback: the ACTUAL last Hermes v3 run from the variant summary.
+
+    The heartbeat banner reads docs/data/heartbeat.json (written by a heartbeat cron
+    that isn't wired). When that's absent we don't claim 'never run' if the engine has
+    in fact produced runs — we read the real artifact. No fabrication.
+    """
+    try:
+        import json as _json
+        p = Path.home() / "trading" / "hermes_v3_lab" / "data" / "variants" / "variant_summary.json"
+        d = _json.loads(p.read_text())
+        ts = d.get("generated_at") or d.get("as_of_date") or ""
+        return ts[:16].replace("T", " ") if ts else ""
+    except Exception:
+        return ""
+
+
 def _hermes_v3_heartbeat_badge() -> str:
     """Render an HTML banner showing the last successful Hermes v3 run time."""
     state = _heartbeat_state(_DOCS / "data" / "heartbeat.json")
@@ -1462,9 +1545,20 @@ def _hermes_v3_heartbeat_badge() -> str:
             f'</div>'
         )
     elif status == "never_run":
+        # No live heartbeat file exists — but the engine may still have produced real
+        # runs. Be honest: surface the actual last run (from the variant summary) AND the
+        # gap (no automated heartbeat/schedule). Do NOT fabricate a heartbeat or hide the gap.
+        last = _hermes_v3_last_variant_run()
+        if last:
+            return (
+                f'<div class="hb-banner hb-stale">'
+                f'&#9888; Hermes v3 last run: <strong>{last}</strong> (variant summary) · '
+                f'no automated heartbeat/schedule recording runs'
+                f'</div>'
+            )
         return (
             f'<div class="hb-banner hb-stale">'
-            f'&#9888; No Hermes v3 run recorded yet'
+            f'&#9888; Hermes v3 — not yet run'
             f'</div>'
         )
     else:  # unreadable

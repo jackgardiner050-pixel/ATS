@@ -74,7 +74,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   </div>
   <p style="margin:0 0 .25rem 0;font-size:.82rem;color:#c9d1d9">
     <strong>0/2</strong> members validated ·
-    <strong>362 days remaining</strong> (deadline 2027-05-29)
+    <strong>360 days remaining</strong> (deadline 2027-05-29)
   </p>
   <p style="margin:0;font-size:.75rem;color:#8b949e">
     Validated = positive forward alpha point estimate + decorrelated (|r|&lt;0.4) + Mnemosyne-clean.
@@ -82,7 +82,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   </p>
 </div>
 </section>
-<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+1.5%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.4%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +0.1%</div></div>
+<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+2.9%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.9%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +1.0%</div></div>
 
 <div class="health-bar">
   <div class="container">
@@ -90,10 +90,10 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   <span class="health-pill yellow" title="49.0% confidence"><span class="dot"></span>Regime: Risk On Growth</span>
   <span class="health-pill yellow"><span class="dot"></span>2 Watches</span>
   <span class="health-pill yellow"><span class="dot"></span>Signal Decay</span>
-<span class="health-last-run">Last run: 2026-06-01 15:07 UTC</span>
+<span class="health-last-run">Last run: 2026-06-03 05:02 UTC</span>
   </div>
 </div>
-<div class="hb-banner hb-stale">&#9888; No Hermes v3 run recorded yet</div>
+<div class="hb-banner hb-stale">&#9888; Hermes v3 last run: <strong>2026-05-28 19:06</strong> (variant summary) · no automated heartbeat/schedule recording runs</div>
 
 <nav class="lab-nav">
   <div class="container">
@@ -228,8 +228,32 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   
 <section>
   <h2 class="section-title">Position Returns</h2>
+  
+<div class="card" style="margin-bottom:0.75rem;font-size:0.82rem;line-height:1.5">
+  <b>Themis (ATS) paper book.</b> 12 equal-weight positions, all <b>rated STRONG BUY · MED confidence</b> by the Themis governance
+  model on <b>25 May 2026</b>. These are the <b>original entry calls — a fixed
+  scorecard, not re-rated.</b> The returns below are <b>live since entry</b> (prices refresh every
+  5&nbsp;min during market hours); the <b>ratings and date do not change</b>, so the call stays
+  honest. Held <b><span id="themis-days-held" data-entry-date="2026-05-25">9</span>
+  days</b> · benchmark <b>SPY</b> (return-since-entry vs SPY shown in the banner above).
+  <span style="color:var(--text-muted)">Paper-only · diagnostic.</span>
+</div>
+<script>(function(){
+  function upd(){
+    /* keep every days-held counter current regardless of when the page was last rebuilt */
+    document.querySelectorAll('[data-entry-date]').forEach(function(el){
+      var ed=el.getAttribute('data-entry-date');if(!ed)return;
+      var d=Math.floor((Date.now()-new Date(ed+'T00:00:00Z').getTime())/86400000);
+      if(d>=0)el.textContent=d;
+    });
+  }
+  if(document.readyState!=='loading')upd();else document.addEventListener('DOMContentLoaded',upd);
+})();</script>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem">
+    Live return since entry · sorted best-first · rating fixed at entry (see note)
+  </div>
   <div class="card">
-    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:68.7%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+20.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:21.7%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+6.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:15.6%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+4.7%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:12.0%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+3.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:8.5%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+2.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-green" style="width:5.3%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--green)">+1.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-red" style="width:1.9%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--red)">-0.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-red" style="width:3.4%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--red)">-1.0%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-red" style="width:7.7%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--red)">-2.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-red" style="width:9.8%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--red)">-2.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:21.4%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-6.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:26.4%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-7.9%</span></div>
+    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:60.6%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+18.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:44.7%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+13.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:21.1%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+6.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-green" style="width:17.8%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--green)">+5.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:13.7%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+4.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-green" style="width:3.8%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--green)">+1.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:2.1%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+0.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-red" style="width:0.1%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--red)">-0.0%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-red" style="width:2.8%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--red)">-0.8%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-red" style="width:5.1%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--red)">-1.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:16.2%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-4.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:23.2%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-7.0%</span></div>
   </div>
 </section>
   
@@ -240,7 +264,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   <div class="card stat-card">
     <div class="stat-value">12</div>
     <div class="stat-label">Open Positions</div>
-    <div class="stat-sub">All STRONG_BUY · MED conf</div>
+    <div class="stat-sub">Rated STRONG_BUY · MED on 2026-05-25 (entry calls — fixed)</div>
   </div>
   <div class="card stat-card">
     <div class="stat-value">0</div>
@@ -248,9 +272,9 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
     <div class="stat-sub">Performance pending</div>
   </div>
   <div class="card stat-card">
-    <div class="stat-value">7d</div>
+    <div class="stat-value"><span id="ov-days-held" data-entry-date="2026-05-25">9</span>d</div>
     <div class="stat-label">Days Held</div>
-    <div class="stat-sub">Since 2026-05-25</div>
+    <div class="stat-sub">Since 2026-05-25 · updates daily</div>
   </div>
   <div class="card stat-card">
     <div class="stat-value">$745.64</div>
@@ -277,6 +301,10 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   
 <section>
   <h2 class="section-title">Open Positions</h2>
+  <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.2rem">
+    Entry / Price Target / Rating / Conf are the <b>original entry call</b> (Themis, fixed) ·
+    Current / Today % / Return refresh live
+  </div>
   <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:0.4rem" id="live-cards-ts">Live prices loading…</div>
   <div class="table-wrap">
     <table>
@@ -992,7 +1020,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
 <footer>
   <div class="container">
     Olympus · Paper portfolio only · Diagnostic read-only layer ·
-    Generated 2026-06-01 15:07 UTC · Not investment advice
+    Generated 2026-06-03 05:02 UTC · Not investment advice
   </div>
 </footer><script>
 (function(){
