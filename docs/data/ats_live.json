@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-06-03T17:15:01Z",
-  "fetched_at_uk": "2026-06-03 18:15 BST",
+  "fetched_at_utc": "2026-06-03T17:45:01Z",
+  "fetched_at_uk": "2026-06-03 18:45 BST",
   "market_status": "open",
   "market_note": "US market open",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
@@ -10,10 +10,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 72.04,
       "spy_entry_price": 745.64,
-      "last_price": 72.215,
+      "last_price": 72.655,
       "prev_close": 71.12,
-      "day_change_pct": 1.54,
-      "return_pct": 0.243,
+      "day_change_pct": 2.158,
+      "return_pct": 0.854,
       "stale": false
     },
     {
@@ -21,10 +21,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 432.16,
       "spy_entry_price": 745.64,
-      "last_price": 498.69,
+      "last_price": 500.91,
       "prev_close": 489.71,
-      "day_change_pct": 1.834,
-      "return_pct": 15.395,
+      "day_change_pct": 2.287,
+      "return_pct": 15.908,
       "stale": false
     },
     {
@@ -32,10 +32,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 411.2,
       "spy_entry_price": 745.64,
-      "last_price": 469.905,
+      "last_price": 469.26,
       "prev_close": 480.15,
-      "day_change_pct": -2.134,
-      "return_pct": 14.277,
+      "day_change_pct": -2.268,
+      "return_pct": 14.12,
       "stale": false
     },
     {
@@ -43,10 +43,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 136.42,
       "spy_entry_price": 745.64,
-      "last_price": 140.6,
+      "last_price": 140.4995,
       "prev_close": 142.0,
-      "day_change_pct": -0.986,
-      "return_pct": 3.064,
+      "day_change_pct": -1.057,
+      "return_pct": 2.99,
       "stale": false
     },
     {
@@ -54,10 +54,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 342.89,
       "spy_entry_price": 745.64,
-      "last_price": 340.87,
+      "last_price": 340.2,
       "prev_close": 340.44,
-      "day_change_pct": 0.126,
-      "return_pct": -0.589,
+      "day_change_pct": -0.07,
+      "return_pct": -0.785,
       "stale": false
     },
     {
@@ -65,10 +65,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 270.14,
       "spy_entry_price": 745.64,
-      "last_price": 281.685,
+      "last_price": 282.4,
       "prev_close": 285.25,
-      "day_change_pct": -1.25,
-      "return_pct": 4.274,
+      "day_change_pct": -0.999,
+      "return_pct": 4.538,
       "stale": false
     },
     {
@@ -76,10 +76,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 475.01,
       "spy_entry_price": 745.64,
-      "last_price": 485.49,
+      "last_price": 485.63,
       "prev_close": 479.0,
-      "day_change_pct": 1.355,
-      "return_pct": 2.206,
+      "day_change_pct": 1.384,
+      "return_pct": 2.236,
       "stale": false
     },
     {
@@ -87,10 +87,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 114.69,
       "spy_entry_price": 745.64,
-      "last_price": 121.93,
+      "last_price": 121.99,
       "prev_close": 122.38,
-      "day_change_pct": -0.368,
-      "return_pct": 6.313,
+      "day_change_pct": -0.319,
+      "return_pct": 6.365,
       "stale": false
     },
     {
@@ -98,10 +98,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 33.79,
       "spy_entry_price": 745.64,
-      "last_price": 31.83,
+      "last_price": 31.765,
       "prev_close": 31.5,
-      "day_change_pct": 1.048,
-      "return_pct": -5.801,
+      "day_change_pct": 0.841,
+      "return_pct": -5.993,
       "stale": false
     },
     {
@@ -109,10 +109,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 126.01,
       "spy_entry_price": 745.64,
-      "last_price": 124.92,
+      "last_price": 125.08,
       "prev_close": 127.56,
-      "day_change_pct": -2.07,
-      "return_pct": -0.865,
+      "day_change_pct": -1.944,
+      "return_pct": -0.738,
       "stale": false
     },
     {
@@ -120,10 +120,10 @@
       "entry_date": "2026-05-25",
       "entry_price": 417.6,
       "spy_entry_price": 745.64,
-      "last_price": 411.095,
+      "last_price": 411.72,
       "prev_close": 418.01,
-      "day_change_pct": -1.654,
-      "return_pct": -1.558,
+      "day_change_pct": -1.505,
+      "return_pct": -1.408,
       "stale": false
     },
     {
@@ -131,20 +131,20 @@
       "entry_date": "2026-05-25",
       "entry_price": 276.75,
       "spy_entry_price": 745.64,
-      "last_price": 268.66,
+      "last_price": 267.705,
       "prev_close": 266.5,
-      "day_change_pct": 0.811,
-      "return_pct": -2.923,
+      "day_change_pct": 0.452,
+      "return_pct": -3.268,
       "stale": false
     }
   ],
-  "portfolio_return_pct": 2.836,
-  "portfolio_today_pct": -0.146,
+  "portfolio_return_pct": 2.902,
+  "portfolio_today_pct": -0.087,
   "spy_entry_price": 745.64,
-  "spy_last_price": 754.245,
-  "spy_return_pct": 1.154,
-  "spy_today_pct": -0.709,
-  "alpha_vs_spy_pct": 1.682,
+  "spy_last_price": 755.2307,
+  "spy_return_pct": 1.286,
+  "spy_today_pct": -0.579,
+  "alpha_vs_spy_pct": 1.616,
   "n_positions": 12,
   "n_priced": 12,
   "source": "yfinance",
