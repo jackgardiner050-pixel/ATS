@@ -1,8 +1,8 @@
 {
-  "fetched_at_utc": "2026-06-02T21:22:53Z",
-  "fetched_at_uk": "2026-06-02 22:22 BST",
-  "market_status": "after_hours",
-  "market_note": "US after-hours",
+  "fetched_at_utc": "2026-06-03T05:12:23Z",
+  "fetched_at_uk": "2026-06-03 06:12 BST",
+  "market_status": "closed",
+  "market_note": "US market closed",
   "systems": {
     "ats": {
       "portfolio_return_pct": 2.91,
@@ -26,9 +26,9 @@
     },
     "hermes_v3": {
       "best_variant_id": "baseline_current_governance",
-      "best_variant_return_pct": -0.07,
-      "worst_variant_return_pct": -0.07,
-      "n_variants": 10
+      "best_variant_return_pct": 6.47,
+      "worst_variant_return_pct": 6.47,
+      "n_variants": 11
     }
   }
 }
