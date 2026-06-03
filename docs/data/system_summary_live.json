@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-06-03T05:12:23Z",
-  "fetched_at_uk": "2026-06-03 06:12 BST",
+  "fetched_at_utc": "2026-06-03T07:08:00Z",
+  "fetched_at_uk": "2026-06-03 08:08 BST",
   "market_status": "closed",
   "market_note": "US market closed",
   "systems": {
@@ -27,7 +27,7 @@
     "hermes_v3": {
       "best_variant_id": "baseline_current_governance",
       "best_variant_return_pct": 6.47,
-      "worst_variant_return_pct": 6.47,
+      "worst_variant_return_pct": 2.85,
       "n_variants": 11
     }
   }
