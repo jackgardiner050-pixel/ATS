@@ -74,7 +74,8 @@ def _govern_growth(cand, book_tickers, *, client, tracker):
 
 
 def run_arm(arm_id: str, candidates, *, client, tracker, fetch_prices: bool = True,
-            record: bool = True, notional: float = 10000.0, qqq_now: float | None = None) -> dict:
+            record: bool = True, notional: float = 10000.0, qqq_now: float | None = None,
+            spy_now: float | None = None) -> dict:
     from olympus.adapters import oracle_llm as LLM
     from olympus.core.constants import ALLOCATION_BANDS
 
@@ -83,6 +84,8 @@ def run_arm(arm_id: str, candidates, *, client, tracker, fetch_prices: bool = Tr
     _update_prices(book, fetch_prices)
     if qqq_now is None and fetch_prices:
         qqq_now = _spot(arms.BENCHMARK_ETF)
+    if spy_now is None and fetch_prices:
+        spy_now = _spot("SPY")                               # secondary benchmark anchor (S&P 500 proxy)
 
     cands = growth_discovery.for_arm(candidates, arms.allowed_roles(arm_id))
 
@@ -138,8 +141,9 @@ def run_arm(arm_id: str, candidates, *, client, tracker, fetch_prices: bool = Tr
         AP.apply_fill(book, fill.__dict__)
         deployed_cost += fill.cost_dollars
         pos = book["satellite"].get(order.ticker)
-        if pos is not None:                                  # stamp QQQ anchor + high-watermark at entry
+        if pos is not None:                                  # stamp QQQ + SPY anchors + high-watermark at entry
             pos.setdefault("qqq_anchor", qqq_now)
+            pos.setdefault("spy_anchor", spy_now)
             pos.setdefault("entry_date", fill.date)
             pos["high"] = max(pos.get("high", 0.0), pos["last_price"])
         for c in buy_queue:
@@ -196,11 +200,12 @@ def run(*, fetch_prices: bool = True, record: bool = True, notional: float = 100
                                 "not. No data-only fallback (that would fake theses)."}
 
         qqq_now = _spot(arms.BENCHMARK_ETF) if fetch_prices else None
+        spy_now = _spot("SPY") if fetch_prices else None
         arm_results = {}
         for arm_id in arms.ARM_IDS:
             arm_results[arm_id] = run_arm(arm_id, candidates, client=client, tracker=tracker,
                                           fetch_prices=fetch_prices, record=record,
-                                          notional=notional, qqq_now=qqq_now)
+                                          notional=notional, qqq_now=qqq_now, spy_now=spy_now)
 
         return {
             "mode": "paper/simulated", "execution_venue": "internal_sim (PaperBroker + Hermes friction)",

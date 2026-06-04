@@ -46,6 +46,16 @@ else
     echo "[$TS] WARN: droplet pull failed — publishing last-known Hermes v3 state"
 fi
 
+# 0b. Pull the Olympus v2 growth-arm paper ledgers (A/B/C) from the droplet where the loop runs.
+#     Non-fatal — a hiccup just re-marks the last-known ledgers.
+mkdir -p "$AGENT/olympus/olympus/data"
+rsync -az --timeout=20 -e "ssh -i $HOME/.ssh/id_ed25519 -o ConnectTimeout=15 -o BatchMode=yes -p 8022" \
+    root@161.35.166.77:/root/agent/olympus/data/arm_A_portfolio.json \
+    root@161.35.166.77:/root/agent/olympus/data/arm_B_portfolio.json \
+    root@161.35.166.77:/root/agent/olympus/data/arm_C_portfolio.json \
+    "$AGENT/olympus/olympus/data/" 2>/dev/null \
+    && echo "[$TS] pulled growth-arm ledgers" || echo "[$TS] WARN: arm-ledger pull failed — re-marking last-known"
+
 # 1. Fetch prices and write JSON files
 $PYTHON "$AGENT/scripts/fetch_live_prices.py"
 
@@ -53,11 +63,14 @@ $PYTHON "$AGENT/scripts/fetch_live_prices.py"
 #     immutable point-in-time ledgers. Display/read-only — no trading.
 ( cd "$HOME/labs" && "$PYTHON" -m experimental_pot_engine.track.publish_card ) || true
 
+# 1c. Re-mark the growth arms (A/B/C) vs QQQ + SPY from their paper ledgers → growth_arms_live.json.
+$PYTHON "$AGENT/scripts/publish_growth_arms.py" || true
+
 # 2. Stage changed data files
 cd "$AGENT"
 git add docs/data/ats_live.json docs/data/scai_live.json \
         docs/data/hermes_live.json docs/data/hermes_v3_live.json \
-        docs/data/system_summary_live.json \
+        docs/data/system_summary_live.json docs/data/growth_arms_live.json \
         docs/olympus_track.html 2>/dev/null || true
 
 # 3. Commit only if something changed

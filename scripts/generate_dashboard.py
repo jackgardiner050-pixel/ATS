@@ -1527,6 +1527,88 @@ def _hermes_v3_last_variant_run() -> str:
         return ""
 
 
+def _growth_arms_panel() -> str:
+    """A/B/C live paper-performance panel — sourced from docs/data/growth_arms_live.json (each arm's
+    paper ledger, marked vs QQQ primary + SPY secondary). Honest, research-grade, % only — never a
+    track record. Fail-soft: renders a placeholder if the feed isn't present yet."""
+    import json as _json
+    try:
+        d = _json.loads((_DOCS / "data" / "growth_arms_live.json").read_text())
+        arms = d.get("arms", {})
+    except Exception:
+        return ('<section><h2 class="section-title">Growth arms — live paper performance</h2>'
+                '<div class="card adv-disabled">Arm performance feed not available yet '
+                '(run the growth loop + publisher).</div></section>')
+
+    def _pct(v, pp=False):
+        if v is None:
+            return '<span style="color:#5c6080">—</span>'
+        c = "#3fb950" if v >= 0 else "#f85149"
+        return f'<span style="color:{c}">{"+" if v >= 0 else ""}{v}{"pp" if pp else "%"}</span>'
+
+    rows = ""
+    max_days = 0
+    for a in ("A", "B", "C"):
+        m = arms.get(a, {})
+        if not m.get("available"):
+            rows += (f'<tr><td style="padding:.4rem .5rem;font-weight:600">Arm {a}</td>'
+                     f'<td colspan="6" style="padding:.4rem .5rem;color:#5c6080">not run yet</td></tr>')
+            continue
+        max_days = max(max_days, m.get("days_held", 0) or 0)
+        rows += (
+            f'<tr>'
+            f'<td style="padding:.4rem .5rem;font-weight:600;color:#c9d1d9">Arm {a}</td>'
+            f'<td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">{m.get("label","")}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:center" id="ga-{a}-n">{m.get("n_positions","—")}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:center" id="ga-{a}-d">{m.get("days_held","—")}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right" id="ga-{a}-ret">{_pct(m.get("active_return_pct"))}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right" id="ga-{a}-qqq">{_pct(m.get("vs_qqq_pp"), True)}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right" id="ga-{a}-spy">{_pct(m.get("vs_spy_pp"), True)}</td>'
+            f'</tr>')
+    tgt = d.get("scorecard_target", 30)
+    return f"""<section>
+<h2 class="section-title">Growth arms — live paper performance (A/B/C)</h2>
+<div class="card" style="overflow-x:auto">
+  <div style="padding:.5rem .7rem;border:1px solid #3a2f12;border-radius:4px;margin-bottom:.6rem;
+              font-size:.8rem;color:#e3b341;line-height:1.5">
+    <strong>research-grade · {max_days} day{'s' if max_days != 1 else ''} · scorecard 0/{tgt} resolved ·
+    not statistically meaningful yet.</strong> The three arms are
+    <strong>AI-infrastructure-concentrated and highly correlated — not independent strategies</strong>.
+    <strong>QQQ is the real test</strong>; beating the S&amp;P with an AI-infra book in an AI bull is
+    <em>expected, not edge</em>. Do not read these early numbers as a track record.
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <thead><tr>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Arm</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Discovery filter</th>
+      <th style="text-align:center;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Pos</th>
+      <th style="text-align:center;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Days</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Paper return</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">vs QQQ (primary)</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">vs S&amp;P (secondary)</th>
+    </tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">
+    Paper/simulated · marked since inception vs QQQ &amp; SPY from each arm's paper ledger · updates as
+    the loop runs forward · % only, no positions sizing shown.
+  </p>
+</div>
+<script>
+(function(){{
+  function f(v,pp){{if(v===null||v===undefined)return'<span style="color:#5c6080">—</span>';var c=v>=0?'#3fb950':'#f85149';return'<span style="color:'+c+'">'+(v>=0?'+':'')+v+(pp?'pp':'%')+'</span>';}}
+  function set(id,html){{var e=document.getElementById(id);if(e)e.innerHTML=html;}}
+  fetch('data/growth_arms_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{
+    ['A','B','C'].forEach(function(a){{var m=(d.arms||{{}})[a];if(!m||!m.available)return;
+      set('ga-'+a+'-n',m.n_positions);set('ga-'+a+'-d',m.days_held);
+      set('ga-'+a+'-ret',f(m.active_return_pct,false));set('ga-'+a+'-qqq',f(m.vs_qqq_pp,true));set('ga-'+a+'-spy',f(m.vs_spy_pp,true));
+    }});
+  }}).catch(function(){{}});
+}})();
+</script>
+</section>"""
+
+
 def _hermes_v3_compute_banner() -> str:
     """Honest Hermes v3 status: the variant marks are from the last daily COMPUTE, not live.
 
@@ -2136,6 +2218,7 @@ def build_index(
 {_oly_intro()}
 {_oly_verdicts()}
 {_oly_growth_v2()}
+{_growth_arms_panel()}
 </div>
 {_oly_kill_switch_card()}
 {lab_nav}
