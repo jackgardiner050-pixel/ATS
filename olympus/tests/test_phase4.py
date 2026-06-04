@@ -78,7 +78,7 @@ def test_screener_firewalled_from_decision_loop():
 def test_scorecard_has_naive_screener_arm():
     sc = forward_scorecard.build(fetch=False)
     arm = sc["naive_screener_arm"]
-    assert "screener_beats_passive" in arm and "olympus_vs_screener" in arm
+    assert "screener_beats_passive" in arm and "olympus_vs_raw_momentum_same_names" in arm
 
 
 def test_monthly_rollup_proposals_flagged_for_human():

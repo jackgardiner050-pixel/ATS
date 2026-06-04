@@ -28,8 +28,26 @@ PORTFOLIO_POLICY = _POLICY_DIR / "portfolio_policy.yaml"            # EXAMPLE co
 PORTFOLIO_POLICY_REAL = _POLICY_DIR / "portfolio_policy.real.yaml"  # REAL core — gitignored, never committed
 
 
+_STANDALONE = False
+
+
+def set_standalone(v: bool) -> None:
+    """Set by the loop for the duration of a paper run (reset in finally — no global leak)."""
+    global _STANDALONE
+    _STANDALONE = bool(v)
+
+
+def standalone() -> bool:
+    """Paper-test mode: disregard real funds (core_supplied:false), Olympus builds its own book."""
+    import os
+    return _STANDALONE or os.environ.get("OLYMPUS_STANDALONE") == "1"
+
+
 def portfolio_policy_path():
-    """Prefer the gitignored real-holdings file if present; else the committed example."""
+    """Prefer the gitignored real-holdings file; in standalone paper mode, force the example
+    (core_supplied:false) so the real book is disregarded."""
+    if standalone():
+        return PORTFOLIO_POLICY
     return PORTFOLIO_POLICY_REAL if PORTFOLIO_POLICY_REAL.exists() else PORTFOLIO_POLICY
 
 # the real satellite paper book (the 12-stock Themis/ATS portfolio)

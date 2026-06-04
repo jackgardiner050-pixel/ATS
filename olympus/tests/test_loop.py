@@ -76,7 +76,8 @@ def test_loop_self_fires_and_trims_to_band(tmp_path, monkeypatch):
     monkeypatch.setattr(PP, "STATE", tmp_path / "pf.json")
     PP.save(_state(80))                                                 # seed over-band, fixed prices
 
-    summary = loop.run(fetch_prices=False, record=True)                 # offline, deterministic prices
+    # discover=False → exercise the Oracle-book path (the original Phase-3 behaviour), offline
+    summary = loop.run(fetch_prices=False, record=True, discover=False, standalone=False)
     assert summary["mode"] == "paper/simulated"
     assert summary["mandate"]["action"] == "trim" and summary["mandate"]["n_trims"] >= 1
     assert summary["mandate"]["banked_into_core"] > 0

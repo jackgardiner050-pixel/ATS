@@ -91,6 +91,16 @@ def cmd_outcome_add(args) -> int:
     return 0
 
 
+def cmd_artemis_discover() -> int:
+    from olympus.discovery import artemis   # imported HERE (CLI); never by a decision member
+    cands = artemis.discover()
+    print(f"Artemis surfaced {len(cands)} NAKED candidate(s) (ticker + source + date only — no signal):")
+    for c in cands:
+        print(f"  {c.ticker:6} · source={c.source} · {c.discovery_date} · {c.status}")
+    print("\nRESEARCH-GRADE / EXPERIMENTAL. Candidates carry no score downstream (firewall).")
+    return 0
+
+
 def cmd_loop_run() -> int:
     import json
     from olympus import loop
@@ -180,6 +190,9 @@ def main(argv=None) -> int:
     scr = sub.add_parser("screener"); scrs = scr.add_subparsers(dest="action")
     scrs.add_parser("run")
 
+    art = sub.add_parser("artemis"); arts = art.add_subparsers(dest="action")
+    arts.add_parser("discover")
+
     rep = sub.add_parser("report"); rep.add_argument("kind",
         choices=["exposure", "scorecard", "override", "success", "quarterly", "monthly"])
     rep.add_argument("--candidate", default=None)
@@ -195,6 +208,8 @@ def main(argv=None) -> int:
         return cmd_postmortem_add(args)
     if args.cmd == "screener" and args.action == "run":
         return cmd_screener_run()
+    if args.cmd == "artemis" and args.action == "discover":
+        return cmd_artemis_discover()
     if args.cmd == "override" and args.action == "add":
         return cmd_override_add(args.decision, args.human_action, args.rationale)
     if args.cmd == "outcome" and args.action == "add":

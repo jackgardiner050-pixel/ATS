@@ -1,0 +1,4 @@
+# Artemis user watchlist — manual candidates (committed example). Tickers only; no signal.
+tickers:
+  - KO
+  - JNJ

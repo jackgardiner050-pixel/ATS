@@ -47,6 +47,40 @@ def to_candidate(rating: dict) -> Candidate:
     )
 
 
+def rate_fresh(ticker: str) -> dict:
+    """Oracle reasons FROM SCRATCH on a naked discovered ticker — from PUBLIC data only.
+
+    No pre-existing ledger entry, and crucially NO discovery signal (the momentum screener's
+    score never reaches here). Bias is derived from free valuation/fundamentals. This is a
+    DEGRADED, data-only path (no human/LLM causal thesis) — explicitly RESEARCH-GRADE — so the
+    honest default is a low-conviction HOLD unless the public data clearly supports otherwise.
+    """
+    from datetime import date as _date
+    from oracle import priced_in as PI
+    pi, val, surv, info = PI.pull(ticker, [])          # free data; no peers
+    fcf, fpe = info.get("freeCashflow"), info.get("forwardPE")
+    fragile = isinstance(fcf, (int, float)) and fcf < 0
+    rich = isinstance(fpe, (int, float)) and fpe > 30
+    cheap = isinstance(fpe, (int, float)) and 0 < fpe < 18
+    if cheap and not fragile:
+        bias, conv, grade = "BUY", 56, "data-only"
+    else:
+        bias, conv, grade = "HOLD", (50 if (fragile and rich) else 52), "weak"
+    return {
+        "ticker": ticker, "bias": bias, "conviction_pct": conv, "horizon": "6–12 months",
+        "thesis_summary": (f"Auto data-only rating for discovered candidate {ticker} (RESEARCH-GRADE; "
+                           f"no causal thesis). Bias from PUBLIC valuation/fundamentals only — "
+                           f"fwdPE={fpe}, FCF{'<0' if fragile else '≥0'}. The discovery source's signal is NOT used."),
+        "evidence_grade": grade,
+        "benchmark_alternative": {"priced_in_stance": pi.stance, "assessment": pi.assessment},
+        "invalidation": "fundamentals deteriorate (FCF turns negative / leverage rises) or valuation re-rates",
+        "review_by": "next quarter", "overlap_is_more_ai": False, "diversifying": True,
+        "claim_labels": {"valuation": "Evidence", "fundamentals": "Evidence", "conviction_pct": "Opinion"},
+        "as_of_date": _date.today().isoformat(),
+        "_raw": {"ticker": ticker, "as_of_date": _date.today().isoformat(), "fresh": True},
+    }
+
+
 def thesis_view(rating: dict) -> dict:
     """A normalised thesis view for downstream members, with every claim evidence-labelled (§4.1)."""
     pi, ov = rating.get("priced_in") or {}, rating.get("overlap_with_core") or {}

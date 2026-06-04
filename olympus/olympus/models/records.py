@@ -26,6 +26,22 @@ class Candidate:
 
 
 @dataclass
+class NakedCandidate:
+    """A discovery output, deliberately NAKED: ticker + which source surfaced it + date + status.
+
+    NO score, signal, rank or momentum number is carried — the firewall (§B) requires the
+    discovery source's signal never reach a decision member. Oracle reasons from scratch.
+    """
+    ticker: str
+    source: str                # momentum | value_quality | context | watchlist (+merged)
+    discovery_date: str
+    status: str = "discovered"  # discovered | promoted | rejected
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
 class Critique:
     critique_id: str
     thesis_ref: str

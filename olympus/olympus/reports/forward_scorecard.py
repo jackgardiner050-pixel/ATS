@@ -124,10 +124,17 @@ def _screener_arm(screener: list, cur: dict, fetch: bool) -> dict:
                      "acwi_return_pct": round(acwi_r, 2) if acwi_r is not None else None,
                      "screener_vs_acwi_pct": rel})
     avg_rel = round(sum(rels) / len(rels), 2) if rels else None
+    # Part D sharp question: do Olympus's GOVERNED decisions beat just buying the RAW momentum
+    # list, on the same discovered names, net of cost? (computed over resolved decisions; the names
+    # Olympus saw came from Artemis — the screener is one feed, stripped to tickers.)
+    olympus_vs_raw = ("needs resolved Olympus decisions on screener-surfaced names "
+                      "(research-grade until then)")
     return {"n_picks": len(screener), "picks": rows,
             "avg_screener_vs_ACWI_pct_net": avg_rel,
             "screener_beats_passive": (avg_rel is not None and avg_rel > 0),
-            "olympus_vs_screener": "needs resolved Olympus decisions (research-grade until then)"}
+            "question": "Does disciplined Olympus beat buying the raw momentum list on the same names, "
+                        "net of cost — and does the screener beat passive (ACWI)?",
+            "olympus_vs_raw_momentum_same_names": olympus_vs_raw}
 
 
 def _calibration(resolved_out) -> dict:
@@ -162,11 +169,12 @@ def render(sc: dict) -> str:
         f"- Calibration by confidence band: {sc['calibration_by_band']}",
         f"- Major winners (skill/luck/beta): {len(sc['major_winners'])}",
         "",
-        "## Benchmark arm (c) — naive screener (walled off from decisions)",
+        "## Benchmark arm (c) — naive momentum screener (walled off from decisions)",
+        f"- *{sc['naive_screener_arm']['question']}*",
         f"- Screener picks: {sc['naive_screener_arm']['n_picks']}",
         f"- Avg screener vs ACWI (net of cost): {sc['naive_screener_arm']['avg_screener_vs_ACWI_pct_net']}% "
-        f"→ beats passive: {sc['naive_screener_arm']['screener_beats_passive']}",
-        f"- Olympus vs screener: {sc['naive_screener_arm']['olympus_vs_screener']}",
+        f"→ screener beats passive: {sc['naive_screener_arm']['screener_beats_passive']}",
+        f"- Olympus vs raw momentum (same names, net): {sc['naive_screener_arm']['olympus_vs_raw_momentum_same_names']}",
         "",
         "## Interim (unresolved) — benchmark drift since entry (not a verdict)",
         *([f"- {i['ticker']} ({i['bias']}, conv {i['conviction']}, {i['elapsed_months']}mo of {i['horizon']}): "

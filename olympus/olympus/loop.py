@@ -22,18 +22,29 @@ from olympus.reports import forward_scorecard
 from src.governance import concentration_governor as CG   # REAL blocking limits (every action)
 
 
-def _govern_candidate(ticker: str):
+def _govern_candidate(ticker: str, satellite_tickers: list[str]):
+    """Govern ONE candidate from a bare ticker (firewall: no discovery signal enters).
+
+    Oracle uses its existing rating if it has one; otherwise it reasons from scratch on public
+    data (rate_fresh) — never from the screener score. Tyche/governance run on the paper book.
+    """
     rating = oracle_adapter.get_rating(ticker)
-    thesis = oracle_adapter.thesis_view(rating)
-    cid = oracle_adapter.to_candidate(rating).candidate_id
+    if rating is not None:
+        thesis = oracle_adapter.thesis_view(rating)
+        cid = oracle_adapter.to_candidate(rating).candidate_id
+        as_of = rating["as_of_date"]
+    else:
+        thesis = oracle_adapter.rate_fresh(ticker)
+        as_of = thesis["as_of_date"]
+        cid = f"artemis_{as_of.replace('-', '')}_{ticker}"
     crit = athena_nemesis_adapter.critique(thesis, candidate_id=cid)
     exp = hecate_adapter.assess(ticker, candidate_id=cid)
-    alloc = tyche.size(thesis, crit, candidate_id=cid)
+    alloc = tyche.size(thesis, crit, candidate_id=cid, satellite_tickers=satellite_tickers)
     ind = themis.evidence_independence(thesis, crit)
     gov = themis.governance_check(thesis, exp, alloc)
     path = hermes_adapter.pathway(thesis, alloc)
     decision = zeus.decide(thesis, crit, exp, alloc, gov, ind, path, candidate_id=cid)
-    return decision, thesis, alloc, rating
+    return decision, thesis, alloc, as_of
 
 
 def _governed_order(order: Order, state: dict):
@@ -44,13 +55,27 @@ def _governed_order(order: Order, state: dict):
     return (True, ["sell/trim de-risks — concentration governance satisfied"])
 
 
+def _price(ticker: str, state: dict) -> float | None:
+    held = state["satellite"].get(ticker)
+    if held:
+        return held["last_price"]
+    try:
+        import yfinance as yf
+        h = yf.Ticker(ticker).history(period="5d")
+        return round(float(h["Close"].dropna().iloc[-1]), 4) if len(h) else None
+    except Exception:
+        return None
+
+
 def _order_from_decision(decision, thesis, alloc, state) -> Order | None:
     t = decision.decision
     held = state["satellite"].get(thesis["ticker"])
-    price = held["last_price"] if held else None
-    if t == "BUY" and alloc.target_allocation > 0 and price:
-        return Order(thesis["ticker"], "BUY", price=price,
-                     dollars=alloc.target_allocation * PP.total_value(state), reason="zeus BUY")
+    if t == "BUY" and alloc.target_allocation > 0:
+        price = _price(thesis["ticker"], state)        # fetch for newly discovered names
+        if price:
+            return Order(thesis["ticker"], "BUY", price=price,
+                         dollars=alloc.target_allocation * PP.total_value(state), reason="zeus BUY")
+        return None
     if t == "REDUCE" and held:
         return Order(thesis["ticker"], "SELL", price=held["last_price"],
                      shares=round(held["shares"] * 0.5, 6), reason="zeus REDUCE")
@@ -71,21 +96,45 @@ def _update_prices(state: dict) -> None:
         pass   # best-effort; keep stored prices if offline
 
 
-def run(*, fetch_prices: bool = True, broker_mode: str = "paper", record: bool = True) -> dict:
+def _discover_tickers(discover: bool, fetch_prices: bool) -> list[tuple[str, str]]:
+    """Return [(ticker, source)] — FIREWALL: only the bare ticker + source tag leave discovery."""
+    if not discover:
+        return [(r["ticker"], "oracle:forward_test") for r in oracle_adapter.list_candidates()]
+    from olympus.discovery import artemis           # imported HERE; decision members never import it
+    cands = artemis.discover() if fetch_prices else artemis.discover(price_fn=None)
+    return [(c.ticker, c.source) for c in cands]     # NAKED: ticker + source only, no signal
+
+
+def run(*, fetch_prices: bool = True, broker_mode: str = "paper", record: bool = True,
+        discover: bool = True, standalone: bool = True) -> dict:
+    if standalone:
+        config.set_standalone(True)                  # disregard real funds; build our own paper book
+    try:
+        return _run(fetch_prices=fetch_prices, broker_mode=broker_mode, record=record,
+                    discover=discover, standalone=standalone)
+    finally:
+        if standalone:
+            config.set_standalone(False)             # reset — no global leak
+
+
+def _run(*, fetch_prices, broker_mode, record, discover, standalone) -> dict:
     broker = make_broker(broker_mode)
     assert isinstance(broker, PaperBroker) and broker.mode == PAPER_MODE, "loop is paper-only"
     state = PP.load()
     if fetch_prices:
         _update_prices(state)
 
-    # 1. candidate pipeline → governed decisions → execute the actionable ones (paper)
+    discovered = _discover_tickers(discover, fetch_prices)
+
+    # 1. discover → for each NAKED candidate: govern from the bare ticker → execute (paper)
     actions = []
-    for rating in oracle_adapter.list_candidates():
-        decision, thesis, alloc, rat = _govern_candidate(rating["ticker"])
+    for ticker, source in discovered:
+        sat_tickers = list(state["satellite"])       # Hecate/Tyche govern the PAPER BOOK's concentration
+        decision, thesis, alloc, as_of = _govern_candidate(ticker, sat_tickers)
         if record:
-            storage.append_decision(decision.to_dict(), ticker=thesis["ticker"],
-                                    decision=decision.decision, data_as_of=rat["as_of_date"])
-        rec = {"ticker": thesis["ticker"], "decision": decision.decision, "executed": False}
+            storage.append_decision(decision.to_dict(), ticker=ticker,
+                                    decision=decision.decision, data_as_of=as_of)
+        rec = {"ticker": ticker, "source": source, "decision": decision.decision, "executed": False}
         order = _order_from_decision(decision, thesis, alloc, state)
         if order:
             ok, why = _governed_order(order, state)
@@ -116,6 +165,9 @@ def run(*, fetch_prices: bool = True, broker_mode: str = "paper", record: bool =
     ok_chain, _ = storage.verify(storage.PAPER_FILLS) if storage.PAPER_FILLS.exists() else (True, [])
     return {
         "mode": PAPER_MODE,
+        "standalone_core_disregarded": standalone,
+        "discovery": {"source": "artemis" if discover else "oracle_book", "n_candidates": len(discovered),
+                      "candidates": [{"ticker": t, "source": s} for t, s in discovered]},
         "candidate_actions": actions,
         "mandate": {"satellite_fraction_before": m["satellite_fraction"], "action": m["action"],
                     "excess_value": m["excess_value"], "n_trims": len(trims), "trims": trims,

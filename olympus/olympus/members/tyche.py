@@ -28,9 +28,11 @@ def _conf_tier(conviction_pct: int, reduce_confidence: bool) -> str:
     return "HIGH" if conviction_pct >= 70 else "MED"
 
 
-def size(thesis: dict, critique, *, candidate_id: str) -> AllocationProposal:
+def size(thesis: dict, critique, *, candidate_id: str, satellite_tickers: list[str] | None = None) -> AllocationProposal:
     ticker = thesis["ticker"]
-    sat = _satellite_tickers()
+    # In the autonomous paper loop the satellite is the loop's OWN paper book; otherwise the
+    # real/Themis book. Either way the REAL concentration governor runs on it.
+    sat = satellite_tickers if satellite_tickers is not None else _satellite_tickers()
     tier = _conf_tier(thesis["conviction_pct"], critique.reduce_confidence)
 
     # REAL governance: would adding this name breach hard concentration limits?
