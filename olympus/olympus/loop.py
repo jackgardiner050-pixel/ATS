@@ -22,11 +22,11 @@ from olympus.reports import forward_scorecard
 from src.governance import concentration_governor as CG   # REAL blocking limits (every action)
 
 
-def _govern_candidate(ticker: str, satellite_tickers: list[str]):
+def _govern_candidate(ticker: str, satellite_tickers: list[str], *, client=None, tracker=None):
     """Govern ONE candidate from a bare ticker (firewall: no discovery signal enters).
 
-    Oracle uses its existing rating if it has one; otherwise it reasons from scratch on public
-    data (rate_fresh) — never from the screener score. Tyche/governance run on the paper book.
+    Oracle uses its existing rating if it has one; otherwise it runs its FULL causal reasoning
+    (rate_causal — LLM, never the screener score). Tyche/governance run on the paper book.
     """
     rating = oracle_adapter.get_rating(ticker)
     if rating is not None:
@@ -34,8 +34,8 @@ def _govern_candidate(ticker: str, satellite_tickers: list[str]):
         cid = oracle_adapter.to_candidate(rating).candidate_id
         as_of = rating["as_of_date"]
     else:
-        thesis = oracle_adapter.rate_fresh(ticker)
-        as_of = thesis["as_of_date"]
+        thesis = oracle_adapter.rate_causal(ticker, client=client, tracker=tracker)  # FULL Oracle (LLM)
+        as_of = thesis.get("as_of_date") or thesis["_raw"]["as_of_date"]
         cid = f"artemis_{as_of.replace('-', '')}_{ticker}"
     crit = athena_nemesis_adapter.critique(thesis, candidate_id=cid)
     exp = hecate_adapter.assess(ticker, candidate_id=cid)
@@ -106,18 +106,19 @@ def _discover_tickers(discover: bool, fetch_prices: bool) -> list[tuple[str, str
 
 
 def run(*, fetch_prices: bool = True, broker_mode: str = "paper", record: bool = True,
-        discover: bool = True, standalone: bool = True) -> dict:
+        discover: bool = True, standalone: bool = True, oracle_client=None) -> dict:
     if standalone:
         config.set_standalone(True)                  # disregard real funds; build our own paper book
     try:
         return _run(fetch_prices=fetch_prices, broker_mode=broker_mode, record=record,
-                    discover=discover, standalone=standalone)
+                    discover=discover, standalone=standalone, oracle_client=oracle_client)
     finally:
         if standalone:
             config.set_standalone(False)             # reset — no global leak
 
 
-def _run(*, fetch_prices, broker_mode, record, discover, standalone) -> dict:
+def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_client=None) -> dict:
+    from olympus.adapters import oracle_llm as LLM
     broker = make_broker(broker_mode)
     assert isinstance(broker, PaperBroker) and broker.mode == PAPER_MODE, "loop is paper-only"
     state = PP.load()
@@ -126,11 +127,30 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone) -> dict:
 
     discovered = _discover_tickers(discover, fetch_prices)
 
+    # FULL Oracle needs the LLM only for candidates without an existing rating. FAIL LOUD if those
+    # exist and no key is present — never fall back to a data-only fake.
+    tracker = LLM.CostTracker()
+    client = oracle_client
+    need_llm = any(oracle_adapter.get_rating(t) is None for t, _ in discovered)
+    if need_llm and client is None:
+        try:
+            client = LLM.make_client()
+        except LLM.OracleReasoningUnavailable as e:
+            return {"mode": PAPER_MODE, "standalone_core_disregarded": standalone,
+                    "discovery": {"source": "artemis" if discover else "oracle_book",
+                                  "n_candidates": len(discovered),
+                                  "candidates": [{"ticker": t, "source": s} for t, s in discovered]},
+                    "oracle_reasoning": "UNAVAILABLE", "reason": str(e),
+                    "candidate_actions": [], "decisions_made": 0, "positions_opened": 0,
+                    "llm_cost": tracker.summary(),
+                    "note": "Full causal Oracle requires ANTHROPIC_API_KEY. Discovery ran; reasoning did "
+                            "not. No data-only fallback (that would fake theses)."}
+
     # 1. discover → for each NAKED candidate: govern from the bare ticker → execute (paper)
     actions = []
     for ticker, source in discovered:
         sat_tickers = list(state["satellite"])       # Hecate/Tyche govern the PAPER BOOK's concentration
-        decision, thesis, alloc, as_of = _govern_candidate(ticker, sat_tickers)
+        decision, thesis, alloc, as_of = _govern_candidate(ticker, sat_tickers, client=client, tracker=tracker)
         if record:
             storage.append_decision(decision.to_dict(), ticker=ticker,
                                     decision=decision.decision, data_as_of=as_of)
@@ -166,8 +186,13 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone) -> dict:
     return {
         "mode": PAPER_MODE,
         "standalone_core_disregarded": standalone,
+        "oracle_reasoning": "FULL_CAUSAL_LLM",
         "discovery": {"source": "artemis" if discover else "oracle_book", "n_candidates": len(discovered),
                       "candidates": [{"ticker": t, "source": s} for t, s in discovered]},
+        "decisions_made": len(actions),
+        "positions_opened": sum(1 for a in actions if a.get("executed") and
+                                (a.get("fill", {}) or {}).get("side") == "BUY"),
+        "llm_cost": tracker.summary(),
         "candidate_actions": actions,
         "mandate": {"satellite_fraction_before": m["satellite_fraction"], "action": m["action"],
                     "excess_value": m["excess_value"], "n_trims": len(trims), "trims": trims,

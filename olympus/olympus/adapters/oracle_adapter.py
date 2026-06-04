@@ -47,6 +47,67 @@ def to_candidate(rating: dict) -> Candidate:
     )
 
 
+def _public_context(ticker: str) -> str:
+    """Public context for Oracle: fundamentals/valuation (fail loud on data error) + free news.
+    NO screener / momentum / discovery signal is included (firewall §B)."""
+    from oracle import priced_in as PI
+    pi, val, surv, info = PI.pull(ticker, [])          # raises on a hard data failure — fail loud
+    keys = ["shortName", "sector", "industry", "currentPrice", "marketCap", "trailingPE", "forwardPE",
+            "priceToSalesTrailing12Months", "enterpriseToEbitda", "freeCashflow", "totalDebt",
+            "debtToEquity", "grossMargins", "profitMargins", "revenueGrowth",
+            "numberOfAnalystOpinions", "recommendationKey", "targetMeanPrice", "shortPercentOfFloat"]
+    fund = "\n".join(f"  {k}: {info.get(k)}" for k in keys)
+    news = ""
+    try:
+        import yfinance as yf
+        items = yf.Ticker(ticker).news or []
+        heads = [(i.get("content", {}).get("title") or i.get("title")) for i in items[:6]]
+        news = "\n".join(f"  - {h}" for h in heads if h) or "  (no recent free news available)"
+    except Exception:
+        news = "  (news feed unavailable)"
+    return (f"Ticker: {ticker}\nFundamentals/valuation:\n{fund}\n"
+            f"Priced-in gauge: {pi.assessment}\nRecent free news headlines:\n{news}")
+
+
+def _to_judgement(ticker: str, j: dict):
+    from oracle.rate import Judgement
+    from oracle.schema import Pillar
+    cat, inv, ov = j.get("catalyst") or {}, j.get("invalidation") or {}, j.get("overlap") or {}
+    pillars = [Pillar(p.get("pillar", "pillar"), p.get("expectation", "")) for p in (j.get("pillars") or [])][:5]
+    while len(pillars) < 3:                              # schema requires 3–5 pillars
+        pillars.append(Pillar("(supporting consideration)", "(noted by Oracle)"))
+    disc = j.get("disconfirming_evidence") or ["(Oracle stated none explicitly)"]
+    return Judgement(
+        ticker=ticker, raw_bias=str(j.get("bias", "HOLD")).upper(), raw_conviction=int(j.get("conviction", 50)),
+        horizon=j.get("horizon", "6–12 months"), causal_thesis=j.get("causal_thesis", ""),
+        catalyst_desc=cat.get("desc", ""), catalyst_when=cat.get("when", ""),
+        catalyst_near_term=bool(cat.get("near_term", False)),
+        right_but_early_risk=str(j.get("right_but_early_risk", "MED")).upper(),
+        invalidation_line=inv.get("line", ""), invalidation_by_when=inv.get("by_when", ""),
+        overlap_is_more_ai=bool(ov.get("is_more_ai", False)), overlap_diversifying=bool(ov.get("diversifying", True)),
+        overlap_text=ov.get("text", ""), pillars=pillars, disconfirming_evidence=disc,
+        target=j.get("target", ""), stop_exit=j.get("stop_exit", ""), peers=[])
+
+
+def rate_causal(ticker: str, *, client=None, tracker=None) -> dict:
+    """FULL causal Oracle on a naked ticker (Phase 6, RESEARCH-GRADE).
+
+    Oracle reads PUBLIC context, runs its causal_sweep + thesis rubrics via an LLM, forms a real
+    thesis (bias/conviction/invalidation, evidence-labelled, priced-in checked), and the rubric
+    down-weights consensus + gates shorts. The rating is logged to Oracle's existing forward-test
+    ledger BEFORE the outcome (chain preserved). FAILS LOUD with no API key — never fakes.
+    """
+    from olympus.adapters import oracle_llm as LLM
+    from oracle import rate as OR, templates as T
+    client = client or LLM.make_client()                # raises OracleReasoningUnavailable if no key
+    ctx = _public_context(ticker)                        # fail loud on data error; no screener signal
+    j = LLM.causal_thesis(ticker, ctx, client=client, tracker=tracker,
+                          causal_sweep=T.load(T.CAUSAL_SWEEP), thesis_rubric=T.load(T.THESIS))
+    rating = OR.build_rating(_to_judgement(ticker, j))   # applies the rubric (consensus down-weight, SELL gate)
+    FT.log_rating(rating)                                 # log before outcome — preserve the chain
+    return thesis_view(rating.to_dict())
+
+
 def rate_fresh(ticker: str) -> dict:
     """Oracle reasons FROM SCRATCH on a naked discovered ticker — from PUBLIC data only.
 

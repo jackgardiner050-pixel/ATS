@@ -100,15 +100,16 @@ def test_loop_discover_decide_execute_score(tmp_path, monkeypatch):
                         lambda **k: [NakedCandidate("MU", "value_quality", "2026-06-04"),
                                      NakedCandidate("INTC", "context", "2026-06-04")])
     monkeypatch.setattr(loop, "_update_prices", lambda s: None)
-    # rate_fresh would hit the network — give it offline, disciplined HOLDs
-    monkeypatch.setattr(loop.oracle_adapter, "rate_fresh", lambda t: {
+    # full Oracle (rate_causal) would hit the LLM — give it offline, disciplined HOLDs
+    monkeypatch.setattr(loop.oracle_adapter, "rate_causal", lambda t, client=None, tracker=None: {
         "ticker": t, "bias": "HOLD", "conviction_pct": 52, "horizon": "6–12 months",
-        "thesis_summary": "data-only", "evidence_grade": "weak",
+        "thesis_summary": "offline", "evidence_grade": "weak",
         "benchmark_alternative": {"priced_in_stance": "MIXED", "assessment": "x"},
         "invalidation": "x", "review_by": "next quarter", "overlap_is_more_ai": False,
-        "diversifying": True, "as_of_date": "2026-06-04"})
+        "diversifying": True, "as_of_date": "2026-06-04", "_raw": {"as_of_date": "2026-06-04"}})
 
-    summary = loop.run(discover=True, standalone=True, fetch_prices=False, record=True)
+    summary = loop.run(discover=True, standalone=True, fetch_prices=False, record=True,
+                       oracle_client=object())          # non-None → skip make_client (offline)
     assert summary["standalone_core_disregarded"] is True
     assert summary["discovery"]["n_candidates"] == 2
     assert {a["ticker"] for a in summary["candidate_actions"]} == {"MU", "INTC"}   # decided each

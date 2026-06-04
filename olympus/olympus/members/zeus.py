@@ -34,8 +34,12 @@ def decide(thesis: dict, critique, exposure, allocation, governance: dict,
     # Decision: anchor on Oracle's bias; never upgrade a constrained idea to BUY.
     bias = thesis["bias"]
     decision = bias if bias in ("BUY", "HOLD", "REDUCE", "EXIT") else "HOLD"
-    if decision == "BUY" and (constraints or allocation.initial_allocation == 0.0):
-        decision = "HOLD"   # discipline: constrained or zero-size → do not buy
+    # The correlated-council note caps confidence UPLIFT; it does not, alone, block a buy. A BUY is
+    # downgraded to HOLD only by SUBSTANTIVE constraints (weak evidence, priced-in, overlap, an
+    # unresolved counter-thesis, a constitution violation) or zero size — so the loop isn't inert.
+    substantive = [c for c in constraints if "correlated" not in c.lower()]
+    if decision == "BUY" and (substantive or allocation.initial_allocation == 0.0):
+        decision = "HOLD"   # discipline: substantively constrained or zero-size → do not buy
 
     # confidence band, constrained downward by the findings
     conv = thesis["conviction_pct"]
