@@ -40,6 +40,12 @@ def _load_friction():
 _friction = _load_friction()
 
 
+def friction_engine(tier_name: str = "retail_5k"):
+    """A real Hermes v3 FillEngine — shared by PaperBroker and the T212 demo broker (which models
+    cost on top of the venue's frictionless demo fill)."""
+    return _friction.FillEngine(_friction.load_friction_tier(tier_name), _friction.ADVCache())
+
+
 @dataclass
 class Order:
     ticker: str
@@ -114,7 +120,11 @@ class LiveBroker:
 
 
 def make_broker(mode: str = "paper"):
-    """Factory the loop uses. Only ever returns a PaperBroker; refuses 'live' before construction."""
+    """Factory the loop uses. Returns the internal PaperBroker or the T212 DEMO broker. The live
+    path is NEVER reachable here — make_broker('live') is refused before any construction."""
     if mode == "paper":
         return PaperBroker()
-    raise RuntimeError(f"refusing to build a non-paper broker (mode={mode!r}): {LiveBroker._MSG}")
+    if mode == "t212_demo":
+        from olympus.adapters.t212_demo import T212DemoBroker   # lazy (avoids import cycle)
+        return T212DemoBroker()                                  # connectivity-checks; fails loud if no key
+    raise RuntimeError(f"refusing to build a non-paper/non-demo broker (mode={mode!r}): {LiveBroker._MSG}")

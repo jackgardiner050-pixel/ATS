@@ -91,6 +91,24 @@ def cmd_outcome_add(args) -> int:
     return 0
 
 
+def cmd_reset(venue: str, notional: float) -> int:
+    from olympus.core import paper_portfolio as PP
+    if venue == "t212_demo":
+        from olympus.adapters.t212_demo import T212DemoBroker, T212Unavailable
+        try:
+            b = T212DemoBroker()                         # connectivity-checks (fail loud if no key)
+            r = b.reset_to_cash()                         # close demo positions, read opening cash
+            notional = r.get("opening_cash") or notional
+            print(f"T212 demo reset: closed {r['closed_positions']} · opening cash {r['opening_cash']}")
+        except T212Unavailable as e:
+            print(f"[reset] T212 demo execution unavailable — not faked: {e}", file=sys.stderr)
+            return 2
+    state = PP.reset_to_cash(notional)                    # clear the internal paper book (VRT/SMCI residue)
+    print(f"Olympus paper book reset to cash · notional {state['core_value']} · satellite empty "
+          f"(0% → deploy-toward-target has room).")
+    return 0
+
+
 def cmd_artemis_discover() -> int:
     from olympus.discovery import artemis   # imported HERE (CLI); never by a decision member
     cands = artemis.discover()
@@ -101,10 +119,10 @@ def cmd_artemis_discover() -> int:
     return 0
 
 
-def cmd_loop_run() -> int:
+def cmd_loop_run(venue: str = "paper") -> int:
     import json
     from olympus import loop
-    summary = loop.run()
+    summary = loop.run(broker_mode=venue)
     print(json.dumps(summary, indent=2, default=str))
     print("\nPAPER/SIMULATED loop run complete — no human in the trade, no broker reachable. "
           "Forward scorecard is the kill-check for any future live step.")
@@ -175,7 +193,8 @@ def main(argv=None) -> int:
     ocadd.add_argument("--notes", default="")
 
     lp = sub.add_parser("loop"); lps = lp.add_subparsers(dest="action")
-    lps.add_parser("run")
+    lrun = lps.add_parser("run")
+    lrun.add_argument("--venue", default="paper", choices=["paper", "t212_demo"])
 
     sub.add_parser("journal")
 
@@ -193,6 +212,10 @@ def main(argv=None) -> int:
     art = sub.add_parser("artemis"); arts = art.add_subparsers(dest="action")
     arts.add_parser("discover")
 
+    rst = sub.add_parser("reset")
+    rst.add_argument("--venue", default="paper", choices=["paper", "t212_demo"])
+    rst.add_argument("--notional", type=float, default=10000.0)
+
     rep = sub.add_parser("report"); rep.add_argument("kind",
         choices=["exposure", "scorecard", "override", "success", "quarterly", "monthly"])
     rep.add_argument("--candidate", default=None)
@@ -201,7 +224,7 @@ def main(argv=None) -> int:
     if args.cmd == "decision" and args.action == "create":
         return cmd_decision_create(args.candidate.upper())
     if args.cmd == "loop" and args.action == "run":
-        return cmd_loop_run()
+        return cmd_loop_run(getattr(args, "venue", "paper"))
     if args.cmd == "journal":
         return cmd_journal()
     if args.cmd == "postmortem" and args.action == "add":
@@ -210,6 +233,8 @@ def main(argv=None) -> int:
         return cmd_screener_run()
     if args.cmd == "artemis" and args.action == "discover":
         return cmd_artemis_discover()
+    if args.cmd == "reset":
+        return cmd_reset(args.venue, args.notional)
     if args.cmd == "override" and args.action == "add":
         return cmd_override_add(args.decision, args.human_action, args.rationale)
     if args.cmd == "outcome" and args.action == "add":

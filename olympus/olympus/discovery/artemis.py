@@ -23,11 +23,37 @@ from olympus.models.records import NakedCandidate
 
 WATCHLIST = config.OLYMPUS_REPO / "olympus" / "config" / "artemis_watchlist.yaml"
 
-# decision-independent universe for the value/context screens (liquid, deliberately value-tilted
-# so the counterweight surfaces non-momentum names). NOT derived from any decision.
-UNIVERSE = ["INTC", "CSCO", "IBM", "TXN", "QCOM", "CVX", "JPM", "PFE", "KO", "WMT", "HD", "MRK",
-            "T", "VZ", "GILD", "MMM", "F", "BAC", "C", "UNH"]
-CAP = 8           # max naked candidates per run (bounds cost + noise)
+# decision-independent universe — broadened toward LESS-COVERED mid-caps and special situations
+# where a non-consensus view could plausibly exist (not the most-covered mega-caps). Strictly
+# within liquidity discipline (the _liquid filter below enforces price/ADV floors at runtime).
+UNIVERSE = [
+    # industrials / infrastructure / special situations
+    "GTLS", "AGX", "BLDR", "FIX", "AAON", "MTZ", "STRL", "PWR", "BWXT",
+    # energy / materials
+    "AR", "RRC", "CNX", "CIVI", "MP", "CMC", "AA",
+    # financials
+    "SOFI", "ALLY", "KEY", "JXN",
+    # healthcare / biotech (liquid)
+    "EXAS", "HALO", "JAZZ", "INCY", "ALKS",
+    # tech / semis-adjacent mid-caps
+    "AMKR", "COHR", "ONTO", "FORM", "PLAB", "SANM",
+    # consumer
+    "DECK", "CROX", "BOOT", "PLNT",
+]
+CAP = 8                # max naked candidates per run (bounds cost + noise)
+PRICE_FLOOR = 5.0      # no penny stocks
+ADV_FLOOR_USD = 10_000_000   # ≥ $10M average daily $ volume — T212-tradeable, no micro-caps
+
+
+def _liquid(info: dict):
+    """Liquidity discipline: adequate price + ADV. Returns True/False, or None if undecidable."""
+    px = info.get("currentPrice") or info.get("regularMarketPrice")
+    vol = info.get("averageDailyVolume10Day") or info.get("averageVolume")
+    if px is None or vol is None:
+        return None
+    if px < PRICE_FLOOR or px * vol < ADV_FLOOR_USD:
+        return False
+    return True
 
 
 class DiscoveryDataError(RuntimeError):
@@ -50,9 +76,11 @@ def _value_quality_source(universe: list[str], fundamentals_fn: Callable) -> lis
         if not info:
             continue
         got_any = True
+        if _liquid(info) is False:                  # liquidity discipline — drop penny/micro names
+            continue
         fpe, fcf, dte = info.get("forwardPE"), info.get("freeCashflow"), info.get("debtToEquity")
-        if isinstance(fpe, (int, float)) and 0 < fpe < 18 and isinstance(fcf, (int, float)) and fcf > 0 \
-                and (dte is None or dte < 150):
+        if isinstance(fpe, (int, float)) and 0 < fpe < 22 and isinstance(fcf, (int, float)) and fcf > 0 \
+                and (dte is None or dte < 200):
             out.append(t)
     if not got_any:
         raise DiscoveryDataError("value/quality: no fundamentals available for the universe — failing loud")

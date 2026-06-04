@@ -65,7 +65,10 @@ def make_client():
             "ANTHROPIC_API_KEY not set — Oracle causal reasoning is UNAVAILABLE. Refusing to fall "
             "back to a data-only screen and fake a thesis (the swallowed-error trap). Set "
             "ANTHROPIC_API_KEY to enable the full Oracle.")
-    import anthropic
+    try:
+        import anthropic
+    except ImportError as e:                       # missing SDK is also fail-loud, never a fake
+        raise OracleReasoningUnavailable(f"anthropic SDK not installed — Oracle unavailable ({e})") from e
     return anthropic.Anthropic()
 
 
@@ -114,11 +117,12 @@ def causal_thesis(ticker: str, public_ctx: str, *, client, tracker: Optional[Cos
               "causal-sweep and thesis rubrics below. Reason ONLY from the public context — you did NOT receive any "
               "momentum/screener/discovery signal; form your own thesis. Down-weight consensus / already-priced "
               "ideas. A BUY or SELL needs real conviction + a falsifiable invalidation line + a near-term catalyst "
-              "(no 'right but early'). Label each claim Evidence/Hypothesis/Assumption/Opinion/Unknown. Output ONLY JSON.")
+              "(no 'right but early'). Label each claim Evidence/Hypothesis/Assumption/Opinion/Unknown. Output ONLY a "
+              "single valid JSON object — no markdown fences, no prose before or after, all strings on one line.")
     user = (f"RUBRICS:\n--- causal_sweep ---\n{causal_sweep[:3000]}\n--- thesis ---\n{thesis_rubric[:3000]}\n\n"
             f"TICKER: {ticker}\nTRIAGE ANGLE: {triage}\nPUBLIC CONTEXT:\n{public_ctx}\n\n"
-            f"Return JSON exactly in this shape:\n{_SCHEMA}")
-    raw = _call(client, deep_model, system, user, 1500, tracker)
+            f"Return JSON exactly in this shape (keep it compact):\n{_SCHEMA}")
+    raw = _call(client, deep_model, system, user, 2500, tracker)
     j = _parse(raw)
     if use_cache:
         cache[key] = j
@@ -127,7 +131,33 @@ def causal_thesis(ticker: str, public_ctx: str, *, client, tracker: Optional[Cos
 
 
 def _parse(raw: str) -> dict:
-    s, e = raw.find("{"), raw.rfind("}") + 1
-    if s < 0 or e <= s:
+    """Extract the first balanced JSON object (respecting strings/escapes); fail loud, never fake."""
+    import re
+    t = raw.strip()
+    fence = re.search(r"```(?:json)?\s*(.*?)```", t, re.S)   # strip a markdown fence if present
+    if fence:
+        t = fence.group(1).strip()
+    start = t.find("{")
+    if start < 0:
         raise OracleReasoningUnavailable(f"Oracle thesis returned non-JSON (cannot fake): {raw[:120]!r}")
-    return json.loads(raw[s:e])
+    depth = 0; in_str = False; esc = False
+    for i in range(start, len(t)):
+        ch = t[i]
+        if esc:
+            esc = False; continue
+        if ch == "\\":
+            esc = True; continue
+        if ch == '"':
+            in_str = not in_str; continue
+        if in_str:
+            continue
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                try:
+                    return json.loads(t[start:i + 1])
+                except Exception as e:
+                    raise OracleReasoningUnavailable(f"Oracle thesis JSON invalid (cannot fake): {e}") from e
+    raise OracleReasoningUnavailable("Oracle thesis JSON was not balanced (cannot fake)")

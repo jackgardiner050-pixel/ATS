@@ -119,8 +119,14 @@ def run(*, fetch_prices: bool = True, broker_mode: str = "paper", record: bool =
 
 def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_client=None) -> dict:
     from olympus.adapters import oracle_llm as LLM
-    broker = make_broker(broker_mode)
-    assert isinstance(broker, PaperBroker) and broker.mode == PAPER_MODE, "loop is paper-only"
+    from olympus.adapters.t212_demo import T212Unavailable
+    try:
+        broker = make_broker(broker_mode)            # 'live' refused; t212_demo connectivity-checks
+    except T212Unavailable as e:
+        return {"mode": broker_mode, "execution_venue": "t212_demo", "broker": "UNAVAILABLE",
+                "reason": str(e), "candidate_actions": [], "decisions_made": 0, "positions_opened": 0,
+                "note": "T212 demo execution unavailable — NOT falling back to the internal sim (no fake)."}
+    assert broker.mode in (PAPER_MODE, "t212_demo"), "loop executes paper/demo only — never live"
     state = PP.load()
     if fetch_prices:
         _update_prices(state)
@@ -152,7 +158,13 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_clie
     actions, buy_queue = [], []
     for ticker, source in discovered:
         sat_tickers = list(state["satellite"])       # Hecate/Tyche govern the PAPER BOOK's concentration
-        decision, thesis, alloc, as_of = _govern_candidate(ticker, sat_tickers, client=client, tracker=tracker)
+        try:
+            decision, thesis, alloc, as_of = _govern_candidate(ticker, sat_tickers, client=client, tracker=tracker)
+        except LLM.OracleReasoningUnavailable as e:
+            # Oracle couldn't form a thesis for THIS name — skip it honestly (no fake), keep going.
+            actions.append({"ticker": ticker, "source": source, "decision": "SKIPPED",
+                            "reason": f"oracle reasoning failed: {str(e)[:80]}"})
+            continue
         if record:
             storage.append_decision(decision.to_dict(), ticker=ticker,
                                     decision=decision.decision, data_as_of=as_of)
@@ -208,6 +220,7 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_clie
     ok_chain, _ = storage.verify(storage.PAPER_FILLS) if storage.PAPER_FILLS.exists() else (True, [])
     return {
         "mode": PAPER_MODE,
+        "execution_venue": broker.mode,
         "standalone_core_disregarded": standalone,
         "oracle_reasoning": "FULL_CAUSAL_LLM",
         "discovery": {"source": "artemis" if discover else "oracle_book", "n_candidates": len(discovered),

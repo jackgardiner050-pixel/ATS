@@ -14,8 +14,14 @@ OLY="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG="$OLY/data/cron.log"
 mkdir -p "$OLY/data"
 TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+# Source the gitignored ANTHROPIC_API_KEY (cron has no interactive env). If absent, the loop
+# FAILS LOUD (Oracle UNAVAILABLE) — it never falls back to a data-only fake. The key is never printed.
+SECRETS="$HOME/labs/.secrets/anthropic.env"
+if [ -f "$SECRETS" ]; then set -a; . "$SECRETS"; set +a; fi
 {
   echo "[$TS] === Olympus paper loop start (PAPER/SIMULATED) ==="
-  cd "$OLY" && python3 -m olympus.cli loop run
+  PY=python3; [ -x "$HOME/olympus_venv/bin/python" ] && PY="$HOME/olympus_venv/bin/python"  # venv has anthropic
+  cd "$OLY" && "$PY" -m olympus.cli loop run
   echo "[$TS] === Olympus paper loop end (rc=$?) ==="
 } >> "$LOG" 2>&1

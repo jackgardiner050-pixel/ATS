@@ -31,6 +31,15 @@ def load() -> dict:
     return json.loads(STATE.read_text())
 
 
+def reset_to_cash(notional: float = 10000.0) -> dict:
+    """Clear the internal paper book to all-cash at a notional (drops the legacy VRT/SMCI residue),
+    so the satellite starts at 0% and the deploy-toward-target rule has room."""
+    state = {"mode": "paper/simulated", "as_of": date.today().isoformat(),
+             "core_value": float(notional), "cash": 0.0, "satellite": {}}
+    save(state)
+    return state
+
+
 def save(state: dict) -> None:
     state.setdefault("mode", "paper/simulated")
     STATE.write_text(json.dumps(state, indent=2))
