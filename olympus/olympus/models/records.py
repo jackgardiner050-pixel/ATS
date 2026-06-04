@@ -118,3 +118,20 @@ class HumanOverride:
 
     def to_dict(self) -> dict:
         return asdict(self)
+
+
+@dataclass
+class ForwardOutcome:
+    outcome_id: str
+    decision_id: str
+    measurement_date: str
+    asset_return: Optional[float]
+    benchmark_return: Optional[float]        # global index (ACWI) over the same window
+    etf_alternative_return: Optional[float]  # naive obvious-AI name (NVDA) over the same window
+    relative_return: Optional[float]         # asset − benchmark
+    skill_luck_beta_classification: str      # skill | luck | beta | factor | unresolved
+    conviction: Optional[int] = None         # stated conviction at decision time (for calibration)
+    notes: str = ""
+
+    def to_dict(self) -> dict:
+        return asdict(self)

@@ -16,6 +16,7 @@ from experimental_pot_engine.track import pit_ledger as L  # the real ledger pri
 
 DECISIONS = config.LEDGER_DIR / "olympus_decisions.jsonl"
 OVERRIDES = config.LEDGER_DIR / "olympus_overrides.jsonl"
+OUTCOMES = config.LEDGER_DIR / "olympus_outcomes.jsonl"
 ENGINE = "olympus_mvp"
 
 # Map an Olympus decision to a valid pit_ledger kind (the exact decision is kept in detail).
@@ -51,9 +52,24 @@ def append_override(override: dict, *, ticker: str) -> dict:
                           record_class=L.LIVE_RECORD_CLASS)
 
 
+def append_outcome(outcome: dict, *, ticker: str) -> dict:
+    ensure_genesis(OUTCOMES, note="Olympus MVP forward-outcome ledger.")
+    return L.append_entry(OUTCOMES, engine=ENGINE, entry_date=date.today(),
+                          kind=L.KIND_MARK, ticker=ticker, detail={"outcome": outcome},
+                          record_class=L.LIVE_RECORD_CLASS)
+
+
 def decisions() -> List[Dict]:
     return L.read_ledger(DECISIONS)
 
 
-def verify() -> tuple:
-    return L.verify_chain(DECISIONS)
+def overrides() -> List[Dict]:
+    return L.read_ledger(OVERRIDES)
+
+
+def outcomes() -> List[Dict]:
+    return L.read_ledger(OUTCOMES)
+
+
+def verify(path=DECISIONS) -> tuple:
+    return L.verify_chain(path)
