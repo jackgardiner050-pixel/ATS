@@ -1527,6 +1527,22 @@ def _hermes_v3_last_variant_run() -> str:
         return ""
 
 
+def _hermes_v3_compute_banner() -> str:
+    """Honest Hermes v3 status: the variant marks are from the last daily COMPUTE, not live.
+
+    Uses the real compute timestamp from the droplet's variant_summary.json (generated_at) — NOT
+    the dashboard republish time — so the label never implies intraday liveness the page lacks.
+    """
+    ts = _hermes_v3_last_variant_run()        # compute time (UTC) from variant_summary.generated_at
+    when = f"{ts} UTC" if ts else "unknown"
+    return (
+        '<div class="hb-banner hb-stale">'
+        f'Hermes v3 — paper shadow arena · <strong>marks as of last compute {when}</strong>. '
+        'Positions are not live-marked intraday; figures are from the last daily compute, not live prices.'
+        '</div>'
+    )
+
+
 def _hermes_v3_heartbeat_badge() -> str:
     """Render an HTML banner showing the last successful Hermes v3 run time."""
     state = _heartbeat_state(_DOCS / "data" / "heartbeat.json")
@@ -2107,9 +2123,14 @@ def build_index(
     # verdicts leaderboard + v2 section + the updated roster.
     heartbeat = _hermes_v3_heartbeat_badge()
 
+    # Single clean v2 story: lead with what-this-is + honest verdicts + the growth experiment, then
+    # the governance gate, the roster, and an HONEST (compute-time, not live) Hermes v3 note. The old
+    # ATS/Themis paper-book sections (position returns, overview, open positions, concentration,
+    # regime, signal, calibration, adversarial, constitutional, factor-alpha, walk-forward, universe)
+    # and the ATS live-strip/perf/health summaries are retired from the LANDING — the data files are
+    # untouched and the detail still lives on the per-track sub-pages linked in the nav.
     body = f"""
 {_oly_status_banner()}
-{_live_strip_html("data/ats_live.json", "SPY")}
 {header}
 <div class="container" style="padding-top:1rem">
 {_oly_intro()}
@@ -2117,33 +2138,19 @@ def build_index(
 {_oly_growth_v2()}
 </div>
 {_oly_kill_switch_card()}
-{perf}
-{health}
-{heartbeat}
 {lab_nav}
 <main>
 <div class="container">
   {_oly_roster()}
   {_oly_independence()}
   {_oly_reconciliation()}
-  {returns_chart}
-  {_portfolio_overview(positions, trades)}
-  {_open_positions_table(positions)}
-  {_factor_alpha_section()}
-  {_backtest_section()}
-  {_regime_section(regime)}
-  {_concentration_section(exposure)}
-  {_signal_section(signal)}
-  {_calibration_section(calib)}
-  {_adversarial_section(adv)}
-  {_constitutional_section(positions)}
-  {_universe_section(screen_state)}
+  {_hermes_v3_compute_banner()}
 </div>
 </main>
 <footer>
   <div class="container">
-    Olympus · Paper portfolio only · Diagnostic read-only layer ·
-    Generated {generated_at} · Not investment advice
+    Olympus · Paper / advisory only · No real money · No validated edge ·
+    Page generated {generated_at} · Not investment advice
   </div>
 </footer>"""
 
