@@ -1,12 +1,12 @@
 {
-  "fetched_at_utc": "2026-06-04T08:00:59Z",
-  "fetched_at_uk": "2026-06-04 09:00 BST",
+  "fetched_at_utc": "2026-06-04T08:49:10Z",
+  "fetched_at_uk": "2026-06-04 09:49 BST",
   "market_status": "pre_market",
   "market_note": "US pre-market",
   "systems": {
     "ats": {
       "portfolio_return_pct": 2.858,
-      "portfolio_today_pct": -0.108,
+      "portfolio_today_pct": -0.118,
       "alpha_vs_spy_pct": 1.705,
       "n_positions": 12
     },
