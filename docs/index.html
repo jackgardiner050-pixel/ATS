@@ -10,13 +10,11 @@
 <body>
 
 <div style="background:#0d1117;border-bottom:1px solid #21262d;
-padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
-  <span style="margin:0 1rem">
-    <span style="color:#e3b341;font-weight:600">● PAPER ONLY</span> · No real orders ·
-    No broker connection · NOT investment advice
-  </span>
-  <span style="margin:0 1rem;color:#484f58">|</span>
-  <span style="margin:0 1rem">
+padding:.4rem 0;font-size:.72rem;text-align:center;color:#8b949e">
+  <div style="margin-bottom:.25rem"><span style="display:inline-block;margin:0 .28rem;padding:.06rem .5rem;border:1px solid #3a2f12;border-radius:3px;color:#e3b341;font-weight:600;letter-spacing:.02em">PAPER ONLY</span><span style="display:inline-block;margin:0 .28rem;padding:.06rem .5rem;border:1px solid #3a2f12;border-radius:3px;color:#e3b341;font-weight:600;letter-spacing:.02em">HUMAN-AUTHORISED</span><span style="display:inline-block;margin:0 .28rem;padding:.06rem .5rem;border:1px solid #3a2f12;border-radius:3px;color:#e3b341;font-weight:600;letter-spacing:.02em">NO REAL MONEY</span><span style="display:inline-block;margin:0 .28rem;padding:.06rem .5rem;border:1px solid #3a2f12;border-radius:3px;color:#e3b341;font-weight:600;letter-spacing:.02em">NO VALIDATED EDGE</span><span style="display:inline-block;margin:0 .28rem;padding:.06rem .5rem;border:1px solid #3a2f12;border-radius:3px;color:#e3b341;font-weight:600;letter-spacing:.02em">IN DEVELOPMENT</span></div>
+  <span style="margin:0 .6rem">No real orders · No broker connection · NOT investment advice</span>
+  <span style="margin:0 .4rem;color:#484f58">|</span>
+  <span style="margin:0 .6rem">
     <span style="color:#e3b341;font-weight:600">0 of 2 members validated</span>
      — evidence phase · no durable edge claimed
   </span>
@@ -65,6 +63,91 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
     
   </div>
 </header>
+<div class="container" style="padding-top:1rem">
+<section>
+<div class="card" style="border-left:4px solid #bc8cff">
+  <h2 style="margin:0 0 .4rem 0;font-size:1.05rem;color:#c9d1d9">What this is</h2>
+  <p style="margin:0 0 .5rem 0;font-size:.86rem;color:#c9d1d9;line-height:1.55">
+    A disciplined <strong>paper</strong> research project — <strong>paper-only, human-authorised,
+    no real money</strong>. Its most valuable output so far is <strong>what doesn't work</strong>:
+    a validation harness (point-in-time backtest + a random/passive control + a full cost model +
+    a Monte-Carlo luck band) that has <strong>falsified more strategies than it has validated</strong>.
+    <strong>Zero validated, decorrelated edges to date.</strong>
+  </p>
+  <p style="margin:0;font-size:.84rem;color:#8b949e;line-height:1.55">
+    The current experiment (<strong>Olympus v2</strong>) tests one honest question:
+    can disciplined <em>growth-picking</em> beat a passive <strong>growth ETF (QQQ)</strong>,
+    <strong>net of cost</strong>, paper-only? The honest prior is that it may not — and a clean
+    negative result would itself be a valid outcome.
+  </p>
+</div>
+</section>
+<section>
+<h2 class="section-title">Honest Verdicts — the validation harness is the asset</h2>
+<div class="card" style="overflow-x:auto">
+  <p style="margin:0 0 .6rem 0;font-size:.82rem;color:#8b949e;line-height:1.5">
+    Ranked by <strong>edge vs benchmark, net of cost</strong> — never raw return. Two clean kills
+    (Hades, Caerus) came from the <em>same discipline</em>, not cleverer strategies: remove
+    look-ahead, count every cost, benchmark net-of-cost against a random/passive control with a
+    luck band. <strong>A successful negative result is a valid outcome.</strong>
+  </p>
+  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <thead><tr>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Strategy</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Bet</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Verdict</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Why (net of cost)</th>
+    </tr></thead>
+    <tbody><tr><td style="padding:.4rem .5rem;color:#c9d1d9;font-weight:600">Hades</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">Crash / VIX de-risk timing overlay</td><td style="padding:.4rem .5rem;white-space:nowrap"><span style="color:#f85149;font-weight:700;font-size:.76rem">FALSIFIED</span></td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem;line-height:1.45">net-negative on all 8 crash episodes once a look-ahead artifact was removed and recovery cost counted (−1.2 to −1.5 pp/yr in calm markets)</td></tr><tr><td style="padding:.4rem .5rem;color:#c9d1d9;font-weight:600">Caerus</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">Short-horizon catalyst-momentum (liquid US equity)</td><td style="padding:.4rem .5rem;white-space:nowrap"><span style="color:#f85149;font-weight:700;font-size:.76rem">FALSIFIED</span></td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem;line-height:1.45">loses to a random liquid-mover control by −1.59 pp net over 45 PIT trades; the catalyst is anti-predictive — you buy the post-event fade</td></tr><tr><td style="padding:.4rem .5rem;color:#c9d1d9;font-weight:600">Nemesis</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">Short-horizon mean-reversion (market-neutral)</td><td style="padding:.4rem .5rem;white-space:nowrap"><span style="color:#f85149;font-weight:700;font-size:.76rem">FALSIFIED</span></td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem;line-height:1.45">real gross reversal (~+17.5%/yr) but two-leg spread + CFD financing crush it to a coin flip net (luck band straddles zero)</td></tr><tr><td style="padding:.4rem .5rem;color:#c9d1d9;font-weight:600">Plutus</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">FX carry / value (G10)</td><td style="padding:.4rem .5rem;white-space:nowrap"><span style="color:#f85149;font-weight:700;font-size:.76rem">FALSIFIED</span></td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem;line-height:1.45">carry and value are real gross premia (~+2%/yr each) but the CFD swap markup eats them whole — none beats passive net of cost</td></tr><tr><td style="padding:.4rem .5rem;color:#c9d1d9;font-weight:600">Apollo / SCAI</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">Thematic AI-infrastructure momentum</td><td style="padding:.4rem .5rem;white-space:nowrap"><span style="color:#e3b341;font-weight:700;font-size:.76rem">NO EDGE</span></td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem;line-height:1.45">selection adds nothing — a static basket dominates the active picks; never beat its own theme calls (AI-regime monoculture, 1 live position)</td></tr><tr><td style="padding:.4rem .5rem;color:#c9d1d9;font-weight:600">Mercury / Kairos</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">Post-earnings drift (liquid slice)</td><td style="padding:.4rem .5rem;white-space:nowrap"><span style="color:#8b949e;font-weight:700;font-size:.76rem">PARKED · ~NULL</span></td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem;line-height:1.45">the drift lives in illiquid names the liquidity filter removes — little-to-no edge after costs, the pre-registered prior, confirmed</td></tr></tbody>
+  </table>
+  <div style="margin-top:.7rem;padding:.55rem .75rem;border:1px solid #2a2d3e;border-radius:4px">
+    <p style="margin:0 0 .25rem 0;font-size:.8rem;color:#e3b341;font-weight:600">The cost-access lesson</p>
+    <p style="margin:0;font-size:.8rem;color:#8b949e;line-height:1.5">
+      Across Caerus, Nemesis and Plutus the edges were <strong>not absent — they were real gross and
+      captured by retail trading costs</strong> (spread, financing, swap). The edge isn't missing;
+      the broker takes it. The real premia (value, carry, momentum, quality) are cheaply ownable via
+      low-cost factor funds — not DIY-tradeable at retail cost. <strong>Capture them cheaply; don't
+      trade them expensively.</strong>
+    </p>
+  </div>
+</div>
+</section>
+<section>
+<h2 class="section-title">Olympus v2 — the growth experiment (early · paper)</h2>
+<div class="card">
+  <p style="margin:0 0 .6rem 0;font-size:.84rem;color:#c9d1d9;line-height:1.55">
+    v2 reorients from non-consensus value to <strong>durable growth</strong>. <strong>Oracle</strong>
+    forms a growth thesis on a bare ticker (consensus leaders are fine; the test is "real &amp;
+    durable, or hype/peaking?"). The <strong>discovery brain</strong> — Hephaestus (value-chain
+    leader vs second-order bottleneck), Chronos (lifecycle / froth), Artemis (multi-source) —
+    surfaces candidates. A <strong>harvest-into-core</strong> mandate rides winners then banks gains
+    into a passive core, with a tight thesis-break exit. Primary benchmark: a growth/tech ETF
+    (<strong>QQQ</strong>) — does picking beat the basket, net of cost?
+  </p>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:.6rem">
+    <thead><tr>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Arm</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Discovery filter</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Paper book (first run)</th>
+    </tr></thead>
+    <tbody><tr><td style="padding:.35rem .5rem;color:#c9d1d9;font-weight:600;white-space:nowrap">Arm A</td><td style="padding:.35rem .5rem;color:#8b949e;font-size:.8rem">obvious theme leaders only</td><td style="padding:.35rem .5rem;color:#8b949e;font-size:.78rem">TSM · ETN · GEV · VRT</td></tr><tr><td style="padding:.35rem .5rem;color:#c9d1d9;font-weight:600;white-space:nowrap">Arm B</td><td style="padding:.35rem .5rem;color:#8b949e;font-size:.8rem">leaders + second-order bottlenecks</td><td style="padding:.35rem .5rem;color:#8b949e;font-size:.78rem">TSM · ONTO · ETN · ANET</td></tr><tr><td style="padding:.35rem .5rem;color:#c9d1d9;font-weight:600;white-space:nowrap">Arm C</td><td style="padding:.35rem .5rem;color:#8b949e;font-size:.8rem">second-order bottleneck names only</td><td style="padding:.35rem .5rem;color:#8b949e;font-size:.78rem">ONTO · ANET · TSM</td></tr></tbody>
+  </table>
+  <p style="margin:0 0 .5rem 0;padding:.5rem .7rem;border:1px solid #3a2f12;border-radius:4px;
+            font-size:.8rem;color:#e3b341;line-height:1.5">
+    ⚠ Honest caveat: the three arms are <strong>currently concentrated in AI-infrastructure and
+    highly correlated</strong> (they share names — e.g. TSM appears in all three). They are
+    <strong>not three independent strategies</strong> yet; treat them as one leveraged AI-infra bet
+    under three discovery filters.
+  </p>
+  <p style="margin:0;font-size:.8rem;color:#8b949e;line-height:1.5">
+    <strong>Forward scorecard: research-grade — no validated edge.</strong> Paper books opened with
+    <strong>0 resolved decisions</strong> (N=0); each arm is scored vs QQQ and vs each other over the
+    holding window. Nothing here is validated; the honest prior is that growth-picking may not beat
+    the growth ETF net of cost.
+  </p>
+</div>
+</section>
+</div>
 <section>
 <div class="card" style="border-left:4px solid #e3b341;padding:0.75rem 1rem 0.6rem">
   <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.3rem">
@@ -74,7 +157,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   </div>
   <p style="margin:0 0 .25rem 0;font-size:.82rem;color:#c9d1d9">
     <strong>0/2</strong> members validated ·
-    <strong>360 days remaining</strong> (deadline 2027-05-29)
+    <strong>359 days remaining</strong> (deadline 2027-05-29)
   </p>
   <p style="margin:0;font-size:.75rem;color:#8b949e">
     Validated = positive forward alpha point estimate + decorrelated (|r|&lt;0.4) + Mnemosyne-clean.
@@ -82,7 +165,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   </p>
 </div>
 </section>
-<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+2.9%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.9%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +1.0%</div></div>
+<div class="container" style="padding-top:1rem"><div class="card-grid"><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-port-return" style="color:var(--green);font-size:2rem">+3.5%</div><div class="stat-label">Portfolio Return</div><div class="stat-sub">since 25 May 2026</div></div><div class="card stat-card" style="text-align:center"><div class="stat-value" id="live-spy-return" style="color:var(--green);font-size:2rem">+1.3%</div><div class="stat-label">SPY Return</div><div class="stat-sub">since 25 May 2026</div></div></div><div id="live-alpha-value" style="text-align:center;margin-top:0.5rem;font-size:0.9rem;color:var(--green);font-weight:600">Alpha: +2.2%</div></div>
 
 <div class="health-bar">
   <div class="container">
@@ -90,10 +173,10 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   <span class="health-pill yellow" title="49.0% confidence"><span class="dot"></span>Regime: Risk On Growth</span>
   <span class="health-pill yellow"><span class="dot"></span>2 Watches</span>
   <span class="health-pill yellow"><span class="dot"></span>Signal Decay</span>
-<span class="health-last-run">Last run: 2026-06-03 05:02 UTC</span>
+<span class="health-last-run">Last run: 2026-06-04 15:20 UTC</span>
   </div>
 </div>
-<div class="hb-banner hb-stale">&#9888; Hermes v3 last run: <strong>2026-05-28 19:06</strong> (variant summary) · no automated heartbeat/schedule recording runs</div>
+<div class="hb-banner hb-stale">&#9888; STALE — last run: 2026-06-03 05:12 UTC · expected by 2026-06-03 21:00 UTC</div>
 
 <nav class="lab-nav">
   <div class="container">
@@ -130,6 +213,14 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
       <span class="lab-nav-title">Live Track</span>
       <span class="lab-nav-sub">Nike &amp; Iris OOS</span>
     </a>
+    <a href="caerus_track.html" class="lab-nav-card">
+      <span class="lab-nav-title">Caerus</span>
+      <span class="lab-nav-sub">demo · pending</span>
+    </a>
+    <a href="macro_card.html" class="lab-nav-card">
+      <span class="lab-nav-title">Macro</span>
+      <span class="lab-nav-sub">awareness · not a signal</span>
+    </a>
   </div>
 </nav>
 <main>
@@ -149,8 +240,16 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
 <td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
 </tr><tr>
 <td style="padding:.4rem .6rem"><a href="scai/" style="color:#bc8cff;font-weight:600;text-decoration:none">Apollo (SCAI)</a><br><span style="color:#8b949e;font-size:.75rem">SCAI-II</span></td>
-<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Structural/thematic AI-infrastructure monitor — selects baskets by regime signals.</td>
-<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1a2a1a;color:#3fb950">Active</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Structural/thematic AI-infrastructure monitor — selects baskets by regime signals.<br><span style="color:#8b949e;font-size:.73rem;font-style:italic">falsified picker — a static basket dominates the active selection (selection adds nothing)</span></td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#1c1c1c;color:#8b949e">Parked</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><span style="color:#bc8cff;font-weight:600">Oracle</span><br><span style="color:#8b949e;font-size:.75rem">growth-thesis engine</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Growth-thesis engine — LLM causal reasoning rates durable-vs-peaking growth on a bare ticker; primary benchmark a growth/tech ETF (QQQ).<br><span style="color:#8b949e;font-size:.73rem;font-style:italic">research-grade · v2 growth reorientation · no validated edge</span></td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#2a2a1a;color:#e3b341">Candidate</span></td>
+</tr><tr>
+<td style="padding:.4rem .6rem"><span style="color:#bc8cff;font-weight:600">Hephaestus / Chronos / Artemis</span><br><span style="color:#8b949e;font-size:.75rem">discovery brain</span></td>
+<td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Discovery brain — Hephaestus maps each theme's value chain (leader vs second-order bottleneck), Chronos tags lifecycle/froth, Artemis is the multi-source feed.<br><span style="color:#8b949e;font-size:.73rem;font-style:italic">research-grade · observational · human-gated</span></td>
+<td style="padding:.4rem .6rem;white-space:nowrap"><span style="display:inline-block;font-size:.7rem;padding:.1rem .45rem;border-radius:3px;font-weight:600;background:#2a2a1a;color:#e3b341">Candidate</span></td>
 </tr><tr>
 <td style="padding:.4rem .6rem"><a href="hermes/" style="color:#bc8cff;font-weight:600;text-decoration:none">Hermes v1 → Apollo</a><br><span style="color:#8b949e;font-size:.75rem">Hermes v1</span></td>
 <td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">Experimental paper lab — original basket-rotation prototype. Folded into Apollo.</td>
@@ -234,7 +333,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
   model on <b>25 May 2026</b>. These are the <b>original entry calls — a fixed
   scorecard, not re-rated.</b> The returns below are <b>live since entry</b> (prices refresh every
   5&nbsp;min during market hours); the <b>ratings and date do not change</b>, so the call stays
-  honest. Held <b><span id="themis-days-held" data-entry-date="2026-05-25">9</span>
+  honest. Held <b><span id="themis-days-held" data-entry-date="2026-05-25">10</span>
   days</b> · benchmark <b>SPY</b> (return-since-entry vs SPY shown in the banner above).
   <span style="color:var(--text-muted)">Paper-only · diagnostic.</span>
 </div>
@@ -253,7 +352,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
     Live return since entry · sorted best-first · rating fixed at entry (see note)
   </div>
   <div class="card">
-    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:60.6%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+18.2%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:44.7%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+13.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:21.1%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+6.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-green" style="width:17.8%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--green)">+5.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:13.7%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+4.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-green" style="width:3.8%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--green)">+1.1%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:2.1%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+0.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-red" style="width:0.1%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--red)">-0.0%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-red" style="width:2.8%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--red)">-0.8%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-red" style="width:5.1%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--red)">-1.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:16.2%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-4.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:23.2%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-7.0%</span></div>
+    <div class="bar-row"><span class="bar-label-sm"><a href="positions/DY.html" class="ticker-link">DY</a></span><div class="bar-track"><div id="pos-fill-DY" class="bar-fill bar-green" style="width:55.2%"></div></div><span id="pos-val-DY" class="bar-value" style="color:var(--green)">+16.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/AMAT.html" class="ticker-link">AMAT</a></span><div class="bar-track"><div id="pos-fill-AMAT" class="bar-fill bar-green" style="width:52.0%"></div></div><span id="pos-val-AMAT" class="bar-value" style="color:var(--green)">+15.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/J.html" class="ticker-link">J</a></span><div class="bar-track"><div id="pos-fill-J" class="bar-fill bar-green" style="width:29.6%"></div></div><span id="pos-val-J" class="bar-value" style="color:var(--green)">+8.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/EMR.html" class="ticker-link">EMR</a></span><div class="bar-track"><div id="pos-fill-EMR" class="bar-fill bar-green" style="width:14.2%"></div></div><span id="pos-val-EMR" class="bar-value" style="color:var(--green)">+4.3%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GNRC.html" class="ticker-link">GNRC</a></span><div class="bar-track"><div id="pos-fill-GNRC" class="bar-fill bar-green" style="width:11.8%"></div></div><span id="pos-val-GNRC" class="bar-value" style="color:var(--green)">+3.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/ACM.html" class="ticker-link">ACM</a></span><div class="bar-track"><div id="pos-fill-ACM" class="bar-fill bar-green" style="width:6.4%"></div></div><span id="pos-val-ACM" class="bar-value" style="color:var(--green)">+1.9%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/SPGI.html" class="ticker-link">SPGI</a></span><div class="bar-track"><div id="pos-fill-SPGI" class="bar-fill bar-green" style="width:5.0%"></div></div><span id="pos-val-SPGI" class="bar-value" style="color:var(--green)">+1.5%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/HUBB.html" class="ticker-link">HUBB</a></span><div class="bar-track"><div id="pos-fill-HUBB" class="bar-fill bar-green" style="width:4.5%"></div></div><span id="pos-val-HUBB" class="bar-value" style="color:var(--green)">+1.4%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/LDOS.html" class="ticker-link">LDOS</a></span><div class="bar-track"><div id="pos-fill-LDOS" class="bar-fill bar-green" style="width:2.4%"></div></div><span id="pos-val-LDOS" class="bar-value" style="color:var(--green)">+0.7%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/GD.html" class="ticker-link">GD</a></span><div class="bar-track"><div id="pos-fill-GD" class="bar-fill bar-red" style="width:2.1%"></div></div><span id="pos-val-GD" class="bar-value" style="color:var(--red)">-0.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/TRGP.html" class="ticker-link">TRGP</a></span><div class="bar-track"><div id="pos-fill-TRGP" class="bar-fill bar-red" style="width:15.4%"></div></div><span id="pos-val-TRGP" class="bar-value" style="color:var(--red)">-4.6%</span></div><div class="bar-row"><span class="bar-label-sm"><a href="positions/KMI.html" class="ticker-link">KMI</a></span><div class="bar-track"><div id="pos-fill-KMI" class="bar-fill bar-red" style="width:22.2%"></div></div><span id="pos-val-KMI" class="bar-value" style="color:var(--red)">-6.7%</span></div>
   </div>
 </section>
   
@@ -272,7 +371,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
     <div class="stat-sub">Performance pending</div>
   </div>
   <div class="card stat-card">
-    <div class="stat-value"><span id="ov-days-held" data-entry-date="2026-05-25">9</span>d</div>
+    <div class="stat-value"><span id="ov-days-held" data-entry-date="2026-05-25">10</span>d</div>
     <div class="stat-label">Days Held</div>
     <div class="stat-sub">Since 2026-05-25 · updates daily</div>
   </div>
@@ -537,8 +636,8 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
       <tr><td><a href="scai/" style="color:#58a6ff">Apollo (SCAI)</a></td><td>Structural rotation monitor</td><td style="color:#3fb950">Paper-only</td><td>$5,000</td><td><span id="sys-pot-scai">—</span></td><td><span id="sys-ret-scai">—</span></td><td><span id="sys-spy-scai">—</span></td><td>1</td><td>cooling_power</td><td>2026-05-28</td></tr>
       <tr><td><a href="hermes/" style="color:#58a6ff">Hermes v1 → Apollo</a></td><td>Experimental paper lab · breadth 38.5%</td><td style="color:#d29922">Observation v1</td><td>$5,000</td><td><span id="sys-pot-hermes">—</span></td><td><span id="sys-ret-hermes">—</span></td><td><span id="sys-spy-hermes">—</span></td><td>1</td><td>cooling_power</td><td>2026-05-28</td></tr>
       <tr><td><a href="hermes_v2/" style="color:#58a6ff">Athena (Hermes v2)</a></td><td>Learning lab · 10 proposals · 12 conv. blocked</td><td style="color:#58a6ff">Learning</td><td><span style="color:#484f58">critique-only</span></td><td><span style="color:#484f58">no pot</span></td><td>—</td><td>—</td><td>1</td><td>Read-only</td><td>2026-05-29</td></tr>
-      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes (execution)</a></td><td>Shadow rotation lab · 10 variants · paper only</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k × 10</td><td><span id="sys-pot-h3">—</span></td><td><span id="sys-ret-h3">best: -0.1%</span></td><td><span id="sys-spy-h3">—</span></td><td>20</td><td>10 variants</td><td>2026-05-28</td></tr>
-      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes v3-N (Hermes)</a></td><td>Market-neutral spread · paper only · spread return —</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k (spread)</td><td>—</td><td><span id="sys-ret-h3n">—</span></td><td>n/a — spread only</td><td>—</td><td>Long/short legs</td><td>2026-05-28</td></tr>
+      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes (execution)</a></td><td>Shadow rotation lab · 11 variants · paper only</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k × 11</td><td><span id="sys-pot-h3">—</span></td><td><span id="sys-ret-h3">best: +4.6%</span></td><td><span id="sys-spy-h3">—</span></td><td>18</td><td>10 variants</td><td>2026-06-04</td></tr>
+      <tr><td><a href="hermes_v3/" style="color:#58a6ff">Hermes v3-N (Hermes)</a></td><td>Market-neutral spread · paper only · spread return —</td><td style="color:#bc8cff">PAPER / SHADOW</td><td>$5k (spread)</td><td>—</td><td><span id="sys-ret-h3n">—</span></td><td>n/a — spread only</td><td>0L/0S</td><td>Long/short legs</td><td>2026-06-04</td></tr>
     </tbody>
   </table>
   <div style="margin-top:0.7rem;padding:0.55rem 0.75rem;border:1px solid #2a2d3e;border-radius:4px;font-size:0.80rem">
@@ -1020,7 +1119,7 @@ padding:.35rem 0;font-size:.72rem;text-align:center;color:#8b949e">
 <footer>
   <div class="container">
     Olympus · Paper portfolio only · Diagnostic read-only layer ·
-    Generated 2026-06-03 05:02 UTC · Not investment advice
+    Generated 2026-06-04 15:20 UTC · Not investment advice
   </div>
 </footer><script>
 (function(){

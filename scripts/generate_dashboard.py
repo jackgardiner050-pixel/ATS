@@ -35,6 +35,9 @@ try:
         pantheon_roster_section as _oly_roster,
         mnemosyne_independence_card as _oly_independence,
         mnemosyne_reconciliation_card as _oly_reconciliation,
+        whats_this_intro as _oly_intro,
+        honest_verdicts_leaderboard as _oly_verdicts,
+        growth_v2_section as _oly_growth_v2,
     )
     _OLYMPUS_AVAILABLE = True
 except Exception:
@@ -45,6 +48,9 @@ except Exception:
     def _oly_roster(): return ""
     def _oly_independence(): return ""
     def _oly_reconciliation(): return ""
+    def _oly_intro(): return ""
+    def _oly_verdicts(): return ""
+    def _oly_growth_v2(): return ""
 
 _ROOT = Path(__file__).parent.parent
 _DOCS = _ROOT / "docs"
@@ -2103,6 +2109,11 @@ def build_index(
 {_oly_status_banner()}
 {_live_strip_html("data/ats_live.json", "SPY")}
 {header}
+<div class="container" style="padding-top:1rem">
+{_oly_intro()}
+{_oly_verdicts()}
+{_oly_growth_v2()}
+</div>
 {_oly_kill_switch_card()}
 {perf}
 {health}
