@@ -108,6 +108,70 @@ def rate_causal(ticker: str, *, client=None, tracker=None) -> dict:
     return thesis_view(rating.to_dict())
 
 
+def _growth_evidence_grade(durability: str, trend: str, momentum: str) -> str:
+    """Growth evidence grade — durable+accelerating is STRONG; peaking/hype/decel/rolling-over is WEAK
+    (so Chronos-style froth and broken momentum collapse the band, NOT consensus)."""
+    durability, trend, momentum = (durability or "").lower(), (trend or "").lower(), (momentum or "").lower()
+    if durability in ("peaking", "hype") or trend == "decelerating" or momentum == "rolling_over":
+        return "weak"
+    if durability == "durable" and trend == "accelerating" and momentum != "rolling_over":
+        return "strong"
+    if durability == "durable":
+        return "moderate"
+    return "weak"
+
+
+def rate_growth(ticker: str, *, role: str = "leader", theme: str = "", enabler: str = "",
+                stage: str = "mid", client=None, tracker=None) -> dict:
+    """GROWTH-mode causal Oracle on a naked ticker (v2, RESEARCH-GRADE).
+
+    Drops the v1 non-consensus gate: a consensus LEADER with durable growth can earn a BUY. The
+    priced-in veto is replaced by a durability check (real & durable vs hype/peaking). Builds the
+    thesis view DIRECTLY from the LLM judgement (it does NOT run the consensus-penalising
+    build_rating) and does NOT write Oracle's forward-test ledger — Oracle's track stays byte-
+    identical. FAILS LOUD with no API key — never fakes.
+    """
+    from datetime import date as _date
+    from olympus.adapters import oracle_llm as LLM
+    client = client or LLM.make_client()                 # raises OracleReasoningUnavailable if no key
+    ctx = _public_context(ticker)                         # fail loud on data error; no screener signal
+    j = LLM.growth_thesis(ticker, ctx, role=role, theme=theme, enabler=enabler, stage=stage,
+                          client=client, tracker=tracker)
+    durability = str(j.get("growth_durability", "")).lower()
+    trend = str(j.get("growth_trend", "")).lower()
+    momentum = str(j.get("momentum_state", "")).lower()
+    grade = _growth_evidence_grade(durability, trend, momentum)
+    bias = str(j.get("bias", "HOLD")).upper()
+    if bias not in ("BUY", "HOLD", "SELL"):
+        bias = "HOLD"
+    inv = j.get("invalidation") or {}
+    today = _date.today().isoformat()
+    return {
+        "ticker": ticker, "bias": bias, "conviction_pct": int(j.get("conviction", 50)),
+        "horizon": j.get("horizon", "6-12 months"),
+        "thesis_summary": j.get("causal_thesis", "") or f"Growth thesis for {ticker} ({role}, {theme}).",
+        "evidence_grade": grade,
+        # GROWTH benchmark stance — NOT the v1 priced-in veto; carries the durability read instead.
+        "benchmark_alternative": {"priced_in_stance": "GROWTH", "growth_durability": durability or "unknown",
+                                  "assessment": f"growth {durability or 'unknown'}/{trend or 'unknown'}, "
+                                                f"momentum {momentum or 'unknown'}"},
+        "invalidation": inv.get("line", "") or "growth decelerates or momentum rolls over",
+        "review_by": inv.get("by_when", "") or "next quarter",
+        "overlap_is_more_ai": False, "diversifying": True,
+        # growth-specific extras (for the journal / scorecard / report)
+        "role": role, "theme": theme, "enabler": enabler, "stage": stage,
+        "growth_durability": durability or "unknown", "growth_trend": trend or "unknown",
+        "momentum_state": momentum or "unknown", "quality": str(j.get("quality", "")).lower(),
+        "bottleneck_angle": j.get("bottleneck_angle", ""),
+        "claim_labels": {"causal_thesis": "Hypothesis", "growth_durability": "Hypothesis",
+                         "conviction_pct": "Opinion", "quality": "Evidence"},
+        "evidence_labels_vocab": EVIDENCE_LABELS,
+        "as_of_date": today,
+        "_raw": {**j, "ticker": ticker, "as_of_date": today, "growth_mode": True,
+                 "role": role, "theme": theme},
+    }
+
+
 def rate_fresh(ticker: str) -> dict:
     """Oracle reasons FROM SCRATCH on a naked discovered ticker — from PUBLIC data only.
 

@@ -130,6 +130,57 @@ def causal_thesis(ticker: str, public_ctx: str, *, client, tracker: Optional[Cos
     return j
 
 
+_GROWTH_SCHEMA = ('{"bias":"BUY|HOLD|SELL","conviction":0-100,"causal_thesis":"...",'
+                  '"growth_durability":"durable|peaking|hype","growth_trend":"accelerating|steady|decelerating",'
+                  '"quality":"high|medium|low","momentum_state":"confirming|neutral|rolling_over",'
+                  '"bottleneck_angle":"...","evidence_labels":{"claim":"Evidence|Hypothesis|Assumption|Opinion|Unknown"},'
+                  '"invalidation":{"line":"...","by_when":"..."},"target":"...","horizon":"6-12 months"}')
+
+
+def growth_thesis(ticker: str, public_ctx: str, *, role: str = "leader", theme: str = "",
+                  enabler: str = "", stage: str = "mid", client, tracker: Optional[CostTracker] = None,
+                  cheap_model: str = CHEAP_MODEL, deep_model: str = DEEP_MODEL, use_cache: bool = True) -> dict:
+    """GROWTH-mode thesis (v2). Consensus is FINE — conviction is durable/accelerating growth +
+    quality + momentum + the bottleneck angle. The veto is NOT 'is it priced in' but 'is the growth
+    REAL and DURABLE, or hype/peaking?'. CHEAP triage + DEEP thesis. Firewall: public context only."""
+    key = f"growth:{ticker}:{role}:{date.today().isoformat()}"
+    cache = _cache() if use_cache else {}
+    if use_cache and key in cache:
+        return cache[key]
+
+    role_hint = (f"This name is tagged a SECOND-ORDER / BOTTLENECK enabler ({enabler}) in the '{theme}' "
+                 f"value chain — judge whether it is a genuine at-scale / new-enabling-tech bottleneck."
+                 if role == "bottleneck" else
+                 f"This name is tagged an obvious LEADER in the '{theme}' theme — consensus leadership is "
+                 f"FINE; judge the durability of its growth.")
+
+    triage = _call(client, cheap_model,
+                   "You are Oracle's GROWTH triage. In ONE sentence give the core growth+bottleneck angle "
+                   "for this name from the public context (durable growth? key enabler?), or 'no angle'. "
+                   "Consensus is fine — you receive NO momentum/screener signal.",
+                   f"Ticker: {ticker} (role={role}, theme={theme})\n{role_hint}\nPublic context:\n{public_ctx}",
+                   200, tracker)
+
+    system = ("You are Oracle in GROWTH mode (paper/advisory, research-grade). Build conviction from "
+              "DURABLE or ACCELERATING growth + quality (margins/returns/balance sheet) + confirming "
+              "momentum + the bottleneck angle. CONSENSUS IS FINE — do NOT penalise a name for being "
+              "well-owned or near its target; the question is NOT 'is it priced in' but 'is the growth "
+              "REAL and DURABLE, or hype / peaking?'. Down-weight conviction hard if growth is peaking, "
+              "hype-driven, or decelerating, or if momentum is rolling over. A BUY needs durable growth + "
+              "a FALSIFIABLE invalidation line (growth-decel or momentum-break). Label each claim "
+              "Evidence/Hypothesis/Assumption/Opinion/Unknown. Output ONLY a single valid JSON object — "
+              "no markdown fences, no prose, all strings on one line.")
+    user = (f"TICKER: {ticker}\nROLE: {role} · THEME: {theme} · STAGE: {stage}\n{role_hint}\n"
+            f"GROWTH+BOTTLENECK ANGLE (triage): {triage}\nPUBLIC CONTEXT:\n{public_ctx}\n\n"
+            f"Return JSON exactly in this shape (compact):\n{_GROWTH_SCHEMA}")
+    raw = _call(client, deep_model, system, user, 2500, tracker)
+    j = _parse(raw)
+    if use_cache:
+        cache[key] = j
+        CACHE.write_text(json.dumps(cache, indent=2))
+    return j
+
+
 def _parse(raw: str) -> dict:
     """Extract the first balanced JSON object (respecting strings/escapes); fail loud, never fake."""
     import re

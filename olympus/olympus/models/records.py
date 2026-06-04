@@ -42,6 +42,29 @@ class NakedCandidate:
 
 
 @dataclass
+class GrowthCandidate:
+    """A v2 growth-discovery output: a NAKED ticker plus its VALUE-CHAIN ROLE and theme context.
+
+    Still firewalled — no price/momentum SIGNAL travels downstream; Oracle forms the growth thesis
+    itself. The role ('leader' | 'bottleneck') is what the three arms partition on; the theme/stage/
+    catalyst are context the growth reasoning may use, never a buy signal.
+    """
+    ticker: str
+    theme: str
+    role: str                  # leader | bottleneck
+    enabler: str               # for a bottleneck: what it enables (power/cooling/packaging/…)
+    stage: str                 # early_accelerating | mid | late_frothy  (Chronos)
+    source: str                # hephaestus | catalyst:<name>
+    obviousness: str = "unknown"   # obvious | less_obvious | unknown (coverage/size proxy)
+    catalyst: str = ""         # the catalyst that surfaced it, if any (awareness only)
+    discovery_date: str = ""
+    status: str = "discovered"
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
 class Critique:
     critique_id: str
     thesis_ref: str

@@ -129,6 +129,38 @@ def cmd_loop_run(venue: str = "paper") -> int:
     return 0
 
 
+def cmd_growth_run() -> int:
+    import json
+    from olympus import growth_loop
+    summary = growth_loop.run()
+    print(json.dumps(summary, indent=2, default=str))
+    print("\nPAPER/SIMULATED v2 growth run — 3 arms, internal PaperBroker (Hermes friction) only, "
+          "no broker reachable. Scored vs QQQ. Human pulls any live trigger.")
+    return 0
+
+
+def cmd_growth_reset(notional: float) -> int:
+    from olympus.core import arm_portfolio as AP
+    from olympus import arms
+    for a in arms.ARM_IDS:
+        AP.reset_to_cash(a, notional)
+    print(f"reset arm books {list(arms.ARM_IDS)} to cash · notional {notional} each (satellite empty).")
+    return 0
+
+
+def cmd_growth_themes() -> int:
+    from olympus.discovery import observational_feed, catalyst_feed
+    snap = observational_feed.snapshot()
+    print(f"Live growth themes ({len(snap['theme_calls'])}):")
+    for c in snap["theme_calls"]:
+        print(f"  {c['theme']:20} stage={c['stage']:18} leaders={c['leaders']} bottlenecks={c['bottlenecks']}")
+    print("\nCatalysts (AWARENESS only — public beneficiaries, never the private IPO):")
+    for r in catalyst_feed.upcoming():
+        print(f"  {r['catalyst']}  [{r.get('type')}]  private={r.get('private_company')}  "
+              f"→ public beneficiaries {r['public_beneficiaries']}")
+    return 0
+
+
 def cmd_journal() -> int:
     text = journal.render(); _save("journal.md", text); print(text); return 0
 
@@ -196,6 +228,11 @@ def main(argv=None) -> int:
     lrun = lps.add_parser("run")
     lrun.add_argument("--venue", default="paper", choices=["paper", "t212_demo"])
 
+    gr = sub.add_parser("growth"); grs = gr.add_subparsers(dest="action")
+    grs.add_parser("run")
+    grt = grs.add_parser("reset"); grt.add_argument("--notional", type=float, default=10000.0)
+    grs.add_parser("themes")
+
     sub.add_parser("journal")
 
     pm = sub.add_parser("postmortem"); pms = pm.add_subparsers(dest="action")
@@ -225,6 +262,12 @@ def main(argv=None) -> int:
         return cmd_decision_create(args.candidate.upper())
     if args.cmd == "loop" and args.action == "run":
         return cmd_loop_run(getattr(args, "venue", "paper"))
+    if args.cmd == "growth" and args.action == "run":
+        return cmd_growth_run()
+    if args.cmd == "growth" and args.action == "reset":
+        return cmd_growth_reset(args.notional)
+    if args.cmd == "growth" and args.action == "themes":
+        return cmd_growth_themes()
     if args.cmd == "journal":
         return cmd_journal()
     if args.cmd == "postmortem" and args.action == "add":
