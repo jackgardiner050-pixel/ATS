@@ -34,13 +34,31 @@ fi
 TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 echo "[$TS] live-refresh start"
 
+# 0. Pull Hermes v3's authoritative variant state from the always-on droplet.
+#    Hermes v3 now COMPUTES on the droplet (daily 21:30 UTC cron); the Mac is a read-replica
+#    for publishing — the same compute-on-droplet / publish-from-Mac pattern as EPE. Non-fatal:
+#    a droplet/SSH hiccup must never break the dashboard refresh; we just publish the last pull.
+HV3_LOCAL="$HOME/trading/hermes_v3_lab/data/variants/"
+if rsync -az --timeout=20 -e "ssh -i $HOME/.ssh/id_ed25519 -o ConnectTimeout=15 -o BatchMode=yes -p 8022" \
+        root@161.35.166.77:/root/trading/hermes_v3_lab/data/variants/ "$HV3_LOCAL" 2>/dev/null; then
+    echo "[$TS] pulled Hermes v3 variant state from droplet"
+else
+    echo "[$TS] WARN: droplet pull failed — publishing last-known Hermes v3 state"
+fi
+
 # 1. Fetch prices and write JSON files
 $PYTHON "$AGENT/scripts/fetch_live_prices.py"
+
+# 1b. Regenerate the sanitized Olympus track card (Iris + Nike) from the
+#     immutable point-in-time ledgers. Display/read-only — no trading.
+( cd "$HOME/labs" && "$PYTHON" -m experimental_pot_engine.track.publish_card ) || true
 
 # 2. Stage changed data files
 cd "$AGENT"
 git add docs/data/ats_live.json docs/data/scai_live.json \
-        docs/data/hermes_live.json docs/data/system_summary_live.json 2>/dev/null || true
+        docs/data/hermes_live.json docs/data/hermes_v3_live.json \
+        docs/data/system_summary_live.json \
+        docs/olympus_track.html 2>/dev/null || true
 
 # 3. Commit only if something changed
 if git diff --cached --quiet; then
