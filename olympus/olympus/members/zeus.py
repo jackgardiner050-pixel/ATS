@@ -34,12 +34,14 @@ def decide(thesis: dict, critique, exposure, allocation, governance: dict,
     # Decision: anchor on Oracle's bias; never upgrade a constrained idea to BUY.
     bias = thesis["bias"]
     decision = bias if bias in ("BUY", "HOLD", "REDUCE", "EXIT") else "HOLD"
-    # The correlated-council note caps confidence UPLIFT; it does not, alone, block a buy. A BUY is
-    # downgraded to HOLD only by SUBSTANTIVE constraints (weak evidence, priced-in, overlap, an
-    # unresolved counter-thesis, a constitution violation) or zero size — so the loop isn't inert.
-    substantive = [c for c in constraints if "correlated" not in c.lower()]
-    if decision == "BUY" and (substantive or allocation.initial_allocation == 0.0):
-        decision = "HOLD"   # discipline: substantively constrained or zero-size → do not buy
+    # Actionable bar v1 (locked): soft constraints (priced-in / overlap / Athena / correlation) have
+    # ALREADY down-weighted conviction in the rubric and stay in the transparency list — they no
+    # longer ALSO veto the buy (that double-penalty was the old ~75 bar). A BUY is downgraded to HOLD
+    # only by a HARD block: zero size (below the 65 bar), a constitution violation, or no invalidation.
+    hard_block = bool(governance.get("constitution_violations")) or allocation.initial_allocation == 0.0
+    no_invalidation = not str(thesis.get("invalidation") or "").strip()
+    if decision == "BUY" and (hard_block or no_invalidation):
+        decision = "HOLD"   # below the bar, hard-governed, or no falsifiable line → do not buy
 
     # confidence band, constrained downward by the findings
     conv = thesis["conviction_pct"]

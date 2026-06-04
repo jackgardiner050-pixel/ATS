@@ -112,7 +112,7 @@ def test_full_oracle_produces_thesis_and_logs(tmp_path, monkeypatch):
 def test_zeus_can_emit_buy():
     thesis = {"ticker": "XYZ", "bias": "BUY", "conviction_pct": 70, "evidence_grade": "strong",
               "thesis_summary": "t", "benchmark_alternative": {"priced_in_stance": "MIXED", "etf_alternative": {}},
-              "review_by": "next quarter"}
+              "invalidation": "thesis breaks if FCF turns negative", "review_by": "next quarter"}
     crit = Critique("c", "XYZ", "counter", [], [], ["x"], ["break"], reduce_confidence=False)
     exp = type("E", (), {"core_overlap_warnings": [], "satellite_overlap_warnings": [],
                          "theme_exposure_status": "ok", "factor_weights": {}, "etf_alternative": {}})()

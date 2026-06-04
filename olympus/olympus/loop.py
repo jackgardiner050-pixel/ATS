@@ -120,12 +120,15 @@ def run(*, fetch_prices: bool = True, broker_mode: str = "paper", record: bool =
 def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_client=None) -> dict:
     from olympus.adapters import oracle_llm as LLM
     from olympus.adapters.t212_demo import T212Unavailable
+    demo_fallback, demo_status = False, "executed on the demo venue"
     try:
         broker = make_broker(broker_mode)            # 'live' refused; t212_demo connectivity-checks
     except T212Unavailable as e:
-        return {"mode": broker_mode, "execution_venue": "t212_demo", "broker": "UNAVAILABLE",
-                "reason": str(e), "candidate_actions": [], "decisions_made": 0, "positions_opened": 0,
-                "note": "T212 demo execution unavailable — NOT falling back to the internal sim (no fake)."}
+        # Phase 8 demo readiness: no valid Invest-type demo key → run the INTERNAL SIM, CLEARLY
+        # labelled NOT demo (explicit fallback — never faking demo execution).
+        broker = PaperBroker()
+        demo_fallback = True
+        demo_status = f"T212 demo unavailable — ran the INTERNAL SIM, clearly NOT demo ({str(e)[:90]})"
     assert broker.mode in (PAPER_MODE, "t212_demo"), "loop executes paper/demo only — never live"
     state = PP.load()
     if fetch_prices:
@@ -220,7 +223,9 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_clie
     ok_chain, _ = storage.verify(storage.PAPER_FILLS) if storage.PAPER_FILLS.exists() else (True, [])
     return {
         "mode": PAPER_MODE,
-        "execution_venue": broker.mode,
+        "execution_venue": ("internal_sim (NOT demo — T212 demo unavailable)" if demo_fallback
+                            else broker.mode),
+        "demo_status": demo_status,
         "standalone_core_disregarded": standalone,
         "oracle_reasoning": "FULL_CAUSAL_LLM",
         "discovery": {"source": "artemis" if discover else "oracle_book", "n_candidates": len(discovered),

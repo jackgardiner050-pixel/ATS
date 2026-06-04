@@ -9,13 +9,13 @@ from __future__ import annotations
 
 from olympus.adapters.execution import Order
 from olympus.core import paper_portfolio as PP
-from olympus.core.constants import MAX_INITIAL, MAX_SINGLE
+from olympus.core.constants import MAX_INITIAL, MAX_SINGLE, ACTIONABLE_CONVICTION
 
 TARGET_SATELLITE = 0.30
 BAND_UPPER = 0.35
 RATCHET_DOWN_ONLY = True   # configurable: trim on overgrowth only; never force-feed on shrink
-# conviction → size mapping: at conviction 55 use the band floor, at 85+ the band ceiling
-_CONV_FLOOR, _CONV_CEIL = 55, 85
+# conviction → size mapping: at the Actionable bar use the band floor (smallest), at 85+ the ceiling
+_CONV_FLOOR, _CONV_CEIL = ACTIONABLE_CONVICTION, 85
 
 
 def _clamp01(x: float) -> float:

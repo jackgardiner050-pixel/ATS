@@ -23,17 +23,22 @@ MAX_INITIAL = 0.03   # hard: max initial 3%
 MAX_SINGLE = 0.05    # hard: max single position 5%
 MAX_THEME = 0.40     # hard: max theme 40%
 
-# Map an Oracle (evidence_grade, confidence) → allocation band. Deliberately conservative:
-# the honest dominant output is research/watchlist/HOLD, not BUY.
+# Actionable bar — PRE-REGISTERED and LOCKED (one-time recalibration; fail-closed on edit).
+from olympus.preregistration.spec import load_spec as _load_bar
+_BAR = _load_bar("actionable_bar_v1")
+ACTIONABLE_CONVICTION = int(_BAR["actionable_conviction_pct"])   # 65 (was an effective ~75)
+HIGH_CONVICTION = int(_BAR["high_conviction_pct"])               # 75 — full-size band floor
+
+
+# Map an Oracle (evidence_grade, conviction) → allocation band. The action bar is now 65: genuinely
+# decent (65–68) ideas earn a SMALL actionable position; only ≥75 + strong evidence earns full size.
 def band_for(evidence_grade: str, conviction_pct: int) -> str:
     eg = (evidence_grade or "").lower()
-    if eg in ("weak", "thin", "speculative") or conviction_pct < 55:
+    if eg in ("weak", "thin", "speculative") or conviction_pct < ACTIONABLE_CONVICTION:
         return "research"
-    if conviction_pct >= 70 and eg in ("strong", "high"):
+    if conviction_pct >= HIGH_CONVICTION and eg in ("strong", "high"):
         return "high_conviction"
-    if conviction_pct >= 60:
-        return "actionable"
-    return "watchlist"
+    return "actionable"
 
 
 # Cheapest-relevant-ETF map (§8). Small, honest, extend over time. Used to force the

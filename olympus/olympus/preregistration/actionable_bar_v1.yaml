@@ -1,0 +1,34 @@
+ruleset: actionable_bar_v1
+title: "Olympus Actionable-conviction bar — one-time recalibration, then locked"
+status: PREREGISTERED
+preregistered_on: "2026-06-04"
+final: true   # FINAL — committed before the run. Editing breaks the hash (fail-closed).
+
+# ── the change ───────────────────────────────────────────────────────────────
+actionable_conviction_pct: 65       # the BUY-eligible bar (was an effective ~75)
+high_conviction_pct: 75             # full-size band floor (raised so 'high conviction' stays high)
+prior_effective_bar_pct: 75
+
+rationale: >
+  A satellite carrying a 30% active mandate must act on realistic active-investing conviction
+  (~60–65%), not on near-certainties. The previous effective bar (~75) — conviction ≥70 AND a
+  clean idea with NO soft constraint — meant genuinely-decent ideas in the 6.5–6.8 (65–68%) range
+  could never earn a BUY, so the book never opened. Lowering the action bar to 65 lets those names
+  take SMALL, conviction-weighted positions.
+
+mechanics:
+  conviction_recorded_truthfully: true     # only the ACTION threshold moves; conviction is unchanged
+  soft_constraints: "priced-in / consensus / overlap / Athena still DOWN-WEIGHT conviction in the
+    rubric; they no longer ALSO veto a BUY whose down-weighted conviction still clears the bar
+    (that double-penalty was the hidden ~75 bar)."
+  still_required: ["a falsifiable invalidation line", "no hard governance block (constitution /
+    concentration / survivability)", "ETF-benchmark check", "firewall intact", "mandate bands intact"]
+  sizing: "conviction-weighted within the band — names just over the bar (65–68) get SMALL positions,
+    not full size (deploy floor = the bar)."
+
+lock:
+  one_time: true
+  do_not_lower_further: >
+    This is a ONE-TIME recalibration. Do NOT iteratively lower the bar to manufacture buys. If even
+    at 65 Olympus still holds everything, THAT IS THE VERDICT — record it and stop. Any change to
+    this file breaks its sha256 and fails closed.

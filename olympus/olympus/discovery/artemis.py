@@ -13,6 +13,7 @@ never fake.
 """
 from __future__ import annotations
 
+import logging
 from datetime import date
 from typing import Callable, Optional
 
@@ -20,6 +21,8 @@ import yaml
 
 from olympus.core import config
 from olympus.models.records import NakedCandidate
+
+_log = logging.getLogger("olympus.artemis")
 
 WATCHLIST = config.OLYMPUS_REPO / "olympus" / "config" / "artemis_watchlist.yaml"
 
@@ -30,7 +33,7 @@ UNIVERSE = [
     # industrials / infrastructure / special situations
     "GTLS", "AGX", "BLDR", "FIX", "AAON", "MTZ", "STRL", "PWR", "BWXT",
     # energy / materials
-    "AR", "RRC", "CNX", "CIVI", "MP", "CMC", "AA",
+    "AR", "RRC", "CNX", "MP", "CMC", "AA",
     # financials
     "SOFI", "ALLY", "KEY", "JXN",
     # healthcare / biotech (liquid)
@@ -72,7 +75,11 @@ def _value_quality_source(universe: list[str], fundamentals_fn: Callable) -> lis
     out = []
     got_any = False
     for t in universe:
-        info = fundamentals_fn(t)                # may raise DiscoveryDataError on a hard failure
+        try:
+            info = fundamentals_fn(t)
+        except DiscoveryDataError as e:             # fail-loud-SKIP a dead/404 symbol; never abort the run
+            _log.warning("value/quality: skipping %s (data error) — %s", t, str(e)[:70])
+            continue
         if not info:
             continue
         got_any = True
@@ -93,7 +100,11 @@ def _context_source(universe: list[str], context_fn: Callable) -> list[str]:
     surfaces names for ATTENTION only — never a signal.) Fail loud on data error."""
     out, got_any = [], False
     for t in universe:
-        ctx = context_fn(t)                      # may raise DiscoveryDataError
+        try:
+            ctx = context_fn(t)
+        except DiscoveryDataError as e:           # fail-loud-SKIP a dead/404 symbol; never abort
+            _log.warning("context: skipping %s (data error) — %s", t, str(e)[:70])
+            continue
         if ctx is None:
             continue
         got_any = True
