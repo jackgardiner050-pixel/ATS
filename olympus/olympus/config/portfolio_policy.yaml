@@ -1,0 +1,21 @@
+# Olympus portfolio policy — the core-vs-satellite context for Hecate (§9).
+#
+# SATELLITE: read live from the real paper book (~/agent/data/paper_positions.yaml) — not duplicated here.
+#
+# CORE: your real-money / passive holdings. Hecate checks candidate exposure against BOTH the
+# satellite AND this core, so a satellite AI bet that merely duplicates core QQQ/tech exposure is flagged.
+#
+# >>> THE CORE BELOW IS EXAMPLE DATA so the core-overlap check runs end-to-end. <<<
+# Replace `holdings` with your actual core ISA/pension/ETF positions; set core_supplied: true.
+core_supplied: false        # set true once the holdings below are your real positions
+
+core:
+  holdings:
+    - { id: VWRP, name: "Vanguard FTSE All-World", weight: 0.45, themes: [global_equity, us_large_cap, ai, tech] }
+    - { id: VUAG, name: "Vanguard S&P 500",        weight: 0.30, themes: [us_large_cap, ai, tech] }
+    - { id: EQQQ, name: "Invesco Nasdaq 100",       weight: 0.15, themes: [tech, ai, semiconductors, growth] }
+    - { id: CASH, name: "Cash",                     weight: 0.10, themes: [] }
+
+# Candidate-theme tags Hecate uses to test core overlap (extend as needed).
+candidate_themes:
+  ORCL: [ai, cloud, tech, us_large_cap, data_center]
