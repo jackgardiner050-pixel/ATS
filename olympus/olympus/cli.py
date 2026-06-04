@@ -90,6 +90,16 @@ def cmd_outcome_add(args) -> int:
     return 0
 
 
+def cmd_loop_run() -> int:
+    import json
+    from olympus import loop
+    summary = loop.run()
+    print(json.dumps(summary, indent=2, default=str))
+    print("\nPAPER/SIMULATED loop run complete — no human in the trade, no broker reachable. "
+          "Forward scorecard is the kill-check for any future live step.")
+    return 0
+
+
 def cmd_report(kind: str, candidate: str | None) -> int:
     if kind == "exposure":
         exp = exposure_report.build(candidate or "ORCL"); text = exposure_report.render(exp); name = "exposure_report.md"
@@ -131,6 +141,9 @@ def main(argv=None) -> int:
     ocadd.add_argument("--conviction", type=int, default=None)
     ocadd.add_argument("--notes", default="")
 
+    lp = sub.add_parser("loop"); lps = lp.add_subparsers(dest="action")
+    lps.add_parser("run")
+
     rep = sub.add_parser("report"); rep.add_argument("kind",
         choices=["exposure", "scorecard", "override", "success", "quarterly"])
     rep.add_argument("--candidate", default=None)
@@ -138,6 +151,8 @@ def main(argv=None) -> int:
     args = p.parse_args(argv)
     if args.cmd == "decision" and args.action == "create":
         return cmd_decision_create(args.candidate.upper())
+    if args.cmd == "loop" and args.action == "run":
+        return cmd_loop_run()
     if args.cmd == "override" and args.action == "add":
         return cmd_override_add(args.decision, args.human_action, args.rationale)
     if args.cmd == "outcome" and args.action == "add":

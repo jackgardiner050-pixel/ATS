@@ -17,6 +17,7 @@ from experimental_pot_engine.track import pit_ledger as L  # the real ledger pri
 DECISIONS = config.LEDGER_DIR / "olympus_decisions.jsonl"
 OVERRIDES = config.LEDGER_DIR / "olympus_overrides.jsonl"
 OUTCOMES = config.LEDGER_DIR / "olympus_outcomes.jsonl"
+PAPER_FILLS = config.LEDGER_DIR / "olympus_paper_fills.jsonl"   # paper/simulated execution only
 ENGINE = "olympus_mvp"
 
 # Map an Olympus decision to a valid pit_ledger kind (the exact decision is kept in detail).
@@ -57,6 +58,19 @@ def append_outcome(outcome: dict, *, ticker: str) -> dict:
     return L.append_entry(OUTCOMES, engine=ENGINE, entry_date=date.today(),
                           kind=L.KIND_MARK, ticker=ticker, detail={"outcome": outcome},
                           record_class=L.LIVE_RECORD_CLASS)
+
+
+def append_fill(fill: dict, *, ticker: str) -> dict:
+    """Record a PAPER/SIMULATED fill to the hash-chained paper-execution ledger."""
+    ensure_genesis(PAPER_FILLS, note="Olympus MVP paper-execution ledger — simulated fills only.")
+    return L.append_entry(PAPER_FILLS, engine=ENGINE, entry_date=date.today(),
+                          kind=L.KIND_MARK, ticker=ticker,
+                          detail={"fill": fill, "mode": "paper/simulated"},
+                          record_class=L.LIVE_RECORD_CLASS)
+
+
+def fills() -> List[Dict]:
+    return L.read_ledger(PAPER_FILLS)
 
 
 def decisions() -> List[Dict]:
