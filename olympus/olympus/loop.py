@@ -146,24 +146,47 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_clie
                     "note": "Full causal Oracle requires ANTHROPIC_API_KEY. Discovery ran; reasoning did "
                             "not. No data-only fallback (that would fake theses)."}
 
-    # 1. discover → for each NAKED candidate: govern from the bare ticker → execute (paper)
-    actions = []
+    # 1. discover → govern each NAKED candidate. SELL-side acts now; BUYs are queued for a
+    #    conviction-ranked deploy-toward-target step (so we don't over-deploy past 30%).
+    from olympus.core.constants import ALLOCATION_BANDS
+    actions, buy_queue = [], []
     for ticker, source in discovered:
         sat_tickers = list(state["satellite"])       # Hecate/Tyche govern the PAPER BOOK's concentration
         decision, thesis, alloc, as_of = _govern_candidate(ticker, sat_tickers, client=client, tracker=tracker)
         if record:
             storage.append_decision(decision.to_dict(), ticker=ticker,
                                     decision=decision.decision, data_as_of=as_of)
-        rec = {"ticker": ticker, "source": source, "decision": decision.decision, "executed": False}
-        order = _order_from_decision(decision, thesis, alloc, state)
-        if order:
-            ok, why = _governed_order(order, state)
-            if ok:
-                fill = broker.execute(order); PP.apply_fill(state, fill.__dict__)
-                rec.update(executed=True, fill=fill.to_dict())
+        rec = {"ticker": ticker, "source": source, "decision": decision.decision,
+               "conviction": thesis.get("conviction_pct"), "executed": False}
+        if decision.decision == "BUY" and alloc.target_allocation > 0:
+            price = _price(ticker, state)
+            if price:
+                lo, hi = ALLOCATION_BANDS.get(alloc.band, (0.0, alloc.target_allocation))
+                buy_queue.append({"ticker": ticker, "conviction": int(thesis.get("conviction_pct", 0)),
+                                  "price": price, "band_lo": lo, "band_hi": hi, "rec": rec})
             else:
-                rec.update(blocked_by_governance=why)
+                rec["note"] = "no price — not deployed"
+        elif decision.decision in ("REDUCE", "EXIT"):
+            order = _order_from_decision(decision, thesis, alloc, state)
+            if order:
+                ok, why = _governed_order(order, state)
+                if ok:
+                    fill = broker.execute(order); PP.apply_fill(state, fill.__dict__)
+                    rec.update(executed=True, fill=fill.to_dict())
+                else:
+                    rec.update(blocked_by_governance=why)
         actions.append(rec)
+
+    # 1b. DEPLOY TOWARD TARGET — when below 30%, open conviction-ranked BUYs sized within bands,
+    #     deploying toward (never forcing to) the target. Weak/few candidates → honest under-deploy.
+    deploy = mandate.deploy_plan(state, [{k: v for k, v in c.items() if k != "rec"} for c in buy_queue])
+    for order in deploy["orders"]:
+        ok, why = _governed_order(order, state)
+        if ok:
+            fill = broker.execute(order); PP.apply_fill(state, fill.__dict__)
+            for c in buy_queue:
+                if c["ticker"] == order.ticker:
+                    c["rec"].update(executed=True, fill=fill.to_dict()); break
 
     # 2. mandate rebalance — trim past the band, bank the excess into the core
     m = mandate.check(state)
@@ -192,6 +215,7 @@ def _run(*, fetch_prices, broker_mode, record, discover, standalone, oracle_clie
         "decisions_made": len(actions),
         "positions_opened": sum(1 for a in actions if a.get("executed") and
                                 (a.get("fill", {}) or {}).get("side") == "BUY"),
+        "deploy_toward_target": {k: v for k, v in deploy.items() if k != "orders"},
         "llm_cost": tracker.summary(),
         "candidate_actions": actions,
         "mandate": {"satellite_fraction_before": m["satellite_fraction"], "action": m["action"],

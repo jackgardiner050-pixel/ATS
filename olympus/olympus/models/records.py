@@ -100,6 +100,7 @@ class ZeusDecision:
     date: str
     decision: str                       # BUY | HOLD | REDUCE | EXIT
     confidence_band: str
+    conviction_pct: int                 # Oracle's honest conviction (for journal + conviction-weighted deploy)
     evidence_grade: str
     confidence_constrained_by: List[str]
     thesis_summary: str

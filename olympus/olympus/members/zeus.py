@@ -53,7 +53,7 @@ def decide(thesis: dict, critique, exposure, allocation, governance: dict,
     return ZeusDecision(
         decision_id=f"zeus_{candidate_id}", candidate_id=candidate_id, thesis_ref=candidate_id,
         date=date.today().isoformat(), decision=decision, confidence_band=band,
-        evidence_grade=thesis["evidence_grade"], confidence_constrained_by=constraints,
+        conviction_pct=int(conv), evidence_grade=thesis["evidence_grade"], confidence_constrained_by=constraints,
         thesis_summary=thesis["thesis_summary"], strongest_counter_case=critique.counter_case,
         key_risks=critique.failure_scenarios,
         current_allocation=0.0, target_allocation=allocation.target_allocation,

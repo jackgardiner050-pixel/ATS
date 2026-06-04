@@ -21,6 +21,7 @@ def entries() -> list[dict]:
         out.append({
             "date": e["date"], "seq": e["seq"], "type": "decision",
             "ticker": zd.get("candidate_id", "").split("_")[-1], "decision": zd.get("decision"),
+            "conviction": zd.get("conviction_pct"),
             "rationale": (zd.get("thesis_summary") or "")[:240],
             "council_summary": zd.get("evidence_independence", ""),
             "binding_constraint": zd.get("confidence_constrained_by", []),
@@ -51,7 +52,8 @@ def render() -> str:
          "(built on Mnemosyne / the decision ledger)*", ""]
     for j in entries():
         if j["type"] == "decision":
-            L += [f"## {j['date']} · DECISION · {j['ticker']} → **{j['decision']}**",
+            L += [f"## {j['date']} · DECISION · {j['ticker']} → **{j['decision']}** "
+                  f"(conviction {j.get('conviction')}%)",
                   f"- Rationale: {j['rationale']}",
                   f"- Constraint that bound confidence: {'; '.join(j['binding_constraint']) or 'none'}",
                   f"- Council: {j['council_summary'][:200]}",
