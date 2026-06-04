@@ -18,6 +18,8 @@ DECISIONS = config.LEDGER_DIR / "olympus_decisions.jsonl"
 OVERRIDES = config.LEDGER_DIR / "olympus_overrides.jsonl"
 OUTCOMES = config.LEDGER_DIR / "olympus_outcomes.jsonl"
 PAPER_FILLS = config.LEDGER_DIR / "olympus_paper_fills.jsonl"   # paper/simulated execution only
+POSTMORTEMS = config.LEDGER_DIR / "olympus_postmortems.jsonl"   # resolved-decision classifications
+SCREENER = config.LEDGER_DIR / "olympus_screener_picks.jsonl"   # WALLED-OFF naive benchmark track
 ENGINE = "olympus_mvp"
 
 # Map an Olympus decision to a valid pit_ledger kind (the exact decision is kept in detail).
@@ -71,6 +73,29 @@ def append_fill(fill: dict, *, ticker: str) -> dict:
 
 def fills() -> List[Dict]:
     return L.read_ledger(PAPER_FILLS)
+
+
+def append_postmortem(pm: dict, *, ticker: str) -> dict:
+    ensure_genesis(POSTMORTEMS, note="Olympus MVP post-mortem ledger — resolved-decision classifications.")
+    return L.append_entry(POSTMORTEMS, engine=ENGINE, entry_date=date.today(),
+                          kind=L.KIND_MARK, ticker=ticker, detail={"postmortem": pm},
+                          record_class=L.LIVE_RECORD_CLASS)
+
+
+def postmortems() -> List[Dict]:
+    return L.read_ledger(POSTMORTEMS)
+
+
+def append_screener_pick(pick: dict, *, ticker: str) -> dict:
+    """WALLED-OFF benchmark track — must never feed any decision member."""
+    ensure_genesis(SCREENER, note="Olympus naive-screener benchmark track — firewalled from decisions.")
+    return L.append_entry(SCREENER, engine="olympus_naive_screener", entry_date=date.today(),
+                          kind=L.KIND_MARK, ticker=ticker, detail={"pick": pick, "mode": "paper/advisory"},
+                          record_class=L.LIVE_RECORD_CLASS)
+
+
+def screener_picks() -> List[Dict]:
+    return L.read_ledger(SCREENER)
 
 
 def decisions() -> List[Dict]:

@@ -53,10 +53,16 @@ def build(*, fetch: bool = True) -> dict:
             counts[dec] += 1
 
     # interim benchmark/ETF marks from Oracle's stored anchors (real wiring)
+    # WALLED-OFF screener track read as a benchmark ARM only (ledger data, not the module).
+    screener = [e["detail"]["pick"] for e in storage.screener_picks()
+                if e.get("detail", {}).get("pick")]
+
     interim = []
     cur = {}
     if fetch:
-        for t in {"ACWI", "NVDA"} | {r["detail"]["rating"]["ticker"] for r in ratings}:
+        tickers = {"ACWI", "NVDA"} | {r["detail"]["rating"]["ticker"] for r in ratings}
+        tickers |= {p["ticker"] for p in screener}
+        for t in tickers:
             cur[t] = _current(t)
     for r in ratings:
         rat = r["detail"]["rating"]
@@ -95,8 +101,33 @@ def build(*, fetch: bool = True) -> dict:
                     "avg_benchmark_relative_pct_ACWI": avg_rel, "avg_etf_relative_pct_NVDA": avg_etf},
         "calibration_by_band": _calibration(resolved_out),
         "major_winners": winners,
+        "naive_screener_arm": _screener_arm(screener, cur, fetch),
         "research_grade": n_res < vp["min_resolved_calls_for_verdict"],
     }
+
+
+def _screener_arm(screener: list, cur: dict, fetch: bool) -> dict:
+    """Benchmark arm (c): does the naive screener beat passive (ACWI), net of cost? And it is the
+    third yardstick Olympus's own decisions are measured against once they resolve."""
+    rows, rels = [], []
+    for p in screener:
+        c = cur.get(p["ticker"]) if fetch else None
+        entry, acwi0 = p.get("price"), p.get("acwi_anchor")
+        acwi_now = cur.get("ACWI") if fetch else None
+        net = ((c / entry - 1) * 100 - p.get("net_cost_haircut_pct", 0)) if (c and entry) else None
+        acwi_r = ((acwi_now / acwi0 - 1) * 100) if (acwi_now and acwi0) else None
+        rel = round(net - acwi_r, 2) if (net is not None and acwi_r is not None) else None
+        if rel is not None:
+            rels.append(rel)
+        rows.append({"ticker": p["ticker"], "entry_date": p.get("entry_date"),
+                     "net_return_pct": round(net, 2) if net is not None else None,
+                     "acwi_return_pct": round(acwi_r, 2) if acwi_r is not None else None,
+                     "screener_vs_acwi_pct": rel})
+    avg_rel = round(sum(rels) / len(rels), 2) if rels else None
+    return {"n_picks": len(screener), "picks": rows,
+            "avg_screener_vs_ACWI_pct_net": avg_rel,
+            "screener_beats_passive": (avg_rel is not None and avg_rel > 0),
+            "olympus_vs_screener": "needs resolved Olympus decisions (research-grade until then)"}
 
 
 def _calibration(resolved_out) -> dict:
@@ -130,6 +161,12 @@ def render(sc: dict) -> str:
         f"- Avg vs NVDA (ETF/naive): {m['avg_etf_relative_pct_NVDA']}%" if m['avg_etf_relative_pct_NVDA'] is not None else "- Avg vs NVDA: —",
         f"- Calibration by confidence band: {sc['calibration_by_band']}",
         f"- Major winners (skill/luck/beta): {len(sc['major_winners'])}",
+        "",
+        "## Benchmark arm (c) — naive screener (walled off from decisions)",
+        f"- Screener picks: {sc['naive_screener_arm']['n_picks']}",
+        f"- Avg screener vs ACWI (net of cost): {sc['naive_screener_arm']['avg_screener_vs_ACWI_pct_net']}% "
+        f"→ beats passive: {sc['naive_screener_arm']['screener_beats_passive']}",
+        f"- Olympus vs screener: {sc['naive_screener_arm']['olympus_vs_screener']}",
         "",
         "## Interim (unresolved) — benchmark drift since entry (not a verdict)",
         *([f"- {i['ticker']} ({i['bias']}, conv {i['conviction']}, {i['elapsed_months']}mo of {i['horizon']}): "

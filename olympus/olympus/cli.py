@@ -21,7 +21,8 @@ from olympus.adapters import hermes_adapter
 from olympus.members import tyche, zeus
 from olympus.models.records import HumanOverride, ForwardOutcome
 from olympus.reports import (zeus_report, exposure_report, forward_scorecard,
-                             override_audit, success_audit, quarterly_review)
+                             override_audit, success_audit, quarterly_review, monthly_rollup)
+from olympus import journal, postmortem
 
 
 def _save(name: str, text: str):
@@ -100,6 +101,26 @@ def cmd_loop_run() -> int:
     return 0
 
 
+def cmd_journal() -> int:
+    text = journal.render(); _save("journal.md", text); print(text); return 0
+
+
+def cmd_postmortem_add(a) -> int:
+    e = postmortem.record(decision_id=a.decision, ticker=a.ticker.upper(), verdict=a.verdict,
+                          classification=a.classification, why=a.why, thesis_drift=a.drift, notes=a.notes or "")
+    print(f"post-mortem recorded for {a.decision}: {a.verdict} · {a.classification} (seq #{e['seq']}). "
+          f"Feeds success audit + calibration; never auto-applied.")
+    return 0
+
+
+def cmd_screener_run() -> int:
+    from olympus.benchmark import screener   # imported HERE only (CLI/measurement), never by a decision member
+    picks = screener.run_and_record()
+    print(f"naive screener (walled-off) recorded {len(picks)} pick(s): "
+          f"{[p['ticker'] for p in picks]} — firewalled from all decision members.")
+    return 0
+
+
 def cmd_report(kind: str, candidate: str | None) -> int:
     if kind == "exposure":
         exp = exposure_report.build(candidate or "ORCL"); text = exposure_report.render(exp); name = "exposure_report.md"
@@ -111,6 +132,8 @@ def cmd_report(kind: str, candidate: str | None) -> int:
         text = success_audit.render(success_audit.build()); name = "success_audit.md"
     elif kind == "quarterly":
         text = quarterly_review.render(quarterly_review.build()); name = "quarterly_review.md"
+    elif kind == "monthly":
+        text = monthly_rollup.render(monthly_rollup.build()); name = "monthly_rollup.md"
     else:
         print(f"[olympus] unknown report '{kind}'", file=sys.stderr); return 2
     out = _save(name, text)
@@ -144,8 +167,21 @@ def main(argv=None) -> int:
     lp = sub.add_parser("loop"); lps = lp.add_subparsers(dest="action")
     lps.add_parser("run")
 
+    sub.add_parser("journal")
+
+    pm = sub.add_parser("postmortem"); pms = pm.add_subparsers(dest="action")
+    pma = pms.add_parser("add")
+    pma.add_argument("--decision", required=True); pma.add_argument("--ticker", required=True)
+    pma.add_argument("--verdict", required=True, choices=list(postmortem.VERDICTS))
+    pma.add_argument("--classification", required=True, choices=list(postmortem.CLASSES))
+    pma.add_argument("--why", required=True); pma.add_argument("--drift", default="")
+    pma.add_argument("--notes", default="")
+
+    scr = sub.add_parser("screener"); scrs = scr.add_subparsers(dest="action")
+    scrs.add_parser("run")
+
     rep = sub.add_parser("report"); rep.add_argument("kind",
-        choices=["exposure", "scorecard", "override", "success", "quarterly"])
+        choices=["exposure", "scorecard", "override", "success", "quarterly", "monthly"])
     rep.add_argument("--candidate", default=None)
 
     args = p.parse_args(argv)
@@ -153,6 +189,12 @@ def main(argv=None) -> int:
         return cmd_decision_create(args.candidate.upper())
     if args.cmd == "loop" and args.action == "run":
         return cmd_loop_run()
+    if args.cmd == "journal":
+        return cmd_journal()
+    if args.cmd == "postmortem" and args.action == "add":
+        return cmd_postmortem_add(args)
+    if args.cmd == "screener" and args.action == "run":
+        return cmd_screener_run()
     if args.cmd == "override" and args.action == "add":
         return cmd_override_add(args.decision, args.human_action, args.rationale)
     if args.cmd == "outcome" and args.action == "add":

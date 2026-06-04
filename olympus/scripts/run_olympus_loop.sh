@@ -11,7 +11,7 @@
 # droplet, mirroring the Hermes v3 pattern. Until deployed, run locally. PAPER ONLY.
 set -uo pipefail
 OLY="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-LOG="$OLY/data/loop.log"
+LOG="$OLY/data/cron.log"
 mkdir -p "$OLY/data"
 TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 {
