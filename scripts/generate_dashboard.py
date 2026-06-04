@@ -2102,7 +2102,9 @@ def build_index(
     health = _health_bar(positions, regime, exposure, signal, generated_at)
 
     lab_nav  = _oly_lab_nav() or _lab_nav()   # Olympus nav, fallback to original
-    systems  = _systems_overview()
+    # _systems_overview() (old "Research Systems" table) retired — it framed Apollo/SCAI + Hermes as
+    # active rotation systems, contradicting the v2 Honest Verdicts. Model status now lives in the
+    # verdicts leaderboard + v2 section + the updated roster.
     heartbeat = _hermes_v3_heartbeat_badge()
 
     body = f"""
@@ -2127,7 +2129,6 @@ def build_index(
   {returns_chart}
   {_portfolio_overview(positions, trades)}
   {_open_positions_table(positions)}
-  {systems}
   {_factor_alpha_section()}
   {_backtest_section()}
   {_regime_section(regime)}
