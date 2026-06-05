@@ -5,18 +5,19 @@
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "book_total_pct_of_notional": 99.95,
-  "n_positions": 5,
+  "n_positions": 6,
   "holdings": [
     "MU",
     "CEG",
     "ANET",
     "GEV",
-    "GOOGL"
+    "GOOGL",
+    "AMZN"
   ],
-  "active_return_pct": 0.0,
-  "vs_qqq_pp": -0.0,
-  "trend": "FLAT vs QQQ",
-  "n_marks": 2,
+  "active_return_pct": 0.57,
+  "vs_qqq_pp": 0.81,
+  "trend": "DEGRADING vs QQQ",
+  "n_marks": 5,
+  "n_watchlist": 0,
   "note": "isolated forward-only paper experiment \u2014 an autonomous agent's own ideas, governed by a local Zeus, paper-executed. Not advice; no real money."
 }
