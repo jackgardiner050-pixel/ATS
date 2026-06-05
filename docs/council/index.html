@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Council Attribution — ATS Research</title>
+  <style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;
+     --green:#3fb950;--red:#f85149;--yellow:#e3b341;--blue:#58a6ff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;}
+.top-nav{background:#161b22;border-bottom:1px solid var(--border);padding:.5rem 1.5rem;display:flex;gap:1.5rem;}
+.top-nav a{color:var(--muted);text-decoration:none;font-size:.85rem;}
+.top-nav a.active,.top-nav a:hover{color:var(--blue);}
+.container{max-width:1100px;margin:0 auto;padding:1.5rem;}
+h1{font-size:1.3rem;font-weight:600;margin-bottom:.25rem;}
+h2{font-size:.95rem;font-weight:600;color:var(--blue);margin:1.5rem 0 .5rem;}
+.subtitle{color:var(--muted);font-size:.8rem;margin-bottom:1.5rem;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:1rem;}
+.flag-ok{color:var(--green);font-weight:600;}
+.flag-alert{color:var(--red);font-weight:700;padding:.4rem .75rem;background:#2a1a1a;border-radius:4px;display:inline-block;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{color:var(--muted);font-weight:500;text-align:right;padding:.35rem .5rem;border-bottom:1px solid var(--border);}
+th:first-child{text-align:left;}
+td{padding:.35rem .5rem;border-bottom:1px solid #21262d;text-align:right;font-variant-numeric:tabular-nums;}
+td:first-child{text-align:left;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+.na{color:var(--muted);}
+.notice{color:var(--muted);font-size:.75rem;margin-top:.75rem;}
+.holdings-chip{display:inline-block;background:#1a2a3a;color:var(--blue);border-radius:3px;
+               padding:.05rem .35rem;font-size:.72rem;margin:.1rem .1rem 0 0;}
+.holdings-none{color:var(--muted);font-size:.75rem;}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html">ATS</a>
+  <a href="../scai/index.html">SCAI-II</a>
+  <a href="../hermes/index.html">Hermes v1</a>
+  <a href="../hermes_v2/index.html">Hermes v2</a>
+  <a href="../hermes_v3/index.html">Hermes v3</a>
+  <a href="index.html" class="active">Council Attribution</a>
+  <a href="mnemosyne.html">Mnemosyne</a>
+</nav>
+<div class="container">
+  <h1>Council Attribution — Cross-member Independence</h1>
+  <div class="subtitle">
+    Precondition gate instrument · Paper-only · Read-only from member systems ·
+    Updated 2026-05-29 13:50 UTC
+  </div>
+
+  <div class="card">
+    <h2>Independence Status</h2>
+    <div class="flag-alert">⚠ MEMBERS NOT INDEPENDENT — ensemble has no diversity. mean holdings Jaccard (active members) 1.00 > 0.8; max holdings Jaccard (active members) 1.00 > 0.8</div>
+    <p class="notice">
+      Flags if mean pairwise return correlation &gt; 0.8 OR mean holdings Jaccard &gt; 0.8.
+      History: 3 cycle(s). Correlation undefined until ≥ 2 overlapping observations.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Current Member Snapshots</h2>
+    <table>
+      <thead><tr>
+        <th style="text-align:left">Member</th>
+        <th>Return (cum.)</th>
+        <th>Open positions</th>
+        <th style="text-align:left">Holdings</th>
+      </tr></thead>
+      <tbody><tr><td>SCAI</td><td>+0.00%</td><td style='text-align:right'>1</td><td style='text-align:left'><span class="holdings-chip">SMCI</span><span class="holdings-chip">VRT</span></td></tr><tr><td>Hermes v1</td><td>+0.00%</td><td style='text-align:right'>1</td><td style='text-align:left'><span class="holdings-chip">SMCI</span><span class="holdings-chip">VRT</span></td></tr><tr><td>Hermes v3 (baseline)</td><td>-0.07%</td><td style='text-align:right'>2</td><td style='text-align:left'><span class="holdings-chip">SMCI</span><span class="holdings-chip">VRT</span></td></tr><tr><td>v3-N (mkt neutral)</td><td><span class="na">—</span></td><td style='text-align:right'>0</td><td style='text-align:left'><span class="holdings-none">—</span></td></tr><tr><td>Mercury</td><td><span class="na">—</span></td><td style='text-align:right'>0</td><td style='text-align:left'><span class="holdings-none">—</span></td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Pairwise Correlation &amp; Overlap</h2>
+    <table>
+      <thead><tr>
+        <th style="text-align:left">Pair</th>
+        <th>Return corr (full)</th>
+        <th>Return corr (roll 20)</th>
+        <th>Holdings Jaccard</th>
+      </tr></thead>
+      <tbody><tr><td>Hermes v1 / Hermes v3 (baseline)</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--red)">1.00</span></td></tr><tr><td>Hermes v1 / v3-N (mkt neutral)</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--green)">0.00</span></td></tr><tr><td>Hermes v1 / Mercury</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--green)">0.00</span></td></tr><tr><td>Hermes v1 / SCAI</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--red)">1.00</span></td></tr><tr><td>Hermes v3 (baseline) / v3-N (mkt neutral)</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--green)">0.00</span></td></tr><tr><td>Hermes v3 (baseline) / Mercury</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--green)">0.00</span></td></tr><tr><td>Hermes v3 (baseline) / SCAI</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--red)">1.00</span></td></tr><tr><td>v3-N (mkt neutral) / Mercury</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span class="na">—</span></td></tr><tr><td>v3-N (mkt neutral) / SCAI</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--green)">0.00</span></td></tr><tr><td>Mercury / SCAI</td><td><span class="na">—</span></td><td><span class="na">—</span></td><td><span style="color:var(--green)">0.00</span></td></tr></tbody>
+    </table>
+    <p class="notice">
+      Means (all pairs) — return corr full: — · roll 20: — · Jaccard: 0.33<br>
+      Active-member Jaccard — mean: 1.00 · max: 1.00
+      <em>(flag evaluates max/mean over active members only — empty-set members excluded to prevent dilution)</em>
+    </p>
+  </div>
+
+  <div class="card">
+    <p class="notice">
+      <strong>Council gate:</strong> ≥ 2 members must show validated, decorrelated edge before the council decision logic is activated.
+      Current validated members: <strong>0</strong>.
+      This page is purely observational — the attribution layer never writes to member systems.
+    </p>
+  </div>
+</div>
+</body>
+</html>

@@ -305,10 +305,6 @@ def olympus_lab_nav() -> str:
       <span class="lab-nav-title">Live Track</span>
       <span class="lab-nav-sub">Nike &amp; Iris OOS</span>
     </a>
-    <a href="caerus_track.html" class="lab-nav-card">
-      <span class="lab-nav-title">Caerus</span>
-      <span class="lab-nav-sub">demo · pending</span>
-    </a>
     <a href="macro_card.html" class="lab-nav-card">
       <span class="lab-nav-title">Macro</span>
       <span class="lab-nav-sub">awareness · not a signal</span>

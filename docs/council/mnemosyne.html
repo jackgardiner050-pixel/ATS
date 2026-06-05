@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Mnemosyne — Live vs Backtest — ATS Research</title>
+  <style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;
+     --green:#3fb950;--red:#f85149;--yellow:#e3b341;--blue:#58a6ff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;}
+.top-nav{background:#161b22;border-bottom:1px solid var(--border);padding:.5rem 1.5rem;display:flex;gap:1.5rem;}
+.top-nav a{color:var(--muted);text-decoration:none;font-size:.85rem;}
+.top-nav a.active,.top-nav a:hover{color:var(--blue);}
+.container{max-width:1100px;margin:0 auto;padding:1.5rem;}
+h1{font-size:1.3rem;font-weight:600;margin-bottom:.25rem;}
+h2{font-size:.95rem;font-weight:600;color:var(--blue);margin:1.5rem 0 .5rem;}
+h3{font-size:.85rem;font-weight:600;color:var(--muted);margin:.75rem 0 .3rem;}
+.subtitle{color:var(--muted);font-size:.8rem;margin-bottom:1.5rem;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1rem;margin-bottom:1rem;}
+.flag-ok{color:var(--green);font-weight:600;}
+.flag-warn{color:var(--yellow);font-weight:600;}
+.flag-bad{color:var(--red);font-weight:700;padding:.35rem .7rem;background:#2a1a1a;border-radius:4px;display:inline-block;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{color:var(--muted);font-weight:500;text-align:right;padding:.35rem .5rem;border-bottom:1px solid var(--border);}
+th:first-child{text-align:left;}
+td{padding:.35rem .5rem;border-bottom:1px solid #21262d;text-align:right;font-variant-numeric:tabular-nums;}
+td:first-child{text-align:left;color:var(--text);}
+tr:last-child td{border-bottom:none;}
+.na{color:var(--muted);}
+.notice{color:var(--muted);font-size:.75rem;margin-top:.6rem;}
+.member-block{border-left:3px solid var(--border);padding-left:.75rem;margin-bottom:1.5rem;}
+.member-block.diverged{border-color:var(--red);}
+.member-block.ok{border-color:var(--green);}
+.member-block.accruing{border-color:var(--yellow);}
+.status-pill{display:inline-block;font-size:.7rem;padding:.1rem .4rem;border-radius:3px;font-weight:600;}
+.pill-ok{background:#1a2a1a;color:var(--green);}
+.pill-accruing{background:#2a2a1a;color:var(--yellow);}
+.pill-diverged{background:#2a1a1a;color:var(--red);}
+.pill-nb{background:#1a1a2a;color:var(--muted);}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a href="../index.html">ATS</a>
+  <a href="../scai/index.html">SCAI-II</a>
+  <a href="../hermes/index.html">Hermes v1</a>
+  <a href="../hermes_v3/index.html">Hermes v3</a>
+  <a href="index.html">Council Attribution</a>
+  <a href="mnemosyne.html" class="active">Mnemosyne</a>
+</nav>
+<div class="container">
+  <h1>Mnemosyne — Live-vs-Backtest Reconciliation</h1>
+  <div class="subtitle">
+    Overfitting detector · Programme kill switch · Paper-only · Read-only from member systems ·
+    Updated 2026-05-29 16:31 UTC
+  </div>
+
+  <div class="card">
+<h2>Programme Kill Switch</h2>
+<div class="flag-warn">⚠ APPROACHING — APPROACHING — 0/2 members validated, 365 days until deadline (2027-05-29). Forward data must accrue for existing members; adding new members does not reset the deadline.</div>
+<p class="notice" style="margin:.5rem 0">
+  Deadline: 2027-05-29 (365 days) ·
+  Validated: 0/2 · v2.0 · pre-registered 2026-05-29 · hash-locked
+</p>
+<table>
+  <thead><tr>
+    <th style="text-align:left">Member</th>
+    <th>Validated</th>
+    <th>Edge (A)</th>
+    <th>Decorr (B)</th>
+    <th>Consistent (C)</th>
+  </tr></thead>
+  <tbody><tr><td>val_v1</td><td style='color:var(--red)'>✗</td><td>accruing (n=0/12)</td><td>pending</td><td>✓</td></tr></tbody>
+</table>
+<p class="notice">
+  Validated = forward alpha CI upper &gt; 0 (A) + mean pairwise |r| &lt; 0.4 (B) + not diverged (C).
+  Rule: if STOP (failure or inconclusive), pause Olympus — "inconclusive" is not a state that permits continuation.
+</p>
+</div>
+
+  <div class="card">
+    <h2>Live-vs-Backtest Status</h2>
+    <span class="flag-ok">✓ ✓ No divergence detected.</span>
+    <p class="notice">
+      Divergence flag trips when: N_forward ≥ min_forward_n AND the forward 95% CI
+      no longer overlaps the backtest CI (pooled z ≥ 2.0).
+      Never flags on thin data — shows "accruing" until the minimum N is reached.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Member Reconciliation</h2>
+    <p class="notice" style="margin-bottom:.75rem">
+      Tracking 1 member(s) with registered backtest expectations.
+      Forward observations accrue monthly as member pipelines run.
+    </p>
+    <div class="member-block ok">
+<h3>Demeter — Valuation (val_v1) <span class="status-pill pill-ok">OK</span></h3>
+<p class="notice">Study: val_v1 Phase 1 — 2026-05-29 (N=59 months, 503-name S&P 500) &nbsp;|&nbsp; <span style="color:var(--green)">● Forward period active</span></p>
+<table>
+  <thead><tr>
+    <th style="text-align:left">Metric</th>
+    <th>Backtest mean</th><th>Backtest 95% CI</th>
+    <th>Realised mean</th><th>Realised 95% CI</th>
+    <th style="text-align:left">N fwd</th>
+    <th style="text-align:left">Flag</th>
+  </tr></thead>
+  <tbody><tr><td>monthly_ic</td><td>+0.0075</td><td>[-0.0117, +0.0267]</td><td><span class="na">accruing (0/12)</span></td><td><span class="na">—</span></td><td style='text-align:left'>0</td><td style='text-align:left'><span class="na">—</span></td></tr><tr><td>monthly_alpha</td><td>+0.0133</td><td>[-0.0087, +0.0353]</td><td><span class="na">accruing (0/12)</span></td><td><span class="na">—</span></td><td style='text-align:left'>0</td><td style='text-align:left'><span class="na">—</span></td></tr></tbody>
+</table>
+
+</div><div class="member-block"><h3>kairos <span class="status-pill pill-nb">NOT BUILT</span></h3><p class="notice">No backtest study registered yet.</p></div>
+  </div>
+
+  <div class="card">
+    <p class="notice">
+      <strong>How to read this:</strong>
+      "Backtest CI" = the confidence interval from the Phase 1 study.
+      "Realised CI" = the CI computed from forward (post-backtest) observations only.
+      Divergence = realised CI outside backtest CI with sufficient data.
+      Possible causes: overfitting in the backtest, regime change, or data error.
+    </p>
+  </div>
+</div>
+</body>
+</html>
