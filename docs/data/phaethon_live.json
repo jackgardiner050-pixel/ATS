@@ -1,0 +1,22 @@
+{
+  "experiment": "phaethon-isolated-paper",
+  "mode": "paper/simulated",
+  "isolated": true,
+  "forward_only": true,
+  "research_grade": true,
+  "benchmark": "QQQ",
+  "book_total_pct_of_notional": 99.95,
+  "n_positions": 5,
+  "holdings": [
+    "MU",
+    "CEG",
+    "ANET",
+    "GEV",
+    "GOOGL"
+  ],
+  "active_return_pct": 0.0,
+  "vs_qqq_pp": -0.0,
+  "trend": "FLAT vs QQQ",
+  "n_marks": 2,
+  "note": "isolated forward-only paper experiment \u2014 an autonomous agent's own ideas, governed by a local Zeus, paper-executed. Not advice; no real money."
+}

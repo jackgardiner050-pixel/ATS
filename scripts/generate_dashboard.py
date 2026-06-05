@@ -1527,6 +1527,47 @@ def _hermes_v3_last_variant_run() -> str:
         return ""
 
 
+def _phaethon_panel() -> str:
+    """Phaethon — the isolated, forward-only paper experiment (autonomous agent + local Zeus governance,
+    fully sandboxed on a separate box). PUBLIC, sanitized: research-grade, vs QQQ, no personal data."""
+    import json as _json
+    try:
+        d = _json.loads((_DOCS / "data" / "phaethon_live.json").read_text())
+    except Exception:
+        return ""
+    def _pct(v, pp=False):
+        if v is None:
+            return '<span style="color:#5c6080">—</span>'
+        c = "#3fb950" if v >= 0 else "#f85149"
+        return f'<span style="color:{c}">{"+" if v >= 0 else ""}{v}{"pp" if pp else "%"}</span>'
+    trend = d.get("trend", "—")
+    tcol = "#3fb950" if "IMPROV" in trend else "#f85149" if "DEGRAD" in trend else "#9fb6cd"
+    holds = " · ".join(d.get("holdings", [])) or "—"
+    return f"""<section>
+<h2 class="section-title">Phaethon — isolated autonomous paper experiment</h2>
+<div class="card">
+  <div style="padding:.5rem .7rem;border:1px solid #2a2440;border-radius:4px;margin-bottom:.6rem;
+              font-size:.8rem;color:#b9a5e0;line-height:1.5">
+    An <strong>autonomous agent</strong> forms its own multi-angle ideas, which a <strong>local Zeus
+    governance</strong> grounds (priced-in, invalidation, sizing, internal concentration) before
+    <strong>paper</strong> execution into its own book — <strong>fully isolated</strong> on a separate
+    sandboxed box, no real money, no access to the real portfolio. <strong>Research-grade ·
+    forward-only · vs QQQ (not raw return).</strong> Do not read early marks as a track record.
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <tbody>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Positions</td><td style="padding:.35rem .5rem;text-align:right">{d.get('n_positions','—')} · {holds}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Active return</td><td style="padding:.35rem .5rem;text-align:right">{_pct(d.get('active_return_pct'))}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">vs QQQ (primary)</td><td style="padding:.35rem .5rem;text-align:right">{_pct(d.get('vs_qqq_pp'), True)}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Improve / degrade trend</td><td style="padding:.35rem .5rem;text-align:right;color:{tcol};font-weight:600">{trend}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Marks</td><td style="padding:.35rem .5rem;text-align:right">{d.get('n_marks','—')} (research-grade)</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">Paper/simulated · isolated experiment · % only · the experiment's value is the improve/degrade-vs-QQQ trend, not the level.</p>
+</div>
+</section>"""
+
+
 def _gaia_panel() -> str:
     """Gaia — three rules-based diversified low-cost cores vs a public all-world benchmark. Shows
     composition + blended fee + paper return vs benchmark. PUBLIC ONLY: never the current allocation
@@ -2298,6 +2339,7 @@ def build_index(
 {_oly_growth_v2()}
 {_growth_arms_panel()}
 {_gaia_panel()}
+{_phaethon_panel()}
 </div>
 {_oly_kill_switch_card()}
 {lab_nav}
