@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-06-05T17:30:24Z",
+  "generated_at_utc": "2026-06-05T17:45:09Z",
   "inception": "2026-06-05",
   "days": 0,
   "mode": "paper/simulated",
@@ -7,7 +7,7 @@
     "ticker": "VWRP",
     "name": "Vanguard FTSE All-World UCITS ETF (Acc)",
     "ocf_pct": 0.22,
-    "return_pct": null
+    "return_pct": -0.483
   },
   "cores": [
     {
@@ -25,9 +25,9 @@
         "AGBP": 0.05,
         "SGLN": 0.05
       },
-      "return_pct": null,
-      "n_priced": 0,
-      "vs_benchmark_pp": null
+      "return_pct": -0.552,
+      "n_priced": 3,
+      "vs_benchmark_pp": -0.069
     },
     {
       "id": "gaia_7",
@@ -44,9 +44,9 @@
         "AGBP": 0.15,
         "SGLN": 0.05
       },
-      "return_pct": null,
-      "n_priced": 0,
-      "vs_benchmark_pp": null
+      "return_pct": -0.528,
+      "n_priced": 3,
+      "vs_benchmark_pp": -0.045
     },
     {
       "id": "gaia_6",
@@ -63,9 +63,9 @@
         "AGBP": 0.25,
         "SGLN": 0.05
       },
-      "return_pct": null,
-      "n_priced": 0,
-      "vs_benchmark_pp": null
+      "return_pct": -0.504,
+      "n_priced": 3,
+      "vs_benchmark_pp": -0.021
     }
   ],
   "framing": [
