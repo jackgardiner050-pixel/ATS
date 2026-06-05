@@ -1527,6 +1527,84 @@ def _hermes_v3_last_variant_run() -> str:
         return ""
 
 
+def _gaia_panel() -> str:
+    """Gaia — three rules-based diversified low-cost cores vs a public all-world benchmark. Shows
+    composition + blended fee + paper return vs benchmark. PUBLIC ONLY: never the current allocation
+    or the fee-saving-vs-current (those are private/gitignored). Honest: cost + risk, not which-wins."""
+    import json as _json
+    try:
+        d = _json.loads((_DOCS / "data" / "gaia_cores_live.json").read_text())
+    except Exception:
+        return ('<section><h2 class="section-title">Gaia — diversified low-cost cores</h2>'
+                '<div class="card adv-disabled">Gaia core feed not available yet '
+                '(run the constructor + publisher).</div></section>')
+
+    def _pct(v, pp=False):
+        if v is None:
+            return '<span style="color:#5c6080">—</span>'
+        c = "#3fb950" if v >= 0 else "#f85149"
+        return f'<span style="color:{c}">{"+" if v >= 0 else ""}{v}{"pp" if pp else "%"}</span>'
+
+    b = d.get("benchmark", {})
+    rows = ""
+    for c in d.get("cores", []):
+        comp = " · ".join(f"{t} {int(round(w*100))}%" for t, w in (c.get("etfs") or {}).items())
+        rows += (
+            f'<tr>'
+            f'<td style="padding:.4rem .5rem;font-weight:600;color:#c9d1d9;white-space:nowrap">Risk {c.get("risk")}/10</td>'
+            f'<td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">{comp}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">{c.get("blended_ocf_pct")}%</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-{c.get("id")}-ret">{_pct(c.get("return_pct"))}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-{c.get("id")}-vs">{_pct(c.get("vs_benchmark_pp"), True)}</td>'
+            f'</tr>')
+    bench_row = (
+        f'<tr style="border-top:1px solid #21262d">'
+        f'<td style="padding:.4rem .5rem;color:#8b949e;white-space:nowrap">Benchmark</td>'
+        f'<td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">{b.get("ticker")} — {b.get("name","")}</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">{b.get("ocf_pct")}%</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-bench-ret">{_pct(b.get("return_pct"))}</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td>'
+        f'</tr>')
+    days = d.get("days", 0)
+    return f"""<section>
+<h2 class="section-title">Gaia — diversified low-cost cores (research, not advice)</h2>
+<div class="card" style="overflow-x:auto">
+  <div style="padding:.5rem .7rem;border:1px solid #21323e;border-radius:4px;margin-bottom:.6rem;
+              font-size:.8rem;color:#9fb6cd;line-height:1.5">
+    Three rules-based cores from cheap, broad ETFs (lowest-cost per sleeve; not optimised), marked
+    forward vs a global all-world ETF. <strong>Research candidates, not advice.</strong> In an AI
+    bull these diversified cores will likely <strong>lag an AI-heavy tilt on raw return</strong> —
+    their value is <strong>lower cost + lower concentration risk, not more return</strong>.
+    <strong>Read as cost + risk, not "which wins."</strong>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <thead><tr>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Core</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Composition (lowest-cost broad ETFs)</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Blended fee</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Paper return ({days}d)</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">vs all-world</th>
+    </tr></thead>
+    <tbody>{rows}{bench_row}</tbody>
+  </table>
+  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">
+    Paper/simulated · % only · marked daily since inception vs the all-world benchmark · the
+    current-allocation comparison is private and never shown here.
+  </p>
+</div>
+<script>
+(function(){{
+  function f(v,pp){{if(v===null||v===undefined)return'<span style="color:#5c6080">—</span>';var c=v>=0?'#3fb950':'#f85149';return'<span style="color:'+c+'">'+(v>=0?'+':'')+v+(pp?'pp':'%')+'</span>';}}
+  function set(id,html){{var e=document.getElementById(id);if(e)e.innerHTML=html;}}
+  fetch('data/gaia_cores_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{
+    (d.cores||[]).forEach(function(c){{set('gaia-'+c.id+'-ret',f(c.return_pct,false));set('gaia-'+c.id+'-vs',f(c.vs_benchmark_pp,true));}});
+    if(d.benchmark)set('gaia-bench-ret',f(d.benchmark.return_pct,false));
+  }}).catch(function(){{}});
+}})();
+</script>
+</section>"""
+
+
 def _growth_arms_panel() -> str:
     """A/B/C live paper-performance panel — sourced from docs/data/growth_arms_live.json (each arm's
     paper ledger, marked vs QQQ primary + SPY secondary). Honest, research-grade, % only — never a
@@ -2219,6 +2297,7 @@ def build_index(
 {_oly_verdicts()}
 {_oly_growth_v2()}
 {_growth_arms_panel()}
+{_gaia_panel()}
 </div>
 {_oly_kill_switch_card()}
 {lab_nav}

@@ -1,0 +1,8 @@
+# Gaia — keep the PUBLIC repo free of the private comparison arm.
+# cores.yaml IS committed (generic ETFs, no personal data). The current allocation is PRIVATE.
+*.real.yaml
+*.real.yml
+current_allocation.real.yaml
+# private paper-test output (contains the current-allocation arm) — local only
+data/gaia_private.json
+data/

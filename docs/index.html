@@ -152,6 +152,43 @@ padding:.4rem 0;font-size:.72rem;text-align:center;color:#8b949e">
 })();
 </script>
 </section>
+<section>
+<h2 class="section-title">Gaia — diversified low-cost cores (research, not advice)</h2>
+<div class="card" style="overflow-x:auto">
+  <div style="padding:.5rem .7rem;border:1px solid #21323e;border-radius:4px;margin-bottom:.6rem;
+              font-size:.8rem;color:#9fb6cd;line-height:1.5">
+    Three rules-based cores from cheap, broad ETFs (lowest-cost per sleeve; not optimised), marked
+    forward vs a global all-world ETF. <strong>Research candidates, not advice.</strong> In an AI
+    bull these diversified cores will likely <strong>lag an AI-heavy tilt on raw return</strong> —
+    their value is <strong>lower cost + lower concentration risk, not more return</strong>.
+    <strong>Read as cost + risk, not "which wins."</strong>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <thead><tr>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Core</th>
+      <th style="text-align:left;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Composition (lowest-cost broad ETFs)</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Blended fee</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Paper return (0d)</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">vs all-world</th>
+    </tr></thead>
+    <tbody><tr><td style="padding:.4rem .5rem;font-weight:600;color:#c9d1d9;white-space:nowrap">Risk 8/10</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">FWRG 90% · AGBP 5% · SGLN 5%</td><td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">0.146%</td><td style="padding:.4rem .5rem;text-align:right" id="gaia-gaia_8-ret"><span style="color:#3fb950">+0.0%</span></td><td style="padding:.4rem .5rem;text-align:right" id="gaia-gaia_8-vs"><span style="color:#3fb950">+0.0pp</span></td></tr><tr><td style="padding:.4rem .5rem;font-weight:600;color:#c9d1d9;white-space:nowrap">Risk 7/10</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">FWRG 80% · AGBP 15% · SGLN 5%</td><td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">0.141%</td><td style="padding:.4rem .5rem;text-align:right" id="gaia-gaia_7-ret"><span style="color:#3fb950">+0.0%</span></td><td style="padding:.4rem .5rem;text-align:right" id="gaia-gaia_7-vs"><span style="color:#3fb950">+0.0pp</span></td></tr><tr><td style="padding:.4rem .5rem;font-weight:600;color:#c9d1d9;white-space:nowrap">Risk 6/10</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">FWRG 70% · AGBP 25% · SGLN 5%</td><td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">0.136%</td><td style="padding:.4rem .5rem;text-align:right" id="gaia-gaia_6-ret"><span style="color:#3fb950">+0.0%</span></td><td style="padding:.4rem .5rem;text-align:right" id="gaia-gaia_6-vs"><span style="color:#3fb950">+0.0pp</span></td></tr><tr style="border-top:1px solid #21262d"><td style="padding:.4rem .5rem;color:#8b949e;white-space:nowrap">Benchmark</td><td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">VWRP — Vanguard FTSE All-World UCITS ETF (Acc)</td><td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">0.22%</td><td style="padding:.4rem .5rem;text-align:right" id="gaia-bench-ret"><span style="color:#3fb950">+0.0%</span></td><td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td></tr></tbody>
+  </table>
+  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">
+    Paper/simulated · % only · marked daily since inception vs the all-world benchmark · the
+    current-allocation comparison is private and never shown here.
+  </p>
+</div>
+<script>
+(function(){
+  function f(v,pp){if(v===null||v===undefined)return'<span style="color:#5c6080">—</span>';var c=v>=0?'#3fb950':'#f85149';return'<span style="color:'+c+'">'+(v>=0?'+':'')+v+(pp?'pp':'%')+'</span>';}
+  function set(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;}
+  fetch('data/gaia_cores_live.json?t='+Date.now()).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+    (d.cores||[]).forEach(function(c){set('gaia-'+c.id+'-ret',f(c.return_pct,false));set('gaia-'+c.id+'-vs',f(c.vs_benchmark_pp,true));});
+    if(d.benchmark)set('gaia-bench-ret',f(d.benchmark.return_pct,false));
+  }).catch(function(){});
+})();
+</script>
+</section>
 </div>
 <section>
 <div class="card" style="border-left:4px solid #e3b341;padding:0.75rem 1rem 0.6rem">
@@ -319,7 +356,7 @@ padding:.4rem 0;font-size:.72rem;text-align:center;color:#8b949e">
 <footer>
   <div class="container">
     Olympus · Paper / advisory only · No real money · No validated edge ·
-    Page generated 2026-06-05 08:54 UTC · Not investment advice
+    Page generated 2026-06-05 09:18 UTC · Not investment advice
   </div>
 </footer><script>
 (function(){

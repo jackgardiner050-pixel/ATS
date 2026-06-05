@@ -1,0 +1,78 @@
+{
+  "generated_at_utc": "2026-06-05T09:16:43Z",
+  "inception": "2026-06-05",
+  "days": 0,
+  "mode": "paper/simulated",
+  "benchmark": {
+    "ticker": "VWRP",
+    "name": "Vanguard FTSE All-World UCITS ETF (Acc)",
+    "ocf_pct": 0.22,
+    "return_pct": 0.0
+  },
+  "cores": [
+    {
+      "id": "gaia_8",
+      "risk": 8,
+      "label": "Risk 8/10 \u2014 growth-tilted",
+      "blended_ocf_pct": 0.146,
+      "weights": {
+        "global_equity": 0.9,
+        "global_bonds": 0.05,
+        "real_asset": 0.05
+      },
+      "etfs": {
+        "FWRG": 0.9,
+        "AGBP": 0.05,
+        "SGLN": 0.05
+      },
+      "return_pct": 0.0,
+      "n_priced": 3,
+      "vs_benchmark_pp": 0.0
+    },
+    {
+      "id": "gaia_7",
+      "risk": 7,
+      "label": "Risk 7/10 \u2014 balanced-growth",
+      "blended_ocf_pct": 0.141,
+      "weights": {
+        "global_equity": 0.8,
+        "global_bonds": 0.15,
+        "real_asset": 0.05
+      },
+      "etfs": {
+        "FWRG": 0.8,
+        "AGBP": 0.15,
+        "SGLN": 0.05
+      },
+      "return_pct": 0.0,
+      "n_priced": 3,
+      "vs_benchmark_pp": 0.0
+    },
+    {
+      "id": "gaia_6",
+      "risk": 6,
+      "label": "Risk 6/10 \u2014 balanced",
+      "blended_ocf_pct": 0.136,
+      "weights": {
+        "global_equity": 0.7,
+        "global_bonds": 0.25,
+        "real_asset": 0.05
+      },
+      "etfs": {
+        "FWRG": 0.7,
+        "AGBP": 0.25,
+        "SGLN": 0.05
+      },
+      "return_pct": 0.0,
+      "n_priced": 3,
+      "vs_benchmark_pp": 0.0
+    }
+  ],
+  "framing": [
+    "Research candidates, not advice.",
+    "In an AI bull, these diversified cores will likely LAG an AI-heavy tilt on raw return.",
+    "Their value is LOWER COST + LOWER CONCENTRATION RISK \u2014 not more return.",
+    "Read as cost + risk, not 'which wins'."
+  ],
+  "note": "research candidates, not advice \u00b7 in an AI bull these diversified cores will likely lag an AI-heavy tilt on raw return \u2014 value is lower cost + lower concentration, not more return \u00b7 read as cost + risk, not which-wins"
+}

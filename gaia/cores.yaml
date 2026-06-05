@@ -1,0 +1,56 @@
+# Gaia — rules-based diversified-core constructor.  RESEARCH TOOL, NOT ADVICE.
+# PUBLIC config: only generic, cheap, broad LSE-listed UCITS ETFs. No personal data here.
+# OCFs are approximate (verify on the latest factsheet) and are carried as plain data you can edit.
+# Rule: pick the LOWEST-COST broad ETF for each sleeve; the risk dial is purely the
+# equity / bond / diversifier ratio. Not optimised — deliberately mechanical.
+
+meta:
+  tool: gaia
+  purpose: "rules-based diversified low-cost cores — research candidates, not advice"
+  construction_rule: "lowest-cost broad ETF per sleeve; risk dial = equity vs bonds vs diversifier; not optimised"
+
+# Public all-world ETF benchmark for the forward paper test.
+benchmark:
+  ticker: VWRP
+  name: "Vanguard FTSE All-World UCITS ETF (Acc)"
+  ocf_pct: 0.22
+
+# One lowest-cost broad ETF per sleeve (no expensive narrow thematics).
+sleeves:
+  global_equity:
+    ticker: FWRG
+    name: "Invesco FTSE All-World UCITS ETF (Acc)"
+    ocf_pct: 0.15
+    note: "single broad all-world fund — developed + emerging markets in one"
+  global_bonds:
+    ticker: AGBP
+    name: "iShares Core Global Aggregate Bond UCITS ETF (GBP-Hedged, Acc)"
+    ocf_pct: 0.10
+    note: "broad investment-grade global bonds, currency-hedged"
+  real_asset:
+    ticker: SGLN
+    name: "iShares Physical Gold ETC"
+    ocf_pct: 0.12
+    note: "gold as a low-correlation real-asset diversifier sleeve"
+
+# Three rules-based cores. Standard risk-tiering: higher risk -> more global equity, fewer bonds.
+cores:
+  - id: gaia_8
+    risk: 8
+    label: "Risk 8/10 — growth-tilted"
+    weights: { global_equity: 0.90, global_bonds: 0.05, real_asset: 0.05 }
+  - id: gaia_7
+    risk: 7
+    label: "Risk 7/10 — balanced-growth"
+    weights: { global_equity: 0.80, global_bonds: 0.15, real_asset: 0.05 }
+  - id: gaia_6
+    risk: 6
+    label: "Risk 6/10 — balanced"
+    weights: { global_equity: 0.70, global_bonds: 0.25, real_asset: 0.05 }
+
+# Honest framing — published verbatim on the dashboard panel.
+framing:
+  - "Research candidates, not advice."
+  - "In an AI bull, these diversified cores will likely LAG an AI-heavy tilt on raw return."
+  - "Their value is LOWER COST + LOWER CONCENTRATION RISK — not more return."
+  - "Read as cost + risk, not 'which wins'."

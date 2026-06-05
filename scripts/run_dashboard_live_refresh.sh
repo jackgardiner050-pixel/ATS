@@ -66,11 +66,16 @@ $PYTHON "$AGENT/scripts/fetch_live_prices.py"
 # 1c. Re-mark the growth arms (A/B/C) vs QQQ + SPY from their paper ledgers → growth_arms_live.json.
 $PYTHON "$AGENT/scripts/publish_growth_arms.py" || true
 
+# 1d. Gaia — mark the 3 diversified cores vs the all-world benchmark (public). The current-allocation
+#     comparison arm is written only to the gitignored gaia/data/gaia_private.json, never published.
+$PYTHON "$AGENT/scripts/publish_gaia.py" || true
+
 # 2. Stage changed data files
 cd "$AGENT"
 git add docs/data/ats_live.json docs/data/scai_live.json \
         docs/data/hermes_live.json docs/data/hermes_v3_live.json \
         docs/data/system_summary_live.json docs/data/growth_arms_live.json \
+        docs/data/gaia_cores_live.json \
         docs/olympus_track.html 2>/dev/null || true
 
 # 3. Commit only if something changed
