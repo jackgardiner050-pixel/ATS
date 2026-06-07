@@ -1,13 +1,13 @@
 {
-  "generated_at_utc": "2026-06-05T22:10:19Z",
+  "generated_at_utc": "2026-06-07T15:07:07Z",
   "inception": "2026-06-05",
-  "days": 0,
+  "days": 2,
   "mode": "paper/simulated",
   "benchmark": {
     "ticker": "VWRP",
     "name": "Vanguard FTSE All-World UCITS ETF (Acc)",
     "ocf_pct": 0.22,
-    "return_pct": null
+    "return_pct": -0.483
   },
   "cores": [
     {
@@ -25,9 +25,15 @@
         "AGBP": 0.05,
         "SGLN": 0.05
       },
-      "return_pct": null,
-      "n_priced": 0,
-      "vs_benchmark_pp": null
+      "return_pct": -0.552,
+      "n_priced": 3,
+      "vs_benchmark_pp": -0.069,
+      "drift_pp": {
+        "global_equity": 0.06,
+        "global_bonds": 0.02,
+        "real_asset": -0.07
+      },
+      "needs_rebalance": false
     },
     {
       "id": "gaia_7",
@@ -44,9 +50,15 @@
         "AGBP": 0.15,
         "SGLN": 0.05
       },
-      "return_pct": null,
-      "n_priced": 0,
-      "vs_benchmark_pp": null
+      "return_pct": -0.528,
+      "n_priced": 3,
+      "vs_benchmark_pp": -0.045,
+      "drift_pp": {
+        "global_equity": 0.03,
+        "global_bonds": 0.04,
+        "real_asset": -0.07
+      },
+      "needs_rebalance": false
     },
     {
       "id": "gaia_6",
@@ -63,9 +75,15 @@
         "AGBP": 0.25,
         "SGLN": 0.05
       },
-      "return_pct": null,
-      "n_priced": 0,
-      "vs_benchmark_pp": null
+      "return_pct": -0.504,
+      "n_priced": 3,
+      "vs_benchmark_pp": -0.021,
+      "drift_pp": {
+        "global_equity": 0.01,
+        "global_bonds": 0.06,
+        "real_asset": -0.07
+      },
+      "needs_rebalance": false
     }
   ],
   "framing": [
@@ -74,5 +92,31 @@
     "Their value is LOWER COST + LOWER CONCENTRATION RISK \u2014 not more return.",
     "Read as cost + risk, not 'which wins'."
   ],
-  "note": "research candidates, not advice \u00b7 in an AI bull these diversified cores will likely lag an AI-heavy tilt on raw return \u2014 value is lower cost + lower concentration, not more return \u00b7 read as cost + risk, not which-wins"
+  "discipline": {
+    "locked": true,
+    "lock_sha": "f6592d14e2046481",
+    "registered": "2026-06-07",
+    "rebalancing": {
+      "band_pp": 5,
+      "schedule": "monthly",
+      "note": "tax-free inside a tax wrapper (no CGT on rebalancing trims/top-ups)"
+    },
+    "glidepath": {
+      "enabled": false,
+      "current_tier": 8,
+      "active_tier": 8,
+      "steps": [
+        {
+          "date": "2035-01-01",
+          "tier": 7
+        },
+        {
+          "date": "2040-01-01",
+          "tier": 6
+        }
+      ],
+      "note": "horizon-based (age/milestones), NOT market-timing \u00b7 default OFF \u2014 holding the aggressive tier (long horizon)"
+    }
+  },
+  "note": "research candidates, not advice \u00b7 in an AI bull these diversified cores will likely lag an AI-heavy tilt on raw return \u2014 value is lower cost + lower concentration, not more return \u00b7 read as cost + risk, not which-wins \u00b7 rebalancing + glidepath are LOCKED, rules-based discipline (not market-timing)"
 }

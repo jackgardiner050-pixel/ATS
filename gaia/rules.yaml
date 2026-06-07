@@ -1,0 +1,20 @@
+# Gaia — PRE-REGISTERED, LOCKED rebalancing + glidepath rules. RESEARCH, NOT ADVICE.
+# Mechanical DISCIPLINE, never condition-timing. Locked 2026-06-07 — do NOT tune to flatter
+# (the lock_sha is verified against the params; any change must be a deliberate re-registration).
+locked: true
+registered: "2026-06-07"
+lock_sha: "f6592d14e2046481"
+
+rebalancing:
+  band_pp: 5                 # trim/top-up a sleeve back to target when it drifts > 5 percentage points
+  schedule: monthly          # checked on a fixed schedule — discipline, NOT timing
+  note: "tax-free inside a tax wrapper (no CGT on rebalancing trims/top-ups)"
+
+glidepath:
+  enabled: false             # DEFAULT OFF — hold the current aggressive tier (36yo, long horizon, pension separate)
+  current_tier: 8            # the tier targeted while the glidepath is off / before the first step
+  # horizon-based steps: on/after each date the TARGET tier steps DOWN. Driven by age/milestones,
+  # NOT market conditions. Inert until enabled: true. Edit the dates to begin easing.
+  steps:
+    - { date: "2035-01-01", tier: 7 }
+    - { date: "2040-01-01", tier: 6 }

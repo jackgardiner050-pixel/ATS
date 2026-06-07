@@ -21,6 +21,7 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT / "gaia"))
 import gaia  # noqa: E402
+import discipline as DISC  # noqa: E402
 
 _PUBLIC = _ROOT / "docs" / "data" / "gaia_cores_live.json"
 _DATA = _ROOT / "gaia" / "data"
@@ -79,23 +80,38 @@ def main() -> int:
     # gather every ticker (cores + benchmark + private current arm) and anchor + mark them
     tickers = {bench["ticker"]} | {s["ticker"] for s in sleeves.values()}
     if current:
-        tickers |= {h["ticker"] for h in current["holdings"]}
-    anchors = _anchors(sorted(tickers))
+        tickers |= {h["ticker"] for h in current["holdings"] if h.get("ticker")}  # skip null tickers (OEIC funds)
+    tickers = sorted(t for t in tickers if t)
+    anchors = _anchors(tickers)
     inception = anchors.get("_inception")
     days = max(0, (date.today() - date.fromisoformat(inception)).days) if inception else 0
-    prices = {t: _spot(t) for t in sorted(tickers)}
+    prices = {t: _spot(t) for t in tickers}
 
     bench_ret, _ = _portfolio_return({bench["ticker"]: 1.0}, prices, anchors)
+
+    # LOCKED rebalancing + glidepath discipline (fail-loud if the lock is broken)
+    rules = DISC.load_rules()
+    if not DISC.verify_lock(rules):
+        raise SystemExit("[gaia] rules.yaml lock broken (tampered) — refusing to publish")
+    band = rules["rebalancing"]["band_pp"]
+    sleeve_ret = {}                                  # each sleeve's return since inception (drives drift)
+    for s, sl in sleeves.items():
+        px, a = prices.get(sl["ticker"]), (anchors.get(sl["ticker"]) or {}).get("price")
+        if px and a:
+            sleeve_ret[s] = round((px / a - 1) * 100, 3)
 
     # ---- PUBLIC: cores vs benchmark (no current, no saving) ----
     pub_cores = []
     for c in fa["cores"]:
         ret, n = _portfolio_return(c["etfs"], prices, anchors)
+        actual = DISC.drifted_weights(c["weights"], sleeve_ret)      # drift since the last rebalance
         pub_cores.append({
             "id": c["id"], "risk": c["risk"], "label": c["label"],
             "blended_ocf_pct": c["blended_ocf_pct"], "weights": c["weights"], "etfs": c["etfs"],
             "return_pct": ret, "n_priced": n,
             "vs_benchmark_pp": round(ret - bench_ret, 3) if (ret is not None and bench_ret is not None) else None,
+            "drift_pp": DISC.drift_pp(c["weights"], actual),
+            "needs_rebalance": DISC.needs_rebalance(c["weights"], actual, band),
         })
     public = {
         "generated_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -103,16 +119,29 @@ def main() -> int:
         "benchmark": {"ticker": bench["ticker"], "name": bench["name"],
                       "ocf_pct": bench["ocf_pct"], "return_pct": bench_ret},
         "cores": pub_cores, "framing": fa["framing"],
+        "discipline": {                                # LOCKED, pre-registered — generic rules only
+            "locked": True, "lock_sha": rules["lock_sha"], "registered": rules["registered"],
+            "rebalancing": {"band_pp": band, "schedule": rules["rebalancing"]["schedule"],
+                            "note": rules["rebalancing"]["note"]},
+            "glidepath": {"enabled": bool(rules["glidepath"]["enabled"]),
+                          "current_tier": rules["glidepath"]["current_tier"],
+                          "active_tier": DISC.target_tier(date.today(), rules),
+                          "steps": rules["glidepath"]["steps"],
+                          "note": "horizon-based (age/milestones), NOT market-timing · default OFF — "
+                                  "holding the aggressive tier (long horizon)"},
+        },
         "note": ("research candidates, not advice · in an AI bull these diversified cores will likely "
                  "lag an AI-heavy tilt on raw return — value is lower cost + lower concentration, not "
-                 "more return · read as cost + risk, not which-wins"),
+                 "more return · read as cost + risk, not which-wins · rebalancing + glidepath are LOCKED, "
+                 "rules-based discipline (not market-timing)"),
     }
     _PUBLIC.parent.mkdir(parents=True, exist_ok=True)
     _PUBLIC.write_text(json.dumps(public, indent=2))
 
     # ---- PRIVATE: current arm + fee saving (gitignored) ----
     if current:
-        cur_ret, cur_n = _portfolio_return({h["ticker"]: h["weight"] for h in current["holdings"]}, prices, anchors)
+        cur_ret, cur_n = _portfolio_return(
+            {h["ticker"]: h["weight"] for h in current["holdings"] if h.get("ticker")}, prices, anchors)
         private = {
             "generated_at_utc": public["generated_at_utc"], "inception": inception, "days": days,
             "current_allocation": {

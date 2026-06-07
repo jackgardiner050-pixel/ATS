@@ -1550,21 +1550,37 @@ def _phaethon_panel() -> str:
               font-size:.8rem;color:#b9a5e0;line-height:1.5">
     An <strong>autonomous agent</strong> forms its own multi-angle ideas, which a <strong>local Zeus
     governance</strong> grounds (priced-in, invalidation, sizing, internal concentration) before
-    <strong>paper</strong> execution into its own book — <strong>fully isolated</strong> on a separate
-    sandboxed box, no real money, no access to the real portfolio. <strong>Research-grade ·
-    forward-only · vs QQQ (not raw return).</strong> Do not read early marks as a track record.
+    <strong>paper</strong> execution into its own book — fully sandboxed on a separate box, with no
+    access to the real portfolio. Do not read early marks as a track record.
+    <div style="margin-top:.4rem;color:#8b6fd6;font-weight:600;font-size:.74rem">
+      research-grade · forward-only · isolated · paper-only · no real money
+    </div>
   </div>
   <table style="width:100%;border-collapse:collapse;font-size:.82rem">
     <tbody>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Positions</td><td style="padding:.35rem .5rem;text-align:right">{d.get('n_positions','—')} · {holds}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Active return</td><td style="padding:.35rem .5rem;text-align:right">{_pct(d.get('active_return_pct'))}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">vs QQQ (primary)</td><td style="padding:.35rem .5rem;text-align:right">{_pct(d.get('vs_qqq_pp'), True)}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Improve / degrade trend</td><td style="padding:.35rem .5rem;text-align:right;color:{tcol};font-weight:600">{trend}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Marks</td><td style="padding:.35rem .5rem;text-align:right">{d.get('n_marks','—')} (research-grade)</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Positions</td><td style="padding:.35rem .5rem;text-align:right" id="ph-positions">{d.get('n_positions','—')} · {holds}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Active return</td><td style="padding:.35rem .5rem;text-align:right" id="ph-active">{_pct(d.get('active_return_pct'))}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">vs QQQ (primary)</td><td style="padding:.35rem .5rem;text-align:right" id="ph-vsqqq">{_pct(d.get('vs_qqq_pp'), True)}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Improve / degrade trend</td><td style="padding:.35rem .5rem;text-align:right;color:{tcol};font-weight:600" id="ph-trend">{trend}</td></tr>
+      <tr><td style="padding:.35rem .5rem;color:#8b949e">Marks</td><td style="padding:.35rem .5rem;text-align:right" id="ph-marks">{d.get('n_marks','—')} (research-grade)</td></tr>
     </tbody>
   </table>
-  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">Paper/simulated · isolated experiment · % only · the experiment's value is the improve/degrade-vs-QQQ trend, not the level.</p>
+  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">Paper/simulated · isolated experiment · % only · the experiment's value is the improve/degrade-vs-QQQ trend, not the level. Published daily from the always-on box.</p>
 </div>
+<script>
+(function(){{
+  function f(v,pp){{if(v===null||v===undefined)return'<span style="color:#5c6080">—</span>';var c=v>=0?'#3fb950':'#f85149';return'<span style="color:'+c+'">'+(v>=0?'+':'')+v+(pp?'pp':'%')+'</span>';}}
+  function set(id,html){{var e=document.getElementById(id);if(e)e.innerHTML=html;}}
+  fetch('data/phaethon_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{
+    set('ph-positions',(d.n_positions!=null?d.n_positions:'—')+' · '+((d.holdings||[]).join(' · ')||'—'));
+    set('ph-active',f(d.active_return_pct,false));
+    set('ph-vsqqq',f(d.vs_qqq_pp,true));
+    var t=d.trend||'—',tc=t.indexOf('IMPROV')>=0?'#3fb950':(t.indexOf('DEGRAD')>=0?'#f85149':'#9fb6cd');
+    var te=document.getElementById('ph-trend');if(te){{te.innerHTML=t;te.style.color=tc;}}
+    set('ph-marks',(d.n_marks!=null?d.n_marks:'—')+' (research-grade)');
+  }}).catch(function(){{}});
+}})();
+</script>
 </section>"""
 
 

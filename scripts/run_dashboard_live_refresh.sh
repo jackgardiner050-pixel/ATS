@@ -70,18 +70,17 @@ $PYTHON "$AGENT/scripts/publish_growth_arms.py" || true
 #     comparison arm is written only to the gitignored gaia/data/gaia_private.json, never published.
 $PYTHON "$AGENT/scripts/publish_gaia.py" || true
 
-# 1e. Phaethon — pull the ISOLATED paper-experiment scorecard READ-ONLY from ats-research (sanitized,
-#     generic, no personal data). Non-fatal: a hiccup just republishes the last-known scorecard.
-scp -P 22 -i "$HOME/.ssh/id_ed25519" -o ConnectTimeout=15 -o BatchMode=yes -q \
-    root@209.97.184.179:/home/phaethon/phaethon/trader/state/scorecard_public.json \
-    "$AGENT/docs/data/phaethon_live.json" 2>/dev/null || echo "[$TS] WARN: phaethon scorecard pull failed"
+# 1e. Phaethon panel — NO LONGER published from the Mac. The always-on ats-research droplet now builds
+#     and pushes docs/data/phaethon_live.json itself (daily root cron /root/phaethon-panel-publish.sh),
+#     so the panel refreshes independently of the Mac. The Mac must NOT touch phaethon_live.json (avoid
+#     fighting the droplet over the same file).
 
-# 2. Stage changed data files
+# 2. Stage changed data files (phaethon_live.json deliberately excluded — owned by the droplet)
 cd "$AGENT"
 git add docs/data/ats_live.json docs/data/scai_live.json \
         docs/data/hermes_live.json docs/data/hermes_v3_live.json \
         docs/data/system_summary_live.json docs/data/growth_arms_live.json \
-        docs/data/gaia_cores_live.json docs/data/phaethon_live.json \
+        docs/data/gaia_cores_live.json \
         docs/olympus_track.html 2>/dev/null || true
 
 # 3. Commit only if something changed

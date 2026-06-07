@@ -50,29 +50,57 @@ def compounding_uplift_pct(core_ocf: float, cur_ocf: float, years: int) -> float
     return round((ratio - 1) * 100, 2)
 
 
+def current_platform_pct(current) -> float:
+    """Platform/account fee (%/yr) of the current setup — 0 if none recorded."""
+    return float((current.get("platform") or {}).get("fee_pct", 0.0)) if current else 0.0
+
+
+def current_fixed_gbp(current) -> float:
+    """Flat account fee (currency/yr) — a fixed cost on top of the % fees."""
+    return float((current.get("platform") or {}).get("fixed_fee_gbp", 0.0)) if current else 0.0
+
+
+def current_all_in_pct(current) -> float | None:
+    """TRUE all-in %/yr of the current setup = blended fund OCF + platform fee % (excl. the flat fee)."""
+    if not current:
+        return None
+    return round(current_blended_ocf(current) + current_platform_pct(current), 4)
+
+
 def fee_analysis(years: int = 30) -> dict:
-    """Per-core blended fee + saving vs current (private) + long-run compounding effect."""
+    """Per-core blended fee + the TRUE all-in saving vs current (fund OCF + platform), with the
+    long-run compounding effect. A Gaia core on a commission-free broker pays fund OCF only (NO
+    platform fee)."""
     cfg = load_cores()
     sleeves = cfg["sleeves"]
     current = load_current()
-    cur_ocf = current_blended_ocf(current) if current else None
+    cur_ocf = current_blended_ocf(current) if current else None          # fund OCF only
+    cur_platform = current_platform_pct(current) if current else None
+    cur_fixed = current_fixed_gbp(current) if current else None
+    cur_all_in = current_all_in_pct(current)                             # fund OCF + platform %
     cur_is_example = bool(current.get("is_example")) if current else None
 
     rows = []
     for core in cfg["cores"]:
-        ocf = core_blended_ocf(core, sleeves)
-        saving_bps = round((cur_ocf - ocf) * 100, 1) if cur_ocf is not None else None
+        ocf = core_blended_ocf(core, sleeves)                            # commission-free broker: fund OCF, NO platform
+        all_in_saving_bps = round((cur_all_in - ocf) * 100, 1) if cur_all_in is not None else None
+        fund_saving_bps = round((cur_ocf - ocf) * 100, 1) if cur_ocf is not None else None
         rows.append({
             "id": core["id"], "risk": core["risk"], "label": core["label"],
             "weights": core["weights"], "etfs": expand_core_to_etfs(core, sleeves),
             "blended_ocf_pct": ocf,
-            "saving_vs_current_bps": saving_bps,
-            "compounding_uplift_pct_30y": compounding_uplift_pct(ocf, cur_ocf, years) if cur_ocf else None,
+            "fund_saving_vs_current_bps": fund_saving_bps,               # funds only (cheaper ETFs)
+            "all_in_saving_vs_current_bps": all_in_saving_bps,          # funds + dropping the platform fee
+            "saving_vs_current_bps": all_in_saving_bps,                 # primary = the TRUE all-in saving
+            "compounding_uplift_pct_30y": compounding_uplift_pct(ocf, cur_all_in, years) if cur_all_in else None,
         })
     return {
         "cores": rows, "sleeves": sleeves, "benchmark": cfg["benchmark"],
         "benchmark_ocf_pct": cfg["benchmark"]["ocf_pct"],
-        "current_blended_ocf_pct": cur_ocf,           # PRIVATE — do not publish
+        "current_blended_ocf_pct": cur_ocf,            # PRIVATE — do not publish
+        "current_platform_pct": cur_platform,          # PRIVATE
+        "current_fixed_fee_gbp": cur_fixed,            # PRIVATE
+        "current_all_in_pct": cur_all_in,              # PRIVATE
         "current_is_example": cur_is_example,
         "years": years, "framing": cfg.get("framing", []),
     }
