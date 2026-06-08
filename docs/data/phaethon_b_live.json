@@ -1,0 +1,46 @@
+{
+  "arm": "aggressive-B",
+  "label": "Aggressive (B)",
+  "mandate": "+10%/qtr, concentrated",
+  "n_positions": 4,
+  "holdings": [
+    {
+      "ticker": "MU",
+      "bought_at": 864.01,
+      "last": 864.01,
+      "weight_pct": 8.9
+    },
+    {
+      "ticker": "CEG",
+      "bought_at": 254.83,
+      "last": 254.83,
+      "weight_pct": 7.5
+    },
+    {
+      "ticker": "GEV",
+      "bought_at": 933.61,
+      "last": 933.61,
+      "weight_pct": 7.1
+    },
+    {
+      "ticker": "COHR",
+      "bought_at": 376.99,
+      "last": 376.99,
+      "weight_pct": 6.8
+    }
+  ],
+  "cash_pct": 69.7,
+  "active_return_pct": 0.0,
+  "vs_qqq_pp": 0.0,
+  "trend": "research-grade \u2014 need >=2 marks",
+  "n_marks": 1,
+  "halted": false,
+  "drawdown_pct": null,
+  "kill_switch": "-25% peak-to-trough",
+  "mode": "paper/simulated",
+  "isolated": true,
+  "forward_only": true,
+  "research_grade": true,
+  "benchmark": "QQQ",
+  "as_of": "2026-06-08"
+}
