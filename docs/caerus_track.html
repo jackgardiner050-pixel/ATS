@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8">
+<title>Caerus — live demo track</title>
+<style>
+ body{font-family:-apple-system,system-ui,sans-serif;background:#0d1117;color:#c9d1d9;margin:0;padding:1.5rem;}
+ h1{font-size:1.2rem} h2{font-size:.9rem;color:#e6edf3;margin:1.2rem 0 .3rem}
+ table{border-collapse:collapse;width:100%;font-size:.78rem;margin:.4rem 0}
+ th,td{text-align:left;padding:.25rem .5rem;border-bottom:1px solid #21262d}
+ .muted{color:#6e7681} .badge{font-size:.65rem;padding:.1rem .45rem;border-radius:.3rem;background:#3b2a14;color:#e2b87e}
+ .headline{font-size:.95rem;color:#e6edf3;margin:.3rem 0}
+</style></head><body>
+<h1>Caerus — live demo track <span class="muted">(paper · auto-executed on a broker demo · sanitized)</span></h1>
+<p class="muted">Percentages and ratios only — no currency, holdings, prices, or personal data.
+Hash-chained, immutable; no look-ahead. Verdict <span class="badge">PENDING</span>
+until 40 closed trades (now 0).</p>
+
+<p class="headline"><b>Net-of-cost edge vs benchmark (headline):</b> n/a (no closed trades yet)</p>
+
+<h2>Benchmarks (net of cost) — the core</h2>
+<table><thead><tr><th>Benchmark</th><th>Result</th></tr></thead><tbody>
+<tr><td>(a) buy-and-hold its own picks — beat rate</td><td>n/a</td></tr>
+<tr><td>(b) random liquid-mover control — beat rate</td><td>n/a</td></tr>
+<tr><td>(c) mean strategy net-of-cost return</td><td>n/a</td></tr>
+</tbody></table>
+<p class="muted">Kill criterion: retire unless net-of-cost beats (a) AND (b). "Positive in a bull market" does not pass.
+No daily-return target — 5–6%/day is impossible by orders of magnitude.</p>
+
+<h2>Live point-in-time track <span class="badge">demo fills · chain ✓</span></h2>
+<table><thead><tr><th>Date</th><th>Kind</th><th>Ticker</th><th>Strategy (net)</th><th>Edge vs B&amp;H</th><th>Exit</th></tr></thead>
+<tbody><tr><td colspan='6' class='muted'>(no live demo trades yet — awaiting first pre-open auto-trade)</td></tr></tbody></table>
+<p class="muted">Entries are the weak, under-test component (a catalyst appears after the move). Display-only; reads the immutable demo record.</p>
+</body></html>

@@ -1528,57 +1528,120 @@ def _hermes_v3_last_variant_run() -> str:
 
 
 def _phaethon_panel() -> str:
-    """Phaethon — the isolated, forward-only paper experiment (autonomous agent + local Zeus governance,
-    fully sandboxed on a separate box). PUBLIC, sanitized: research-grade, vs QQQ, no personal data."""
+    """Phaethon — the isolated, forward-only paper experiment. TWO arms in one panel, clearly distinguished:
+    Arm A (disciplined) and Arm B (aggressive, +10%/qtr mandate with a -25% drawdown kill-switch). Each arm
+    shows holdings + bought-at price, return, vs QQQ, trend, marks; B also shows drawdown + kill-switch state.
+    PUBLIC, sanitized: research-grade, vs QQQ, % + market prices only, no personal data. Both feeds are
+    published daily from the consolidated always-on box; this re-renders them client-side."""
     import json as _json
-    try:
-        d = _json.loads((_DOCS / "data" / "phaethon_live.json").read_text())
-    except Exception:
-        return ""
+
+    def _load(name):
+        try:
+            return _json.loads((_DOCS / "data" / name).read_text())
+        except Exception:
+            return None
+
     def _pct(v, pp=False):
         if v is None:
             return '<span style="color:#5c6080">—</span>'
         c = "#3fb950" if v >= 0 else "#f85149"
         return f'<span style="color:{c}">{"+" if v >= 0 else ""}{v}{"pp" if pp else "%"}</span>'
-    trend = d.get("trend", "—")
-    tcol = "#3fb950" if "IMPROV" in trend else "#f85149" if "DEGRAD" in trend else "#9fb6cd"
-    holds = " · ".join(d.get("holdings", [])) or "—"
+
+    def _arm(d, accent, is_b):
+        """Server-side initial paint of one arm card (the client script rebuilds the same structure)."""
+        if not d:
+            return ('<div class="card adv-disabled" style="border-left:3px solid ' + accent + '">'
+                    'arm feed not available yet</div>')
+        trend = d.get("trend", "—")
+        tcol = "#3fb950" if "IMPROV" in trend else "#f85149" if "DEGRAD" in trend else "#9fb6cd"
+        rows = ""
+        for h in d.get("holdings", []) or []:
+            ba = h.get("bought_at")
+            rows += (f'<tr><td style="padding:.25rem .5rem;font-weight:600;color:#c9d1d9">{h.get("ticker")}</td>'
+                     f'<td style="padding:.25rem .5rem;color:#8b949e;text-align:right">bought @ ${ba}</td>'
+                     f'<td style="padding:.25rem .5rem;color:#9fb6cd;text-align:right">{h.get("weight_pct")}%</td></tr>')
+        if not rows:
+            rows = '<tr><td colspan="3" style="padding:.25rem .5rem;color:#5c6080">no positions yet</td></tr>'
+        # kill-switch badge (arm B only)
+        ks = ""
+        if is_b:
+            if d.get("halted"):
+                ks = ('<span style="color:#f85149;font-weight:600">⛔ KILL-SWITCH HALTED'
+                      + (f' (drawdown {d.get("drawdown_pct")}%)' if d.get("drawdown_pct") is not None else '')
+                      + ' — no new buys</span>')
+            else:
+                dd = d.get("drawdown_pct")
+                ks = ('<span style="color:#3fb950">kill-switch armed · −25% peak-to-trough</span>'
+                      + (f' <span style="color:#8b949e">· drawdown {dd}%</span>' if dd is not None else ''))
+        return (
+            f'<div class="card" style="border-left:3px solid {accent}">'
+            f'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem">'
+            f'<span style="font-weight:700;color:{accent}">{d.get("label","—")}</span>'
+            f'<span style="font-size:.72rem;color:#8b949e">{d.get("mandate","")}</span></div>'
+            + (f'<div id="ph{"B" if is_b else "A"}-ks" style="font-size:.74rem;margin-bottom:.4rem">{ks}</div>' if is_b else '')
+            + f'<table style="width:100%;border-collapse:collapse;font-size:.78rem;margin-bottom:.45rem">'
+            f'<thead><tr><th style="text-align:left;padding:.2rem .5rem;color:#5c6080;font-weight:500">What it bought</th>'
+            f'<th style="text-align:right;padding:.2rem .5rem;color:#5c6080;font-weight:500">entry</th>'
+            f'<th style="text-align:right;padding:.2rem .5rem;color:#5c6080;font-weight:500">weight</th></tr></thead>'
+            f'<tbody id="ph{"B" if is_b else "A"}-holds">{rows}</tbody></table>'
+            f'<table style="width:100%;border-collapse:collapse;font-size:.8rem">'
+            f'<tr><td style="padding:.25rem .5rem;color:#8b949e">Positions</td><td style="padding:.25rem .5rem;text-align:right" id="ph{"B" if is_b else "A"}-pos">{d.get("n_positions","—")} · {d.get("cash_pct","—")}% cash</td></tr>'
+            f'<tr><td style="padding:.25rem .5rem;color:#8b949e">Active return</td><td style="padding:.25rem .5rem;text-align:right" id="ph{"B" if is_b else "A"}-ret">{_pct(d.get("active_return_pct"))}</td></tr>'
+            f'<tr><td style="padding:.25rem .5rem;color:#8b949e">vs QQQ (primary)</td><td style="padding:.25rem .5rem;text-align:right" id="ph{"B" if is_b else "A"}-vs">{_pct(d.get("vs_qqq_pp"), True)}</td></tr>'
+            f'<tr><td style="padding:.25rem .5rem;color:#8b949e">Improve / degrade</td><td style="padding:.25rem .5rem;text-align:right;color:{tcol};font-weight:600" id="ph{"B" if is_b else "A"}-trend">{trend}</td></tr>'
+            f'<tr><td style="padding:.25rem .5rem;color:#8b949e">Marks</td><td style="padding:.25rem .5rem;text-align:right" id="ph{"B" if is_b else "A"}-marks">{d.get("n_marks","—")}</td></tr>'
+            f'</table></div>')
+
+    a = _load("phaethon_live.json")
+    b = _load("phaethon_b_live.json")
+    if not a and not b:
+        return ""
+    as_of = (a or b or {}).get("as_of", "")
     return f"""<section>
-<h2 class="section-title">Phaethon — isolated autonomous paper experiment</h2>
+<h2 class="section-title">Phaethon — isolated autonomous paper experiment (two arms)</h2>
 <div class="card">
   <div style="padding:.5rem .7rem;border:1px solid #2a2440;border-radius:4px;margin-bottom:.6rem;
               font-size:.8rem;color:#b9a5e0;line-height:1.5">
     An <strong>autonomous agent</strong> forms its own multi-angle ideas, which a <strong>local Zeus
     governance</strong> grounds (priced-in, invalidation, sizing, internal concentration) before
-    <strong>paper</strong> execution into its own book — fully sandboxed on a separate box, with no
-    access to the real portfolio. Do not read early marks as a track record.
+    <strong>paper</strong> execution — fully sandboxed on a separate box, with no access to the real
+    portfolio. Two arms run side by side: <strong>A — disciplined</strong> (the original strict gate) and
+    <strong>B — aggressive</strong> (relaxed gate, +10%/qtr mandate, concentrated, with a −25% drawdown
+    kill-switch). Do not read early marks as a track record.
     <div style="margin-top:.4rem;color:#8b6fd6;font-weight:600;font-size:.74rem">
       research-grade · forward-only · isolated · paper-only · no real money
     </div>
   </div>
-  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
-    <tbody>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Positions</td><td style="padding:.35rem .5rem;text-align:right" id="ph-positions">{d.get('n_positions','—')} · {holds}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Active return</td><td style="padding:.35rem .5rem;text-align:right" id="ph-active">{_pct(d.get('active_return_pct'))}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">vs QQQ (primary)</td><td style="padding:.35rem .5rem;text-align:right" id="ph-vsqqq">{_pct(d.get('vs_qqq_pp'), True)}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Improve / degrade trend</td><td style="padding:.35rem .5rem;text-align:right;color:{tcol};font-weight:600" id="ph-trend">{trend}</td></tr>
-      <tr><td style="padding:.35rem .5rem;color:#8b949e">Marks</td><td style="padding:.35rem .5rem;text-align:right" id="ph-marks">{d.get('n_marks','—')} (research-grade)</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">Paper/simulated · isolated experiment · % only · the experiment's value is the improve/degrade-vs-QQQ trend, not the level. Published daily from the always-on box.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem" id="ph-arms">
+    {_arm(a, "#8b6fd6", False)}
+    {_arm(b, "#f0883e", True)}
+  </div>
+  <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">Paper/simulated · isolated experiment · % + market prices only · the experiment's value is the improve/degrade-vs-QQQ trend, not the level. Both arms published daily from the consolidated always-on box{(' · as of ' + as_of) if as_of else ''}.</p>
 </div>
 <script>
 (function(){{
   function f(v,pp){{if(v===null||v===undefined)return'<span style="color:#5c6080">—</span>';var c=v>=0?'#3fb950':'#f85149';return'<span style="color:'+c+'">'+(v>=0?'+':'')+v+(pp?'pp':'%')+'</span>';}}
   function set(id,html){{var e=document.getElementById(id);if(e)e.innerHTML=html;}}
-  fetch('data/phaethon_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{
-    set('ph-positions',(d.n_positions!=null?d.n_positions:'—')+' · '+((d.holdings||[]).join(' · ')||'—'));
-    set('ph-active',f(d.active_return_pct,false));
-    set('ph-vsqqq',f(d.vs_qqq_pp,true));
+  function render(d,P,isB){{
+    if(!d)return;
+    var hr='';(d.holdings||[]).forEach(function(h){{hr+='<tr><td style="padding:.25rem .5rem;font-weight:600;color:#c9d1d9">'+h.ticker+'</td><td style="padding:.25rem .5rem;color:#8b949e;text-align:right">bought @ $'+h.bought_at+'</td><td style="padding:.25rem .5rem;color:#9fb6cd;text-align:right">'+h.weight_pct+'%</td></tr>';}});
+    if(!hr)hr='<tr><td colspan="3" style="padding:.25rem .5rem;color:#5c6080">no positions yet</td></tr>';
+    set('ph'+P+'-holds',hr);
+    set('ph'+P+'-pos',(d.n_positions!=null?d.n_positions:'—')+' · '+(d.cash_pct!=null?d.cash_pct:'—')+'% cash');
+    set('ph'+P+'-ret',f(d.active_return_pct,false));
+    set('ph'+P+'-vs',f(d.vs_qqq_pp,true));
     var t=d.trend||'—',tc=t.indexOf('IMPROV')>=0?'#3fb950':(t.indexOf('DEGRAD')>=0?'#f85149':'#9fb6cd');
-    var te=document.getElementById('ph-trend');if(te){{te.innerHTML=t;te.style.color=tc;}}
-    set('ph-marks',(d.n_marks!=null?d.n_marks:'—')+' (research-grade)');
-  }}).catch(function(){{}});
+    var te=document.getElementById('ph'+P+'-trend');if(te){{te.innerHTML=t;te.style.color=tc;}}
+    set('ph'+P+'-marks',(d.n_marks!=null?d.n_marks:'—'));
+    if(isB){{
+      var ks;
+      if(d.halted){{ks='<span style="color:#f85149;font-weight:600">⛔ KILL-SWITCH HALTED'+(d.drawdown_pct!=null?' (drawdown '+d.drawdown_pct+'%)':'')+' — no new buys</span>';}}
+      else{{ks='<span style="color:#3fb950">kill-switch armed · −25% peak-to-trough</span>'+(d.drawdown_pct!=null?' <span style="color:#8b949e">· drawdown '+d.drawdown_pct+'%</span>':'');}}
+      set('phB-ks',ks);
+    }}
+  }}
+  fetch('data/phaethon_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{render(d,'A',false);}}).catch(function(){{}});
+  fetch('data/phaethon_b_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{render(d,'B',true);}}).catch(function(){{}});
 }})();
 </script>
 </section>"""
