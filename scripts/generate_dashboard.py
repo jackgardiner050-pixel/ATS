@@ -493,6 +493,14 @@ def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
         port_return = sum(returns) / len(returns)
     if "SPY" in prices:
         spy_return = (prices["SPY"] - spy_entry) / spy_entry
+    qqq_return: Optional[float] = None
+    try:
+        import json as _j
+        _qe = _j.loads((_DOCS / "data" / "ats_live.json").read_text()).get("qqq_entry_price")
+        if "QQQ" in prices and _qe:
+            qqq_return = (prices["QQQ"] - _qe) / _qe
+    except Exception:
+        pass
 
     def _card(value: Optional[float], label: str, elem_id: str = "") -> str:
         if value is None:
@@ -526,6 +534,7 @@ def _perf_banner(positions: list[dict], prices: dict[str, float]) -> str:
         f'<div class="card-grid">'
         f"{_card(port_return, 'Portfolio Return', 'live-port-return')}"
         f"{_card(spy_return, 'SPY Return', 'live-spy-return')}"
+        f"{_card(qqq_return, 'QQQ Return', 'live-qqq-return')}"
         f"</div>"
         f"{alpha_html}"
         f"</div>"
@@ -1676,13 +1685,25 @@ def _gaia_panel() -> str:
             f'<td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">{c.get("blended_ocf_pct")}%</td>'
             f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-{c.get("id")}-ret">{_pct(c.get("return_pct"))}</td>'
             f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-{c.get("id")}-vs">{_pct(c.get("vs_benchmark_pp"), True)}</td>'
+            f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-{c.get("id")}-qqq">{_pct(c.get("vs_qqq_pp"), True)}</td>'
             f'</tr>')
+    q = d.get("qqq", {})
     bench_row = (
         f'<tr style="border-top:1px solid #21262d">'
         f'<td style="padding:.4rem .5rem;color:#8b949e;white-space:nowrap">Benchmark</td>'
         f'<td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">{b.get("ticker")} — {b.get("name","")}</td>'
         f'<td style="padding:.4rem .5rem;text-align:right;color:#9fb6cd">{b.get("ocf_pct")}%</td>'
         f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-bench-ret">{_pct(b.get("return_pct"))}</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td>'
+        f'</tr>')
+    qqq_row = (
+        f'<tr>'
+        f'<td style="padding:.4rem .5rem;color:#8b949e;white-space:nowrap">Benchmark</td>'
+        f'<td style="padding:.4rem .5rem;color:#8b949e;font-size:.78rem">{q.get("ticker","QQQ")} — {q.get("name","Nasdaq-100")}</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right" id="gaia-qqq-ret">{_pct(q.get("return_pct"))}</td>'
+        f'<td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td>'
         f'<td style="padding:.4rem .5rem;text-align:right;color:#5c6080">—</td>'
         f'</tr>')
     days = d.get("days", 0)
@@ -1704,8 +1725,9 @@ def _gaia_panel() -> str:
       <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Blended fee</th>
       <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Paper return ({days}d)</th>
       <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">vs all-world</th>
+      <th style="text-align:right;padding:.3rem .5rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">vs QQQ</th>
     </tr></thead>
-    <tbody>{rows}{bench_row}</tbody>
+    <tbody>{rows}{bench_row}{qqq_row}</tbody>
   </table>
   <p style="font-size:.72rem;color:#5c6080;margin-top:.5rem">
     Paper/simulated · % only · marked daily since inception vs the all-world benchmark · the
@@ -1717,8 +1739,9 @@ def _gaia_panel() -> str:
   function f(v,pp){{if(v===null||v===undefined)return'<span style="color:#5c6080">—</span>';var c=v>=0?'#3fb950':'#f85149';return'<span style="color:'+c+'">'+(v>=0?'+':'')+v+(pp?'pp':'%')+'</span>';}}
   function set(id,html){{var e=document.getElementById(id);if(e)e.innerHTML=html;}}
   fetch('data/gaia_cores_live.json?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{
-    (d.cores||[]).forEach(function(c){{set('gaia-'+c.id+'-ret',f(c.return_pct,false));set('gaia-'+c.id+'-vs',f(c.vs_benchmark_pp,true));}});
+    (d.cores||[]).forEach(function(c){{set('gaia-'+c.id+'-ret',f(c.return_pct,false));set('gaia-'+c.id+'-vs',f(c.vs_benchmark_pp,true));set('gaia-'+c.id+'-qqq',f(c.vs_qqq_pp,true));}});
     if(d.benchmark)set('gaia-bench-ret',f(d.benchmark.return_pct,false));
+    if(d.qqq)set('gaia-qqq-ret',f(d.qqq.return_pct,false));
   }}).catch(function(){{}});
 }})();
 </script>
@@ -2343,6 +2366,7 @@ def _live_cards_js() -> str:
     var pricesOk=d.n_priced&&d.n_priced>0;
     setLivePct('live-port-return',d.portfolio_return_pct);
     setLivePct('live-spy-return',d.spy_return_pct);
+    setLivePct('live-qqq-return',d.qqq_return_pct);
     var alphaEl=document.getElementById('live-alpha-value');
     if(alphaEl){
       if(d.alpha_vs_spy_pct===null||d.alpha_vs_spy_pct===undefined){alphaEl.innerHTML='Alpha: '+NA_HTML;alphaEl.style.color='';}

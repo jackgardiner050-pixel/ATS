@@ -244,6 +244,20 @@ def _hist_entry_price(ticker: str, entry_date_str: str) -> float | None:
 
 # ─── Per-system JSON builders ──────────────────────────────────────────────────
 
+def _qqq_compare(port_return, entry_date_str: str, prices: dict) -> dict:
+    """Uniform vs-QQQ overlay added ALONGSIDE each portfolio's native benchmark (QQQ is already in
+    _ALWAYS_FETCH, so this is free). Returns QQQ's return since the portfolio's entry date + the
+    portfolio's alpha over QQQ. Honest about gaps — None where the entry/price is unavailable."""
+    qp = prices.get("QQQ", {})
+    qqq_lp = qp.get("last_price")
+    qqq_entry = _hist_entry_price("QQQ", entry_date_str) if entry_date_str else None
+    qqq_return = (round((qqq_lp - qqq_entry) / qqq_entry * 100, 3)
+                  if (qqq_lp and qqq_entry and qqq_entry > 0) else None)
+    alpha = (round(port_return - qqq_return, 3)
+             if (port_return is not None and qqq_return is not None) else None)
+    return {"qqq_entry_price": qqq_entry, "qqq_return_pct": qqq_return, "alpha_vs_qqq_pct": alpha}
+
+
 def _build_ats_json(positions: list[dict], prices: dict[str, dict], now: datetime) -> dict:
     status, note = _market_status(now)
     pos_out = []
@@ -295,6 +309,8 @@ def _build_ats_json(positions: list[dict], prices: dict[str, dict], now: datetim
     spy_return = round((spy_lp - spy_entry_common) / spy_entry_common * 100, 3) if spy_lp and spy_entry_common > 0 else None
     spy_today = round((spy_lp - spy_pc) / spy_pc * 100, 3) if spy_lp and spy_pc and spy_pc > 0 else None
     alpha = round(port_return - spy_return, 3) if port_return is not None and spy_return is not None else None
+    _ats_entry = min((p.get("entry_date", "") for p in positions if p.get("entry_date")), default="")
+    _ats_qqq = _qqq_compare(port_return, _ats_entry, prices)
 
     return {
         "fetched_at_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -310,6 +326,9 @@ def _build_ats_json(positions: list[dict], prices: dict[str, dict], now: datetim
         "spy_return_pct": spy_return,
         "spy_today_pct": spy_today,
         "alpha_vs_spy_pct": alpha,
+        "qqq_entry_price": _ats_qqq["qqq_entry_price"],
+        "qqq_return_pct": _ats_qqq["qqq_return_pct"],
+        "alpha_vs_qqq_pct": _ats_qqq["alpha_vs_qqq_pct"],
         "n_positions": len(positions),
         "n_priced": len(returns),
         "source": "yfinance",
@@ -508,6 +527,7 @@ def _build_lab_json(
         "spy_today_pct": spy_today_pct,
         "alpha_vs_spy_pct": alpha_spy,
         "spy_baseline_status": top_spy_status,
+        **_qqq_compare(port_ret, earliest_entry_date or "", prices),
         "n_baskets": len(positions),
         "n_priced": len(returns),
         "source": "yfinance",

@@ -42,6 +42,23 @@ def _spot(ticker: str):
         return None
 
 
+def _hist_close(ticker: str, date_str: str):
+    """Historical close at/just before a date (PIT). Tries the .L suffix. Fail-soft -> None."""
+    try:
+        import yfinance as yf
+        import pandas as pd
+        target = pd.Timestamp(date_str).normalize()
+        for sym in (f"{ticker}.L", ticker):
+            h = yf.Ticker(sym).history(start=(target - pd.Timedelta(days=8)).date().isoformat(),
+                                       end=(target + pd.Timedelta(days=1)).date().isoformat())
+            cl = h["Close"].dropna() if len(h) else None
+            if cl is not None and len(cl):
+                return round(float(cl.iloc[-1]), 6)
+        return None
+    except Exception:
+        return None
+
+
 def _anchors(tickers: list[str]) -> dict:
     """Inception prices, established once and reused (so returns are since-inception)."""
     _DATA.mkdir(parents=True, exist_ok=True)
@@ -88,6 +105,12 @@ def main() -> int:
     prices = {t: _spot(t) for t in tickers}
 
     bench_ret, _ = _portfolio_return({bench["ticker"]: 1.0}, prices, anchors)
+    # QQQ overlay — measured over the SAME window as the cores (QQQ's historical close at Gaia's
+    # inception → its spot now) so vs-QQQ is period-consistent. NB: USD reference vs GBP cores (rough,
+    # FX not stripped) — an indicative growth-tilt yardstick, not the primary all-world benchmark.
+    _qqq_entry = _hist_close("QQQ", inception) if inception else None
+    _qqq_now = _spot("QQQ")
+    qqq_ret = round((_qqq_now / _qqq_entry - 1) * 100, 3) if (_qqq_now and _qqq_entry) else None
 
     # LOCKED rebalancing + glidepath discipline (fail-loud if the lock is broken)
     rules = DISC.load_rules()
@@ -110,6 +133,7 @@ def main() -> int:
             "blended_ocf_pct": c["blended_ocf_pct"], "weights": c["weights"], "etfs": c["etfs"],
             "return_pct": ret, "n_priced": n,
             "vs_benchmark_pp": round(ret - bench_ret, 3) if (ret is not None and bench_ret is not None) else None,
+            "vs_qqq_pp": round(ret - qqq_ret, 3) if (ret is not None and qqq_ret is not None) else None,
             "drift_pp": DISC.drift_pp(c["weights"], actual),
             "needs_rebalance": DISC.needs_rebalance(c["weights"], actual, band),
         })
@@ -118,6 +142,7 @@ def main() -> int:
         "inception": inception, "days": days, "mode": "paper/simulated",
         "benchmark": {"ticker": bench["ticker"], "name": bench["name"],
                       "ocf_pct": bench["ocf_pct"], "return_pct": bench_ret},
+        "qqq": {"ticker": "QQQ", "name": "Nasdaq-100 (QQQ)", "return_pct": qqq_ret},
         "cores": pub_cores, "framing": fa["framing"],
         "discipline": {                                # LOCKED, pre-registered — generic rules only
             "locked": True, "lock_sha": rules["lock_sha"], "registered": rules["registered"],
