@@ -314,7 +314,14 @@ def olympus_lab_nav() -> str:
 
 
 def pantheon_roster_section() -> str:
-    """Pantheon roster card — each member with god name, function, status badge."""
+    """Pantheon roster card — each member with god name, function, status badge, and (for the
+    feed-backed members) its live return + vs-QQQ, refreshed client-side every 5 min."""
+    _PERF = {  # roster code → (live feed, return field, dom key)
+        "ATS":       ("ats_live.json",       "portfolio_return_pct",    "ats"),
+        "SCAI-II":   ("scai_live.json",      "portfolio_return_pct",    "scai"),
+        "Hermes v1": ("hermes_live.json",    "portfolio_return_pct",    "hermes"),
+        "Hermes v3": ("hermes_v3_live.json", "best_variant_return_pct", "h3"),
+    }
     rows_html = ""
     for m in PANTHEON_ROSTER:
         god    = m["god"]
@@ -334,10 +341,18 @@ def pantheon_roster_section() -> str:
             f'<span style="color:#8b949e;font-size:.73rem;font-style:italic">{note}</span>'
             if note else ""
         )
+        if code in _PERF:
+            _k = _PERF[code][2]
+            perf_cell = (f'<span id="roster-{_k}-ret">—</span>'
+                         f'<span style="color:#6b7280"> · </span>'
+                         f'<span id="roster-{_k}-qqq" title="return-since-entry vs QQQ">—</span>')
+        else:
+            perf_cell = '<span style="color:#484f58">—</span>'
         rows_html += f"""<tr>
 <td style="padding:.4rem .6rem">{god_cell}<br>{code_cell}</td>
 <td style="padding:.4rem .6rem;font-size:.8rem;color:#c9d1d9">{fn}{f"<br>{note_cell}" if note_cell else ""}</td>
 <td style="padding:.4rem .6rem;white-space:nowrap">{_status_badge(status)}</td>
+<td style="padding:.4rem .6rem;text-align:right;white-space:nowrap;font-size:.8rem">{perf_cell}</td>
 </tr>"""
 
     return f"""<section>
@@ -348,14 +363,34 @@ def pantheon_roster_section() -> str:
       <th style="text-align:left;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Member</th>
       <th style="text-align:left;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Function</th>
       <th style="text-align:left;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Status</th>
+      <th style="text-align:right;padding:.35rem .6rem;color:#8b949e;font-weight:500;border-bottom:1px solid #21262d">Return · vs QQQ</th>
     </tr></thead>
     <tbody>{rows_html}</tbody>
   </table>
   <p style="margin-top:.5rem;font-size:.72rem;color:#484f58">
     Active = running · Candidate = evidence accruing · Parked = below noise floor ·
-    Designed = not yet built
+    Designed = not yet built · paper/simulated · vs QQQ = return-since-entry minus QQQ over the same window
   </p>
 </div>
+<script>
+(function(){{
+  var INT=5*60*1000;
+  function f(v,pp){{if(v===null||v===undefined)return'—';return(v>=0?'+':'')+(+v).toFixed(1)+(pp?'pp':'%');}}
+  function col(v){{return (v===null||v===undefined)?'#8b949e':(v>=0?'#3fb950':'#f85149');}}
+  function set(id,v,pp){{var e=document.getElementById(id);if(!e)return;e.textContent=f(v,pp);e.style.color=col(v);}}
+  function load(feed,key,retField){{
+    fetch('data/'+feed+'?t='+Date.now()).then(function(r){{return r.ok?r.json():Promise.reject();}}).then(function(d){{
+      var ret=d[retField];
+      var vq=d.alpha_vs_qqq_pct;
+      if(vq===undefined||vq===null){{vq=(ret!=null&&d.qqq_return_pct!=null)?Math.round((ret-d.qqq_return_pct)*100)/100:null;}}
+      set('roster-'+key+'-ret',ret,false);
+      set('roster-'+key+'-qqq',vq,true);
+    }}).catch(function(){{}});
+  }}
+  function all(){{load('ats_live.json','ats','portfolio_return_pct');load('scai_live.json','scai','portfolio_return_pct');load('hermes_live.json','hermes','portfolio_return_pct');load('hermes_v3_live.json','h3','best_variant_return_pct');}}
+  all();setInterval(all,INT);
+}})();
+</script>
 </section>"""
 
 
