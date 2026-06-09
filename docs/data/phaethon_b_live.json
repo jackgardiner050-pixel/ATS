@@ -2,45 +2,63 @@
   "arm": "aggressive-B",
   "label": "Aggressive (B)",
   "mandate": "+10%/qtr, concentrated",
-  "n_positions": 4,
+  "n_positions": 7,
   "holdings": [
     {
       "ticker": "MU",
       "bought_at": 864.01,
-      "last": 864.01,
-      "weight_pct": 8.9
+      "last": 949.28,
+      "weight_pct": 15.0
     },
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 254.83,
-      "weight_pct": 7.5
+      "last": 250.67,
+      "weight_pct": 14.7
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 933.61,
-      "weight_pct": 7.1
+      "last": 933.85,
+      "weight_pct": 7.0
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 376.99,
-      "weight_pct": 6.8
+      "last": 401.93,
+      "weight_pct": 7.1
+    },
+    {
+      "ticker": "VRT",
+      "bought_at": 300.57,
+      "last": 300.57,
+      "weight_pct": 7.5
+    },
+    {
+      "ticker": "NOW",
+      "bought_at": 114.19,
+      "last": 114.19,
+      "weight_pct": 6.7
+    },
+    {
+      "ticker": "GOOGL",
+      "bought_at": 363.31,
+      "last": 363.31,
+      "weight_pct": 7.1
     }
   ],
-  "cash_pct": 69.7,
-  "active_return_pct": 0.0,
-  "vs_qqq_pp": 0.0,
-  "trend": "research-grade \u2014 need >=2 marks",
-  "n_marks": 1,
+  "cash_pct": 34.8,
+  "active_return_pct": 2.43,
+  "vs_qqq_pp": 0.87,
+  "trend": "IMPROVING vs QQQ",
+  "n_marks": 3,
   "halted": false,
-  "drawdown_pct": null,
+  "drawdown_pct": 0.0,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-08"
+  "as_of": "2026-06-09"
 }
