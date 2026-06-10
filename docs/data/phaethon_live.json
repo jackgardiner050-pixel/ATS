@@ -7,57 +7,57 @@
     {
       "ticker": "MU",
       "bought_at": 916.22,
-      "last": 935.89,
-      "weight_pct": 4.9
+      "last": 891.88,
+      "weight_pct": 4.8
     },
     {
       "ticker": "CEG",
       "bought_at": 257.48,
-      "last": 251.65,
-      "weight_pct": 4.9
+      "last": 242.3,
+      "weight_pct": 5.0
     },
     {
       "ticker": "ANET",
       "bought_at": 156.13,
-      "last": 152.16,
+      "last": 151.76,
       "weight_pct": 4.2
     },
     {
       "ticker": "GEV",
       "bought_at": 939.65,
-      "last": 920.15,
-      "weight_pct": 4.8
+      "last": 867.09,
+      "weight_pct": 4.6
     },
     {
       "ticker": "GOOGL",
       "bought_at": 368.64,
-      "last": 364.26,
+      "last": 356.38,
       "weight_pct": 2.3
     },
     {
       "ticker": "AMZN",
       "bought_at": 253.57,
-      "last": 244.19,
-      "weight_pct": 1.4
+      "last": 238.0,
+      "weight_pct": 1.3
     },
     {
       "ticker": "AVGO",
       "bought_at": 385.73,
-      "last": 392.16,
+      "last": 372.1,
       "weight_pct": 1.2
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 289.52,
-      "weight_pct": 1.2
+      "last": 280.98,
+      "weight_pct": 1.1
     }
   ],
-  "cash_pct": 75.1,
-  "active_return_pct": -1.29,
-  "vs_qqq_pp": 0.91,
+  "cash_pct": 75.6,
+  "active_return_pct": -4.81,
+  "vs_qqq_pp": -0.65,
   "trend": "DEGRADING vs QQQ",
-  "n_marks": 12,
+  "n_marks": 13,
   "halted": null,
   "drawdown_pct": null,
   "kill_switch": "n/a (disciplined arm)",
@@ -66,5 +66,5 @@
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-09"
+  "as_of": "2026-06-10"
 }
