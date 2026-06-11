@@ -7,58 +7,58 @@
     {
       "ticker": "MU",
       "bought_at": 864.01,
-      "last": 935.89,
-      "weight_pct": 15.1
+      "last": 891.88,
+      "weight_pct": 14.7
     },
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 251.65,
-      "weight_pct": 15.0
+      "last": 242.3,
+      "weight_pct": 14.8
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 920.15,
-      "weight_pct": 7.1
+      "last": 867.09,
+      "weight_pct": 6.8
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 355.94,
-      "weight_pct": 6.4
+      "last": 354.77,
+      "weight_pct": 6.5
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 289.52,
-      "weight_pct": 7.3
+      "last": 280.98,
+      "weight_pct": 7.2
     },
     {
       "ticker": "NOW",
       "bought_at": 114.19,
-      "last": 106.97,
-      "weight_pct": 6.4
+      "last": 106.06,
+      "weight_pct": 6.5
     },
     {
       "ticker": "GOOGL",
       "bought_at": 363.31,
-      "last": 364.26,
+      "last": 356.38,
       "weight_pct": 7.2
     }
   ],
-  "cash_pct": 35.5,
-  "active_return_pct": -0.32,
-  "vs_qqq_pp": -0.71,
+  "cash_pct": 36.2,
+  "active_return_pct": -3.6,
+  "vs_qqq_pp": -1.99,
   "trend": "DEGRADING vs QQQ",
-  "n_marks": 4,
+  "n_marks": 5,
   "halted": false,
-  "drawdown_pct": -1.75,
+  "drawdown_pct": -3.84,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-10"
+  "as_of": "2026-06-11"
 }
