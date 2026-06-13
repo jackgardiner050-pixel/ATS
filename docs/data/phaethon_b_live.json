@@ -7,58 +7,58 @@
     {
       "ticker": "MU",
       "bought_at": 864.01,
-      "last": 995.87,
-      "weight_pct": 15.0
+      "last": 981.61,
+      "weight_pct": 14.6
     },
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 246.71,
-      "weight_pct": 14.7
+      "last": 253.76,
+      "weight_pct": 14.9
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 906.79,
-      "weight_pct": 6.9
+      "last": 940.66,
+      "weight_pct": 7.1
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 363.58,
-      "weight_pct": 6.5
+      "last": 385.03,
+      "weight_pct": 6.8
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 297.88,
+      "last": 302.87,
       "weight_pct": 7.5
     },
     {
       "ticker": "NOW",
       "bought_at": 114.19,
-      "last": 103.08,
-      "weight_pct": 6.2
+      "last": 102.15,
+      "weight_pct": 6.0
     },
     {
       "ticker": "GOOGL",
       "bought_at": 363.31,
-      "last": 357.77,
-      "weight_pct": 7.1
+      "last": 359.68,
+      "weight_pct": 7.0
     }
   ],
-  "cash_pct": 36.2,
-  "active_return_pct": 0.34,
-  "vs_qqq_pp": -1.37,
+  "cash_pct": 35.9,
+  "active_return_pct": 1.85,
+  "vs_qqq_pp": -0.46,
   "trend": "IMPROVING vs QQQ",
-  "n_marks": 6,
+  "n_marks": 7,
   "halted": false,
-  "drawdown_pct": -1.22,
+  "drawdown_pct": -0.28,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-12"
+  "as_of": "2026-06-13"
 }
