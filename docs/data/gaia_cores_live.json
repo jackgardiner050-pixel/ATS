@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-06-17T14:09:28Z",
+  "generated_at_utc": "2026-06-17T14:40:58Z",
   "inception": "2026-06-05",
   "days": 12,
   "mode": "paper/simulated",
@@ -7,12 +7,12 @@
     "ticker": "VWRP",
     "name": "Vanguard FTSE All-World UCITS ETF (Acc)",
     "ocf_pct": 0.22,
-    "return_pct": 0.966
+    "return_pct": 1.207
   },
   "qqq": {
     "ticker": "QQQ",
     "name": "Nasdaq-100 (QQQ)",
-    "return_pct": 3.781
+    "return_pct": 3.835
   },
   "cores": [
     {
@@ -30,14 +30,14 @@
         "AGBP": 0.05,
         "SGLN": 0.05
       },
-      "return_pct": 0.751,
+      "return_pct": 0.978,
       "n_priced": 3,
-      "vs_benchmark_pp": -0.215,
-      "vs_qqq_pp": -3.03,
+      "vs_benchmark_pp": -0.229,
+      "vs_qqq_pp": -2.857,
       "drift_pp": {
         "global_equity": 0.17,
-        "global_bonds": -0.01,
-        "real_asset": -0.16
+        "global_bonds": -0.02,
+        "real_asset": -0.15
       },
       "needs_rebalance": false
     },
@@ -56,14 +56,14 @@
         "AGBP": 0.15,
         "SGLN": 0.05
       },
-      "return_pct": 0.712,
+      "return_pct": 0.916,
       "n_priced": 3,
-      "vs_benchmark_pp": -0.254,
-      "vs_qqq_pp": -3.069,
+      "vs_benchmark_pp": -0.291,
+      "vs_qqq_pp": -2.919,
       "drift_pp": {
-        "global_equity": 0.18,
-        "global_bonds": -0.02,
-        "real_asset": -0.15
+        "global_equity": 0.2,
+        "global_bonds": -0.06,
+        "real_asset": -0.14
       },
       "needs_rebalance": false
     },
@@ -82,14 +82,14 @@
         "AGBP": 0.25,
         "SGLN": 0.05
       },
-      "return_pct": 0.674,
+      "return_pct": 0.853,
       "n_priced": 3,
-      "vs_benchmark_pp": -0.292,
-      "vs_qqq_pp": -3.107,
+      "vs_benchmark_pp": -0.354,
+      "vs_qqq_pp": -2.982,
       "drift_pp": {
-        "global_equity": 0.18,
-        "global_bonds": -0.03,
-        "real_asset": -0.15
+        "global_equity": 0.22,
+        "global_bonds": -0.08,
+        "real_asset": -0.14
       },
       "needs_rebalance": false
     }
