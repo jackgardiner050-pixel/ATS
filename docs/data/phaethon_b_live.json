@@ -7,64 +7,64 @@
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 262.35,
-      "weight_pct": 14.9
+      "last": 268.0,
+      "weight_pct": 15.0
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 979.07,
+      "last": 982.35,
       "weight_pct": 7.2
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 413.84,
-      "weight_pct": 7.1
+      "last": 382.81,
+      "weight_pct": 6.6
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 311.93,
-      "weight_pct": 7.5
+      "last": 299.6,
+      "weight_pct": 7.2
     },
     {
       "ticker": "NOW",
       "bought_at": 114.19,
-      "last": 104.15,
-      "weight_pct": 6.0
+      "last": 101.33,
+      "weight_pct": 5.8
     },
     {
       "ticker": "GOOGL",
       "bought_at": 363.31,
-      "last": 369.35,
-      "weight_pct": 13.6
+      "last": 373.25,
+      "weight_pct": 13.8
     },
     {
       "ticker": "ANET",
       "bought_at": 169.09,
-      "last": 169.09,
+      "last": 168.01,
       "weight_pct": 8.4
     },
     {
       "ticker": "VST",
       "bought_at": 153.52,
-      "last": 153.52,
-      "weight_pct": 8.1
+      "last": 158.61,
+      "weight_pct": 8.3
     }
   ],
-  "cash_pct": 27.2,
-  "active_return_pct": 1.84,
-  "vs_qqq_pp": -3.68,
+  "cash_pct": 27.6,
+  "active_return_pct": 1.42,
+  "vs_qqq_pp": -2.1,
   "trend": "IMPROVING vs QQQ",
-  "n_marks": 9,
+  "n_marks": 10,
   "halted": false,
-  "drawdown_pct": 0.0,
+  "drawdown_pct": -0.3,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-16"
+  "as_of": "2026-06-17"
 }
