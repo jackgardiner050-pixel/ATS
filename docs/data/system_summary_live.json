@@ -1,6 +1,6 @@
 {
-  "fetched_at_utc": "2026-06-17T21:08:23Z",
-  "fetched_at_uk": "2026-06-17 22:08 BST",
+  "fetched_at_utc": "2026-06-17T22:09:07Z",
+  "fetched_at_uk": "2026-06-17 23:09 BST",
   "market_status": "after_hours",
   "market_note": "US after-hours",
   "systems": {
@@ -26,8 +26,8 @@
     },
     "hermes_v3": {
       "best_variant_id": "fixed_profit_take_10pct",
-      "best_variant_return_pct": -6.84,
-      "worst_variant_return_pct": -8.86,
+      "best_variant_return_pct": -6.49,
+      "worst_variant_return_pct": -8.48,
       "n_variants": 11
     }
   }
