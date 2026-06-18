@@ -1,13 +1,13 @@
 {
-  "fetched_at_utc": "2026-06-18T20:17:11Z",
-  "fetched_at_uk": "2026-06-18 21:17 BST",
+  "fetched_at_utc": "2026-06-18T21:04:42Z",
+  "fetched_at_uk": "2026-06-18 22:04 BST",
   "market_status": "after_hours",
   "market_note": "US after-hours",
   "systems": {
     "ats": {
-      "portfolio_return_pct": 4.274,
-      "portfolio_today_pct": -0.748,
-      "alpha_vs_spy_pct": 4.126,
+      "portfolio_return_pct": 4.273,
+      "portfolio_today_pct": -0.749,
+      "alpha_vs_spy_pct": 4.125,
       "n_positions": 12
     },
     "scai": {
