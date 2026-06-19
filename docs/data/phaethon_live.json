@@ -74,8 +74,8 @@
   "cash_pct": 70.7,
   "active_return_pct": 9.6,
   "vs_qqq_pp": 7.27,
-  "trend": "IMPROVING vs QQQ",
-  "n_marks": 20,
+  "trend": "FLAT vs QQQ",
+  "n_marks": 21,
   "halted": null,
   "drawdown_pct": null,
   "kill_switch": "n/a (disciplined arm)",
@@ -84,5 +84,5 @@
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-18"
+  "as_of": "2026-06-19"
 }
