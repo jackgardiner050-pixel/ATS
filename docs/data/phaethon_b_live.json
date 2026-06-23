@@ -2,56 +2,86 @@
   "arm": "aggressive-B",
   "label": "Aggressive (B)",
   "mandate": "+10%/qtr, concentrated",
-  "n_positions": 7,
+  "n_positions": 12,
   "holdings": [
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 274.06,
+      "last": 275.53,
       "weight_pct": 15.0
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 1109.73,
+      "last": 1127.59,
       "weight_pct": 8.0
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 389.57,
-      "weight_pct": 6.6
+      "last": 425.48,
+      "weight_pct": 7.1
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 333.05,
-      "weight_pct": 7.9
+      "last": 357.96,
+      "weight_pct": 8.4
     },
     {
       "ticker": "GOOGL",
       "bought_at": 363.31,
-      "last": 368.03,
-      "weight_pct": 13.4
+      "last": 349.68,
+      "weight_pct": 12.6
     },
     {
       "ticker": "ANET",
       "bought_at": 169.09,
-      "last": 169.67,
-      "weight_pct": 8.3
+      "last": 174.56,
+      "weight_pct": 8.4
     },
     {
       "ticker": "VST",
       "bought_at": 153.52,
-      "last": 163.75,
-      "weight_pct": 8.4
+      "last": 167.26,
+      "weight_pct": 8.5
+    },
+    {
+      "ticker": "TSM",
+      "bought_at": 467.67,
+      "last": 467.67,
+      "weight_pct": 8.8
+    },
+    {
+      "ticker": "MU",
+      "bought_at": 1211.38,
+      "last": 1211.38,
+      "weight_pct": 1.0
+    },
+    {
+      "ticker": "AMZN",
+      "bought_at": 232.79,
+      "last": 232.79,
+      "weight_pct": 9.5
+    },
+    {
+      "ticker": "MSFT",
+      "bought_at": 367.34,
+      "last": 367.34,
+      "weight_pct": 8.1
+    },
+    {
+      "ticker": "PLTR",
+      "bought_at": 119.5,
+      "last": 119.5,
+      "weight_pct": 5.6
     }
   ],
-  "cash_pct": 32.4,
-  "active_return_pct": 6.34,
-  "vs_qqq_pp": 1.3,
-  "trend": "FLAT vs QQQ",
-  "n_marks": 13,
+  "cash_pct": -1.1,
+  "active_return_pct": 5.35,
+  "vs_qqq_pp": 0.69,
+  "trend": "IMPROVING vs QQQ",
+  "n_marks": 15,
   "halted": false,
   "drawdown_pct": 0.0,
   "kill_switch": "-25% peak-to-trough",
@@ -60,5 +90,5 @@
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-22"
+  "as_of": "2026-06-23"
 }
