@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-06-24T15:27:24Z",
+  "generated_at_utc": "2026-06-24T15:42:37Z",
   "inception": "2026-06-05",
   "days": 19,
   "mode": "paper/simulated",
@@ -7,12 +7,12 @@
     "ticker": "VWRP",
     "name": "Vanguard FTSE All-World UCITS ETF (Acc)",
     "ocf_pct": 0.22,
-    "return_pct": 0.895
+    "return_pct": 0.866
   },
   "qqq": {
     "ticker": "QQQ",
     "name": "Nasdaq-100 (QQQ)",
-    "return_pct": 1.75
+    "return_pct": 1.604
   },
   "cores": [
     {
@@ -30,12 +30,12 @@
         "AGBP": 0.05,
         "SGLN": 0.05
       },
-      "return_pct": 0.229,
+      "return_pct": 0.311,
       "n_priced": 3,
-      "vs_benchmark_pp": -0.666,
-      "vs_qqq_pp": -1.521,
+      "vs_benchmark_pp": -0.555,
+      "vs_qqq_pp": -1.293,
       "drift_pp": {
-        "global_equity": 0.4,
+        "global_equity": 0.41,
         "global_bonds": 0.02,
         "real_asset": -0.43
       },
@@ -56,13 +56,13 @@
         "AGBP": 0.15,
         "SGLN": 0.05
       },
-      "return_pct": 0.23,
+      "return_pct": 0.304,
       "n_priced": 3,
-      "vs_benchmark_pp": -0.665,
-      "vs_qqq_pp": -1.52,
+      "vs_benchmark_pp": -0.562,
+      "vs_qqq_pp": -1.3,
       "drift_pp": {
-        "global_equity": 0.36,
-        "global_bonds": 0.07,
+        "global_equity": 0.37,
+        "global_bonds": 0.06,
         "real_asset": -0.43
       },
       "needs_rebalance": false
@@ -82,13 +82,13 @@
         "AGBP": 0.25,
         "SGLN": 0.05
       },
-      "return_pct": 0.231,
+      "return_pct": 0.298,
       "n_priced": 3,
-      "vs_benchmark_pp": -0.664,
-      "vs_qqq_pp": -1.519,
+      "vs_benchmark_pp": -0.568,
+      "vs_qqq_pp": -1.306,
       "drift_pp": {
-        "global_equity": 0.31,
-        "global_bonds": 0.11,
+        "global_equity": 0.33,
+        "global_bonds": 0.1,
         "real_asset": -0.43
       },
       "needs_rebalance": false
