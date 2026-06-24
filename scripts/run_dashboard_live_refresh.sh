@@ -77,6 +77,13 @@ $PYTHON "$AGENT/scripts/publish_gaia.py" || true
 
 # 2. Stage changed data files (phaethon_live.json deliberately excluded — owned by the droplet)
 cd "$AGENT"
+
+# Clear a stale git index.lock left by a crashed run — ONLY when no git process is active (safe).
+if [ -f "$AGENT/.git/index.lock" ] && ! pgrep -x git >/dev/null 2>&1; then
+    echo "[$TS] clearing stale .git/index.lock (no git process running)"
+    rm -f "$AGENT/.git/index.lock"
+fi
+
 git add docs/data/ats_live.json docs/data/scai_live.json \
         docs/data/hermes_live.json docs/data/hermes_v3_live.json \
         docs/data/system_summary_live.json docs/data/growth_arms_live.json \
@@ -91,8 +98,20 @@ else
     git commit -m "live dashboard refresh — $COMMIT_TS" \
                --author="ATS Live Refresh <noreply@ats>" \
                -q
-    git push -q
-    echo "[$TS] committed and pushed"
+    # The droplet's Phaethon panel publisher pushes to this same branch (daily 22:45 UTC), so integrate
+    # its commits BEFORE pushing or our push is rejected non-fast-forward (the 06-09 stall). Our files are
+    # disjoint from the droplet's (we never touch phaethon_live.json), so this rebase is conflict-free;
+    # --autostash protects any untracked-ledger churn, and we abort+log if a conflict ever appears.
+    if git pull --rebase --autostash -q origin main; then
+        if git push -q; then
+            echo "[$TS] committed, rebased on origin/main, and pushed"
+        else
+            echo "[$TS] WARN: push failed after rebase (network/remote?) — commit stays local, retry next run"
+        fi
+    else
+        echo "[$TS] WARN: could not rebase on origin/main — aborting, commit stays local for next run"
+        git rebase --abort 2>/dev/null || true
+    fi
 fi
 
 echo "[$TS] live-refresh done"
