@@ -7,93 +7,93 @@
     {
       "ticker": "MU",
       "bought_at": 916.22,
-      "last": 1048.51,
+      "last": 1213.56,
       "weight_pct": 5.0
     },
     {
       "ticker": "CEG",
       "bought_at": 257.48,
-      "last": 267.97,
+      "last": 268.69,
       "weight_pct": 5.0
     },
     {
       "ticker": "ANET",
       "bought_at": 156.13,
-      "last": 161.74,
-      "weight_pct": 4.8
+      "last": 165.45,
+      "weight_pct": 4.9
     },
     {
       "ticker": "GEV",
       "bought_at": 939.65,
-      "last": 1057.65,
-      "weight_pct": 4.8
+      "last": 1085.47,
+      "weight_pct": 4.9
     },
     {
       "ticker": "GOOGL",
       "bought_at": 368.64,
-      "last": 345.29,
+      "last": 343.71,
       "weight_pct": 2.1
     },
     {
       "ticker": "AMZN",
       "bought_at": 253.57,
-      "last": 234.27,
-      "weight_pct": 2.4
+      "last": 227.01,
+      "weight_pct": 2.3
     },
     {
       "ticker": "AVGO",
       "bought_at": 385.73,
-      "last": 382.07,
-      "weight_pct": 1.2
+      "last": 378.91,
+      "weight_pct": 1.1
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 316.43,
-      "weight_pct": 1.2
+      "last": 325.57,
+      "weight_pct": 1.3
     },
     {
       "ticker": "VST",
       "bought_at": 153.52,
-      "last": 162.87,
+      "last": 167.77,
       "weight_pct": 1.3
     },
     {
       "ticker": "LLY",
       "bought_at": 1129.35,
-      "last": 1117.26,
+      "last": 1127.69,
       "weight_pct": 1.1
     },
     {
       "ticker": "COHR",
       "bought_at": 413.84,
-      "last": 392.5,
-      "weight_pct": 0.9
+      "last": 407.25,
+      "weight_pct": 1.0
     },
     {
       "ticker": "TSM",
       "bought_at": 467.67,
-      "last": 440.83,
+      "last": 434.99,
       "weight_pct": 1.6
     },
     {
       "ticker": "MSFT",
       "bought_at": 367.34,
-      "last": 365.46,
+      "last": 352.83,
       "weight_pct": 1.3
     },
     {
       "ticker": "ONTO",
       "bought_at": 347.87,
-      "last": 322.24,
-      "weight_pct": 0.9
+      "last": 344.24,
+      "weight_pct": 1.0
     }
   ],
-  "cash_pct": 66.2,
-  "active_return_pct": 3.27,
-  "vs_qqq_pp": 5.09,
+  "cash_pct": 66.3,
+  "active_return_pct": 6.07,
+  "vs_qqq_pp": 7.09,
   "trend": "IMPROVING vs QQQ",
-  "n_marks": 25,
+  "n_marks": 26,
   "halted": null,
   "drawdown_pct": null,
   "kill_switch": "n/a (disciplined arm)",
@@ -102,5 +102,5 @@
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-24"
+  "as_of": "2026-06-25"
 }
