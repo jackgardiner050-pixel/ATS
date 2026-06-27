@@ -7,88 +7,88 @@
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 268.69,
+      "last": 264.02,
       "weight_pct": 14.9
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 1085.47,
-      "weight_pct": 8.1
+      "last": 1045.17,
+      "weight_pct": 7.9
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 407.25,
-      "weight_pct": 7.1
+      "last": 380.56,
+      "weight_pct": 6.7
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 325.57,
-      "weight_pct": 7.9
+      "last": 303.95,
+      "weight_pct": 7.5
     },
     {
       "ticker": "GOOGL",
       "bought_at": 363.31,
-      "last": 343.71,
-      "weight_pct": 12.9
+      "last": 337.39,
+      "weight_pct": 12.8
     },
     {
       "ticker": "ANET",
       "bought_at": 169.09,
-      "last": 165.45,
-      "weight_pct": 8.3
+      "last": 157.6,
+      "weight_pct": 8.1
     },
     {
       "ticker": "VST",
       "bought_at": 153.52,
-      "last": 167.77,
-      "weight_pct": 8.9
+      "last": 163.49,
+      "weight_pct": 8.8
     },
     {
       "ticker": "TSM",
       "bought_at": 467.67,
-      "last": 434.99,
+      "last": 432.35,
       "weight_pct": 8.6
     },
     {
       "ticker": "MU",
       "bought_at": 1211.38,
-      "last": 1213.56,
+      "last": 1132.33,
       "weight_pct": 1.0
     },
     {
       "ticker": "AMZN",
       "bought_at": 232.79,
-      "last": 227.01,
-      "weight_pct": 9.7
+      "last": 232.69,
+      "weight_pct": 10.1
     },
     {
       "ticker": "MSFT",
       "bought_at": 367.34,
-      "last": 352.83,
-      "weight_pct": 8.1
+      "last": 372.97,
+      "weight_pct": 8.7
     },
     {
       "ticker": "PLTR",
       "bought_at": 119.5,
-      "last": 107.27,
-      "weight_pct": 5.3
+      "last": 112.93,
+      "weight_pct": 5.6
     }
   ],
   "cash_pct": -0.8,
-  "active_return_pct": 1.06,
-  "vs_qqq_pp": -0.55,
+  "active_return_pct": -0.5,
+  "vs_qqq_pp": -0.71,
   "trend": "DEGRADING vs QQQ",
-  "n_marks": 18,
+  "n_marks": 19,
   "halted": false,
-  "drawdown_pct": -4.12,
+  "drawdown_pct": -5.6,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-06-26"
+  "as_of": "2026-06-27"
 }
