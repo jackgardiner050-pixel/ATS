@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-06-25T16:49:24Z",
+  "generated_at_utc": "2026-07-01T13:14:49Z",
   "benchmark_primary": "QQQ",
   "benchmark_secondary": "SPY",
-  "qqq_spot": null,
-  "spy_spot": null,
+  "qqq_spot": 736.4,
+  "spy_spot": 746.77,
   "scorecard_target": 30,
   "mode": "paper/simulated",
   "honest_note": "research-grade \u00b7 scorecard 0/30 resolved \u00b7 not statistically meaningful. The three arms are AI-infrastructure-concentrated and highly correlated \u2014 not independent strategies. QQQ is the real test; beating the S&P with an AI-infra book in an AI bull is expected, not edge.",
@@ -20,29 +20,29 @@
         "VRT"
       ],
       "inception": "2026-06-04",
-      "days_held": 21,
-      "active_return_pct": 0.0,
-      "qqq_return_pct": null,
-      "spy_return_pct": null,
-      "vs_qqq_pp": null,
-      "vs_spy_pp": null,
+      "days_held": 27,
+      "active_return_pct": 10.1,
+      "qqq_return_pct": -0.09,
+      "spy_return_pct": -1.11,
+      "vs_qqq_pp": 10.19,
+      "vs_spy_pp": 11.21,
       "n_priced": 4,
       "positions": [
         {
           "ticker": "TSM",
-          "return_pct": 0.0
+          "return_pct": 8.26
         },
         {
           "ticker": "ETN",
-          "return_pct": 0.0
+          "return_pct": 3.3
         },
         {
           "ticker": "GEV",
-          "return_pct": 0.0
+          "return_pct": 24.35
         },
         {
           "ticker": "VRT",
-          "return_pct": 0.0
+          "return_pct": 6.92
         }
       ],
       "n_resolved": 0,
@@ -60,29 +60,29 @@
         "TSM"
       ],
       "inception": "2026-06-04",
-      "days_held": 21,
-      "active_return_pct": 0.0,
-      "qqq_return_pct": null,
-      "spy_return_pct": null,
-      "vs_qqq_pp": null,
-      "vs_spy_pp": null,
+      "days_held": 27,
+      "active_return_pct": 11.92,
+      "qqq_return_pct": -0.09,
+      "spy_return_pct": -1.11,
+      "vs_qqq_pp": 12.01,
+      "vs_spy_pp": 13.03,
       "n_priced": 4,
       "positions": [
         {
           "ticker": "TSM",
-          "return_pct": 0.0
+          "return_pct": 8.08
         },
         {
           "ticker": "ANET",
-          "return_pct": 0.0
+          "return_pct": 4.28
         },
         {
           "ticker": "ONTO",
-          "return_pct": 0.0
+          "return_pct": 39.63
         },
         {
           "ticker": "ETN",
-          "return_pct": 0.0
+          "return_pct": 3.08
         }
       ],
       "n_resolved": 0,
@@ -99,25 +99,25 @@
         "TSM"
       ],
       "inception": "2026-06-04",
-      "days_held": 21,
-      "active_return_pct": 0.0,
-      "qqq_return_pct": null,
-      "spy_return_pct": null,
-      "vs_qqq_pp": null,
-      "vs_spy_pp": null,
+      "days_held": 27,
+      "active_return_pct": 13.61,
+      "qqq_return_pct": -0.09,
+      "spy_return_pct": -1.11,
+      "vs_qqq_pp": 13.7,
+      "vs_spy_pp": 14.72,
       "n_priced": 3,
       "positions": [
         {
           "ticker": "TSM",
-          "return_pct": 0.0
+          "return_pct": 7.69
         },
         {
           "ticker": "ANET",
-          "return_pct": 0.0
+          "return_pct": 4.28
         },
         {
           "ticker": "ONTO",
-          "return_pct": 0.0
+          "return_pct": 39.45
         }
       ],
       "n_resolved": 0,
