@@ -7,118 +7,118 @@
     {
       "ticker": "CEG",
       "bought_at": 254.83,
-      "last": 248.37,
-      "weight_pct": 13.5
+      "last": 236.5,
+      "weight_pct": 13.2
     },
     {
       "ticker": "GEV",
       "bought_at": 933.61,
-      "last": 1174.86,
-      "weight_pct": 8.6
+      "last": 1134.35,
+      "weight_pct": 8.5
     },
     {
       "ticker": "COHR",
       "bought_at": 376.99,
-      "last": 394.47,
-      "weight_pct": 6.8
+      "last": 368.65,
+      "weight_pct": 6.5
     },
     {
       "ticker": "VRT",
       "bought_at": 300.57,
-      "last": 334.82,
-      "weight_pct": 8.0
+      "last": 311.42,
+      "weight_pct": 7.6
     },
     {
       "ticker": "GOOGL",
       "bought_at": 363.31,
-      "last": 357.37,
-      "weight_pct": 13.1
+      "last": 361.21,
+      "weight_pct": 13.6
     },
     {
       "ticker": "ANET",
       "bought_at": 169.09,
-      "last": 169.88,
-      "weight_pct": 8.4
+      "last": 166.62,
+      "weight_pct": 8.5
     },
     {
       "ticker": "VST",
       "bought_at": 153.52,
-      "last": 158.63,
-      "weight_pct": 8.3
+      "last": 153.16,
+      "weight_pct": 8.2
     },
     {
       "ticker": "TSM",
       "bought_at": 467.67,
-      "last": 477.57,
-      "weight_pct": 9.2
+      "last": 444.23,
+      "weight_pct": 8.8
     },
     {
       "ticker": "MU",
       "bought_at": 1211.38,
-      "last": 1154.29,
-      "weight_pct": 1.0
+      "last": 1032.28,
+      "weight_pct": 0.9
     },
     {
       "ticker": "AMZN",
       "bought_at": 232.79,
-      "last": 238.34,
-      "weight_pct": 10.0
+      "last": 241.7,
+      "weight_pct": 10.4
     },
     {
       "ticker": "MSFT",
       "bought_at": 367.34,
-      "last": 373.02,
-      "weight_pct": 8.4
+      "last": 384.28,
+      "weight_pct": 8.9
     },
     {
       "ticker": "PLTR",
       "bought_at": 119.5,
-      "last": 116.67,
-      "weight_pct": 5.6
+      "last": 125.73,
+      "weight_pct": 6.2
     },
     {
       "ticker": "FSLR",
       "bought_at": 232.8,
-      "last": 235.96,
-      "weight_pct": 8.7
+      "last": 232.08,
+      "weight_pct": 8.8
     },
     {
       "ticker": "ENPH",
       "bought_at": 48.34,
-      "last": 49.24,
-      "weight_pct": 6.7
+      "last": 46.84,
+      "weight_pct": 6.5
     },
     {
       "ticker": "REGN",
       "bought_at": 631.81,
-      "last": 623.54,
-      "weight_pct": 7.1
+      "last": 624.72,
+      "weight_pct": 7.3
     },
     {
       "ticker": "JPM",
       "bought_at": 329.39,
-      "last": 327.33,
-      "weight_pct": 6.5
+      "last": 334.07,
+      "weight_pct": 6.8
     },
     {
       "ticker": "ISRG",
       "bought_at": 405.97,
-      "last": 397.68,
-      "weight_pct": 6.7
+      "last": 402.38,
+      "weight_pct": 7.0
     }
   ],
-  "cash_pct": -36.6,
-  "active_return_pct": 2.2,
-  "vs_qqq_pp": -2.25,
+  "cash_pct": -37.5,
+  "active_return_pct": 0.4,
+  "vs_qqq_pp": -2.45,
   "trend": "DEGRADING vs QQQ",
-  "n_marks": 22,
+  "n_marks": 23,
   "halted": false,
-  "drawdown_pct": -2.31,
+  "drawdown_pct": -4.66,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "as_of": "2026-07-01"
+  "as_of": "2026-07-02"
 }
