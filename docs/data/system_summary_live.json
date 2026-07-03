@@ -1,8 +1,8 @@
 {
-  "fetched_at_utc": "2026-07-02T20:31:28Z",
-  "fetched_at_uk": "2026-07-02 21:31 BST",
-  "market_status": "after_hours",
-  "market_note": "US after-hours",
+  "fetched_at_utc": "2026-07-03T16:57:28Z",
+  "fetched_at_uk": "2026-07-03 17:57 BST",
+  "market_status": "open",
+  "market_note": "US market open",
   "systems": {
     "ats": {
       "portfolio_return_pct": 3.218,
@@ -25,9 +25,9 @@
       "n_baskets": 1
     },
     "hermes_v3": {
-      "best_variant_id": "baseline_current_governance",
-      "best_variant_return_pct": -8.68,
-      "worst_variant_return_pct": -10.82,
+      "best_variant_id": "buy_and_hold_structural",
+      "best_variant_return_pct": -9.98,
+      "worst_variant_return_pct": -12.1,
       "n_variants": 11
     }
   }
