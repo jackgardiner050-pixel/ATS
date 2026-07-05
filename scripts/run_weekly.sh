@@ -44,6 +44,11 @@ log "Step 0: check_universe_liveness.py"
 python3 scripts/check_universe_liveness.py 2>&1 | tee -a "${LOGFILE}" || \
   log "WARNING: liveness check exited non-zero — continuing (warn-only)"
 
+# ── 0b. Extraction audit (warn-only, non-blocking; alerts on SEV_HIGH) ────────
+log "Step 0b: extraction_audit.py"
+python3 scripts/extraction_audit.py 2>&1 | tee -a "${LOGFILE}" || \
+  log "WARNING: extraction_audit found SEV_HIGH (exit nonzero) — continuing (non-blocking)"
+
 # ── 1. Universe screener ──────────────────────────────────────────────────────
 log "Step 1: run_universe.py"
 python3 scripts/run_universe.py 2>&1 | tee -a "${LOGFILE}"
