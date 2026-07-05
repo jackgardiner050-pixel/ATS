@@ -113,6 +113,39 @@ def test_swingbot_and_agent_are_ringfenced():
     assert not offenders, "ringfence breach:\n" + "\n".join(offenders)
 
 
+# ─── 2b. Phaethon (LLM idea-generator) firewall ──────────────────────────────
+
+# Live P&L / fills artifacts an LLM agent must never see (NO_LIVE_PNL_LEARNING).
+LIVE_PNL_ARTIFACTS = ["fills.jsonl", "data/live/", "realized_pnl", "live_pnl", "book.json"]
+
+
+def test_phaethon_does_not_import_engine_or_signals():
+    """src/phaethon must not reach into the rating engine or signals (isolation)."""
+    offenders = []
+    for path in _py_files("src/phaethon"):
+        for mod in _imported_names(path):
+            seg = mod.split(".")
+            if seg[:2] in (["src", "engine"], ["src", "signals"]):
+                offenders.append(f"{path.relative_to(ROOT)} → {mod}")
+    assert not offenders, "phaethon imports engine/signals:\n" + "\n".join(offenders)
+
+
+def test_phaethon_no_live_pnl_read_in_prompt_paths():
+    """CRITICAL NO_LIVE_PNL_LEARNING firewall: no code under src/phaethon reads a live
+    P&L / fills artifact. The Phaethon generator is an LLM agent — if a live-outcome file
+    reached any prompt-construction path it would learn from realized P&L. src/phaethon
+    only renders already-computed *public* scorecard state; it must never open live P&L.
+    (Note: book.json here is the trader's holdings-state input read by the frozen render;
+    it is the public book snapshot, but we still forbid live *fills/pnl* artifacts.)"""
+    offenders = []
+    for path in _py_files("src/phaethon"):
+        text = path.read_text()
+        for token in ("fills.jsonl", "data/live/", "realized_pnl", "live_pnl", "/pnl"):
+            if token in text:
+                offenders.append(f"{path.relative_to(ROOT)} references {token}")
+    assert not offenders, "phaethon touches live P&L artifacts:\n" + "\n".join(offenders)
+
+
 # ─── 3. deploy.sh trading-droplet guards ─────────────────────────────────────
 
 def test_deploy_sh_has_both_trading_guards():

@@ -17,6 +17,7 @@
 | **Phobos** | volatility / variance premium (new) | God of fear — the VIX is literally the "fear gauge." (Alt: Poseidon, storm/turbulence, if naming the chaos over the fear.) |
 | **Hades** | crash detection / de-risk | Ruler of the underworld; presides over the downside everyone else pretends won't come. See `hades_design_note.md`. |
 | **Kairos** | short-horizon event / earnings reaction (Mercury) | God of the fleeting opportune moment — seize it instantly or it's gone; the earnings pop at the open. Renaming kills the Hermes/Mercury duplication (same god). Currently parked (~null in large caps). |
+| **Phaethon** | isolated forward-only LLM idea-generation experiment — **status: ACTIVE (paper, two arms A/B)**; routes through **Hermes** for (paper) execution per `phaethon_design_note.md`. Under governance since 2026-07-05 (render + leverage/micro-cap/max-position checks in `src/phaethon/`). | Son of Helios who insisted on driving the sun-chariot *himself*, couldn't control it, and was struck down by **Zeus** — a self-directing generator reined in by the council/governance. The myth encodes the prior: over-reach → fall. |
 
 ## Layers (machinery, not viewpoints)
 
