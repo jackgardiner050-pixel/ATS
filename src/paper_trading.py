@@ -13,6 +13,7 @@ Storage:
 from __future__ import annotations
 
 import json
+import logging
 import math
 from datetime import date
 from pathlib import Path
@@ -21,6 +22,8 @@ from typing import Optional
 import yaml
 
 from src.io_utils import append_jsonl, atomic_write_text
+
+logger = logging.getLogger(__name__)
 
 POSITIONS_PATH = Path(__file__).parent.parent / "data" / "paper_positions.yaml"
 TRADES_PATH    = Path(__file__).parent.parent / "data" / "paper_trades.jsonl"
@@ -168,17 +171,85 @@ def process_screener_results(
     return positions, closed_trades, opened, closed
 
 
+# ─── Schema validation (lightweight — plain functions, no deps) ──────────────
+
+_NUMBER = (int, float)
+
+# key -> accepted python type(s). Required keys only; extra keys are allowed.
+_POSITION_SCHEMA: dict[str, object] = {
+    "ticker": str,
+    "entry_date": str,
+    "entry_price": _NUMBER,
+    "entry_rating": str,
+    "entry_confidence": str,
+    "price_target": _NUMBER,
+    "spy_entry_price": _NUMBER,
+}
+
+_TRADE_SCHEMA: dict[str, object] = {
+    "ticker": str,
+    "entry_date": str,
+    "entry_price": _NUMBER,
+    "exit_date": str,
+    "exit_price": _NUMBER,
+    "exit_rating": str,
+    "return_pct": _NUMBER,
+    "spy_return_pct": _NUMBER,
+    "alpha": _NUMBER,
+}
+
+
+def _validate(record: object, schema: dict[str, object], kind: str) -> None:
+    """Raise ValueError if `record` is missing a required key or has a wrong type."""
+    if not isinstance(record, dict):
+        raise ValueError(f"{kind} record is not a mapping (got {type(record).__name__})")
+    for key, types in schema.items():
+        if key not in record:
+            raise ValueError(f"{kind} record missing required key '{key}'")
+        value = record[key]
+        # bool is a subclass of int; reject it where a number is expected.
+        if types is _NUMBER and isinstance(value, bool):
+            raise ValueError(f"{kind} key '{key}' is a bool, expected a number")
+        if not isinstance(value, types):
+            expected = getattr(types, "__name__", str(types))
+            raise ValueError(
+                f"{kind} key '{key}' has type {type(value).__name__}, expected {expected}"
+            )
+
+
+def validate_position(record: object) -> None:
+    """Assert `record` has the required position keys with the right types."""
+    _validate(record, _POSITION_SCHEMA, "position")
+
+
+def validate_trade(record: object) -> None:
+    """Assert `record` has the required closed-trade keys with the right types."""
+    _validate(record, _TRADE_SCHEMA, "trade")
+
+
 # ─── I/O helpers ─────────────────────────────────────────────────────────────
 
 def load_positions(path: Optional[Path] = None) -> dict[str, dict]:
-    """Load open positions as {ticker: record}. Empty dict if file missing."""
+    """Load open positions as {ticker: record}. Empty dict if file missing.
+
+    Records that fail schema validation are logged (WARN) and skipped rather than
+    crashing the caller.
+    """
     p = path or POSITIONS_PATH
     if not p.exists():
         return {}
     with open(p) as f:
         raw = yaml.safe_load(f) or {}
     records = raw.get("positions") or []
-    return {r["ticker"]: r for r in records if "ticker" in r}
+    positions: dict[str, dict] = {}
+    for i, r in enumerate(records):
+        try:
+            validate_position(r)
+        except ValueError as e:
+            logger.warning("skipping invalid position (index %d) in %s: %s", i, p, e)
+            continue
+        positions[r["ticker"]] = r
+    return positions
 
 
 def save_positions(positions: dict[str, dict], path: Optional[Path] = None) -> None:
@@ -196,10 +267,17 @@ def load_trades(path: Optional[Path] = None) -> list[dict]:
         return []
     trades = []
     with open(p) as f:
-        for line in f:
+        for lineno, line in enumerate(f, start=1):
             line = line.strip()
-            if line:
-                trades.append(json.loads(line))
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+                validate_trade(record)
+            except (ValueError, json.JSONDecodeError) as e:
+                logger.warning("skipping malformed trade at %s line %d: %s", p, lineno, e)
+                continue
+            trades.append(record)
     return trades
 
 
