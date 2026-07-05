@@ -51,9 +51,14 @@ def main() -> None:
     print(f"Paper Trading Report  —  {today}")
     print("=" * 70)
 
-    # ── Open positions ─────────────────────────────────────────────────────────
-    positions = load_positions()
-    trades = load_trades()
+    # ── Cohort gate (protocol §7): abort on any untagged/invalid-cohort record ──
+    try:
+        positions = load_positions(strict=True)
+        trades = load_trades(strict=True)
+    except ValueError as e:
+        print(f"ERROR: cohort gate failed — every position/trade must carry a valid "
+              f"cohort tag before a performance report can be built.\n  {e}")
+        sys.exit(1)
 
     spy_price = fetch_spy_price()
     if spy_price is None:

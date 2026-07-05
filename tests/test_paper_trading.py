@@ -440,6 +440,46 @@ def test_validate_position_rejects_missing_key_and_bad_type():
     print("  ✓ validate_position rejects missing keys / wrong types / non-dict")
 
 
+def test_validate_position_requires_valid_cohort():
+    import pytest
+    # accepts both valid cohorts
+    validate_position(open_position("ACM", "2026-05-25", 100.0, "STRONG_BUY", "MED",
+                                    130.0, 500.0, cohort="legacy_pre_fix"))
+    validate_position(open_position("ACM", "2026-06-01", 100.0, "STRONG_BUY", "MED",
+                                    130.0, 500.0, cohort="cohort_1"))
+    # missing cohort → fail (do not default it in)
+    no_cohort = _make_position("ACM")
+    del no_cohort["cohort"]
+    with pytest.raises(ValueError):
+        validate_position(no_cohort)
+    # unknown cohort string → fail
+    bad = _make_position("ACM")
+    bad["cohort"] = "cohort_99"
+    with pytest.raises(ValueError):
+        validate_position(bad)
+    print("  ✓ validate_position requires a cohort in the allowed set")
+
+
+def test_validate_trade_requires_valid_cohort():
+    import pytest
+    pos = _make_position("ACM")
+    trade = close_position(pos, "2026-06-01", 115.0, "HOLD", 510.0)
+    validate_trade(trade)                      # inherits cohort_1 from the position
+    del trade["cohort"]
+    with pytest.raises(ValueError):
+        validate_trade(trade)
+    trade["cohort"] = "not_a_cohort"
+    with pytest.raises(ValueError):
+        validate_trade(trade)
+    print("  ✓ validate_trade requires a cohort in the allowed set")
+
+
+def test_new_position_defaults_to_cohort_1():
+    pos = open_position("ACM", "2026-06-01", 100.0, "STRONG_BUY", "MED", 130.0, 500.0)
+    assert pos["cohort"] == "cohort_1"
+    print("  ✓ open_position tags new positions cohort_1 by default")
+
+
 def test_validate_trade_accepts_and_rejects():
     import pytest
     pos = _make_position("ACM", entry_price=100.0, spy_entry=500.0)
@@ -537,6 +577,9 @@ if __name__ == "__main__":
     test_process_empty_screener_results_noop()
     test_validate_position_accepts_valid_record()
     test_validate_position_rejects_missing_key_and_bad_type()
+    test_validate_position_requires_valid_cohort()
+    test_validate_trade_requires_valid_cohort()
+    test_new_position_defaults_to_cohort_1()
     test_validate_trade_accepts_and_rejects()
 
     with tempfile.TemporaryDirectory() as td:

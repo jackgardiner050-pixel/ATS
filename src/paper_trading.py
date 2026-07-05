@@ -30,6 +30,13 @@ TRADES_PATH    = Path(__file__).parent.parent / "data" / "paper_trades.jsonl"
 
 _CONSTRAINTS = {"no_real_orders": True, "no_live_pnl_learning": True}
 
+# Cohort tags. Kept as an open string list (not a closed Enum) so cohort_2, ...
+# can be appended without a code migration. Validation rejects anything not here.
+VALID_COHORTS = ("legacy_pre_fix", "cohort_1")
+
+# Positions opened under the current (post-fix, locked) ruleset belong to cohort_1.
+NEW_POSITION_COHORT = "cohort_1"
+
 
 # ─── Entry / exit gates ───────────────────────────────────────────────────────
 
@@ -61,10 +68,16 @@ def open_position(
     entry_confidence: str,
     price_target: float,
     spy_entry_price: float,
+    cohort: str = NEW_POSITION_COHORT,
 ) -> dict:
-    """Build an open position record. Pure — no I/O."""
+    """Build an open position record. Pure — no I/O.
+
+    New positions are tagged cohort_1 by default (opened under the locked
+    ruleset); the pre-fix legacy book is tagged separately by the migration.
+    """
     return {
         "ticker": ticker,
+        "cohort": cohort,
         "direction": "LONG",
         "entry_date": entry_date,
         "entry_price": float(entry_price),
@@ -92,6 +105,7 @@ def close_position(
 
     return {
         "ticker":          position["ticker"],
+        "cohort":          position.get("cohort"),   # inherit the position's cohort
         "direction":       position["direction"],
         "entry_date":      position["entry_date"],
         "entry_price":     entry_price,
@@ -178,6 +192,7 @@ _NUMBER = (int, float)
 # key -> accepted python type(s). Required keys only; extra keys are allowed.
 _POSITION_SCHEMA: dict[str, object] = {
     "ticker": str,
+    "cohort": str,
     "entry_date": str,
     "entry_price": _NUMBER,
     "entry_rating": str,
@@ -188,6 +203,7 @@ _POSITION_SCHEMA: dict[str, object] = {
 
 _TRADE_SCHEMA: dict[str, object] = {
     "ticker": str,
+    "cohort": str,
     "entry_date": str,
     "entry_price": _NUMBER,
     "exit_date": str,
@@ -217,23 +233,41 @@ def _validate(record: object, schema: dict[str, object], kind: str) -> None:
             )
 
 
+def _validate_cohort(record: dict, kind: str) -> None:
+    """Reject a record whose cohort is not one of VALID_COHORTS.
+
+    Presence + str-type are already guaranteed by the schema, so an untagged
+    record fails on the missing key; here we reject an unknown tag value. There
+    is deliberately no default — an unrecognised cohort is an error, not a
+    record to silently re-home into a valid cohort.
+    """
+    value = record["cohort"]
+    if value not in VALID_COHORTS:
+        raise ValueError(
+            f"{kind} record has invalid cohort {value!r}; expected one of {VALID_COHORTS}"
+        )
+
+
 def validate_position(record: object) -> None:
-    """Assert `record` has the required position keys with the right types."""
+    """Assert `record` has the required position keys/types and a valid cohort."""
     _validate(record, _POSITION_SCHEMA, "position")
+    _validate_cohort(record, "position")
 
 
 def validate_trade(record: object) -> None:
-    """Assert `record` has the required closed-trade keys with the right types."""
+    """Assert `record` has the required closed-trade keys/types and a valid cohort."""
     _validate(record, _TRADE_SCHEMA, "trade")
+    _validate_cohort(record, "trade")
 
 
 # ─── I/O helpers ─────────────────────────────────────────────────────────────
 
-def load_positions(path: Optional[Path] = None) -> dict[str, dict]:
+def load_positions(path: Optional[Path] = None, *, strict: bool = False) -> dict[str, dict]:
     """Load open positions as {ticker: record}. Empty dict if file missing.
 
     Records that fail schema validation are logged (WARN) and skipped rather than
-    crashing the caller.
+    crashing the caller. With ``strict=True`` an invalid record raises instead of
+    being skipped — used by the report build to enforce the cohort gate.
     """
     p = path or POSITIONS_PATH
     if not p.exists():
@@ -246,6 +280,8 @@ def load_positions(path: Optional[Path] = None) -> dict[str, dict]:
         try:
             validate_position(r)
         except ValueError as e:
+            if strict:
+                raise ValueError(f"invalid position (index {i}) in {p}: {e}") from e
             logger.warning("skipping invalid position (index %d) in %s: %s", i, p, e)
             continue
         positions[r["ticker"]] = r
@@ -260,8 +296,13 @@ def save_positions(positions: dict[str, dict], path: Optional[Path] = None) -> N
     atomic_write_text(p, text)
 
 
-def load_trades(path: Optional[Path] = None) -> list[dict]:
-    """Load all closed trade records from the JSONL log."""
+def load_trades(path: Optional[Path] = None, *, strict: bool = False) -> list[dict]:
+    """Load all closed trade records from the JSONL log.
+
+    Malformed lines (bad JSON or failing schema/cohort validation) are logged
+    (WARN) and skipped. With ``strict=True`` the first bad line raises instead —
+    used by the report build to enforce the cohort gate.
+    """
     p = path or TRADES_PATH
     if not p.exists():
         return []
@@ -275,6 +316,8 @@ def load_trades(path: Optional[Path] = None) -> list[dict]:
                 record = json.loads(line)
                 validate_trade(record)
             except (ValueError, json.JSONDecodeError) as e:
+                if strict:
+                    raise ValueError(f"malformed trade at {p} line {lineno}: {e}") from e
                 logger.warning("skipping malformed trade at %s line %d: %s", p, lineno, e)
                 continue
             trades.append(record)

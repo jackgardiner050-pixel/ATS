@@ -10,6 +10,7 @@ positions:
   constraints: &id001
     no_real_orders: true
     no_live_pnl_learning: true
+  cohort: legacy_pre_fix
 - ticker: AMAT
   direction: LONG
   entry_date: '2026-05-25'
@@ -19,6 +20,7 @@ positions:
   price_target: 578.9562827508729
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: DY
   direction: LONG
   entry_date: '2026-05-25'
@@ -28,6 +30,7 @@ positions:
   price_target: 765.6343198784302
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: EMR
   direction: LONG
   entry_date: '2026-05-25'
@@ -37,6 +40,7 @@ positions:
   price_target: 234.39914144973554
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: GD
   direction: LONG
   entry_date: '2026-05-25'
@@ -46,6 +50,7 @@ positions:
   price_target: 650.0670304673835
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: GNRC
   direction: LONG
   entry_date: '2026-05-25'
@@ -55,6 +60,7 @@ positions:
   price_target: 598.9323227696458
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: HUBB
   direction: LONG
   entry_date: '2026-05-25'
@@ -64,6 +70,7 @@ positions:
   price_target: 590.0694371447429
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: J
   direction: LONG
   entry_date: '2026-05-25'
@@ -73,6 +80,7 @@ positions:
   price_target: 138.92843413194961
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: KMI
   direction: LONG
   entry_date: '2026-05-25'
@@ -82,6 +90,7 @@ positions:
   price_target: 69.18444730016842
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: LDOS
   direction: LONG
   entry_date: '2026-05-25'
@@ -91,6 +100,7 @@ positions:
   price_target: 250.07097352456216
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: SPGI
   direction: LONG
   entry_date: '2026-05-25'
@@ -100,6 +110,7 @@ positions:
   price_target: 523.9531781327053
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
 - ticker: TRGP
   direction: LONG
   entry_date: '2026-05-25'
@@ -109,3 +120,4 @@ positions:
   price_target: 359.2892011331714
   spy_entry_price: 745.64
   constraints: *id001
+  cohort: legacy_pre_fix
