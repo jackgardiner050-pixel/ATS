@@ -57,3 +57,19 @@ confirming a clean baseline before the edit. The upcoming change adds an
 observation-only status note to `src/signals/momentum.py` (a ruleset_file) and
 neutralizes the momentum→confidence link in `src/signals/escalation.py` (NOT a
 ruleset_file). The lock is re-registered again after the change lands.
+
+---
+
+## 2026-07-05 — Re-registration after momentum-signal neutralization (item 8)
+
+**Reason:** Re-registered after momentum-signal neutralization (item 8). Momentum
+quintile no longer affects entry confidence; still computed/logged for attribution.
+Evidence-driven, human-approved 2026-07-05.
+
+**Details:** The change landed as: (a) `src/signals/escalation.py` — momentum quintile
+classified NEUTRAL always (not a ruleset_file, no hash impact); (b)
+`src/signals/momentum.py` — an OBSERVATION-ONLY docstring note (a ruleset_file → its
+per-file digest changed). `verify_protocol_lock.py --register` updated `ruleset_sha` and
+the `src/signals/momentum.py` digest (all other ruleset files unchanged);
+`verify_protocol_lock.py` exits 0 — new clean baseline. `_assign_quintiles` /
+`_fetch_single_return` were preserved unchanged.
