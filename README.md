@@ -141,6 +141,9 @@ Implemented:
 - [x] Governance layer — constitution, calibration, regime, exposure, adversarial (`src/governance/`)
 - [x] Paper-trading calibration (simulated, no broker — `src/paper_trading.py`)
 - [x] Static dashboard (`docs/`, GitHub Pages)
+- [x] EPS-trend clock — weekly forward-observation logging started **2026-07-05**
+  (`scripts/log_eps_trend.py` → `data/eps_trend_history.jsonl`); a first testable
+  POSITIVE-vs-NEGATIVE read is expected **~18 months out** (see item 9 Study A memo)
 
 Planned / not built:
 - [ ] Research agent (qualitative narrative — Task 1 port)

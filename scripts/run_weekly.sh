@@ -49,6 +49,14 @@ log "Step 0b: extraction_audit.py"
 python3 scripts/extraction_audit.py 2>&1 | tee -a "${LOGFILE}" || \
   log "WARNING: extraction_audit found SEV_HIGH (exit nonzero) — continuing (non-blocking)"
 
+# ── 0c. EPS-trend clock (non-blocking data collection — item 9 Study A) ───────
+# Multi-year forward-observation clock: a single missed week must NOT halt the
+# pipeline, so this logs-and-continues on any failure. Appends to
+# data/eps_trend_history.jsonl via src/io_utils.append_jsonl.
+log "Step 0c: log_eps_trend.py"
+python3 scripts/log_eps_trend.py 2>&1 | tee -a "${LOGFILE}" || \
+  log "WARNING: log_eps_trend exited non-zero — continuing (non-blocking data collection)"
+
 # ── 1. Universe screener ──────────────────────────────────────────────────────
 log "Step 1: run_universe.py"
 python3 scripts/run_universe.py 2>&1 | tee -a "${LOGFILE}"
