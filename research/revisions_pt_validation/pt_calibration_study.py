@@ -55,7 +55,9 @@ def asof_10k_metrics(ticker: str, asof: date):
         if ident:
             set_identity(ident)
         co = Company(ticker)
-        filings = co.get_filings(form="10-K")
+        # amendments=False: 10-K/A amendments carry no XBRL, so the newest-first pick would
+        # grab an amendment and every extraction returned NO_DATA (per edgartools' own warning).
+        filings = co.get_filings(form="10-K", amendments=False)
         chosen = None
         for f in filings:
             acc = getattr(f, "acceptance_datetime", None) or getattr(f, "filing_date", None)
@@ -68,24 +70,29 @@ def asof_10k_metrics(ticker: str, asof: date):
         # Reuse the repo's XBRL→metrics extraction (import only, no src change).
         from src.data.edgar_client import extract_historical_metrics, CompanyData
         fin = chosen.obj().financials  # edgartools financials for that specific filing
-        cd = CompanyData(ticker=ticker, income_statement=fin.income_statement().to_dataframe(),
+        cd = CompanyData(ticker=ticker, cik=str(getattr(co, "cik", "")),
+                         name=str(getattr(co, "name", ticker)), sic="", sic_description="",
+                         fiscal_year_end="",   # metadata; extractor uses only the 3 statements
+                         income_statement=fin.income_statement().to_dataframe(),
                          balance_sheet=fin.balance_sheet().to_dataframe(),
                          cash_flow=fin.cashflow_statement().to_dataframe())
         metrics = extract_historical_metrics(cd)
         if not metrics:
             return None
         return metrics[sorted(metrics)[-1]]
-    except Exception:
+    except Exception as e:
+        import sys
+        print(f"[pt-calib] NO_DATA {ticker} @ {asof}: {type(e).__name__}: {e}", file=sys.stderr)
         return None
 
 
 def implied_upside_proxy(m: dict, price_asof: float):
     """Transparent comps proxy: EV = mult × EBITDA; equity = EV − net_debt; PT = equity/shares."""
     ebitda = m.get("ebitda") or m.get("operating_income")   # EBIT proxy if EBITDA absent
-    shares = m.get("shares")
+    shares = m.get("shares") or m.get("diluted_shares")     # extractor emits diluted_shares
     net_debt = m.get("net_debt")
     if net_debt is None:
-        td, cash = m.get("total_debt"), m.get("cash")
+        td, cash = m.get("total_debt") or m.get("debt"), m.get("cash")   # extractor emits debt
         net_debt = (td - cash) if (td is not None and cash is not None) else 0.0
     if not ebitda or not shares or ebitda <= 0 or shares <= 0 or not price_asof:
         return None
