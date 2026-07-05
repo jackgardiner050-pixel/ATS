@@ -21,6 +21,7 @@ import yaml
 from src.io_utils import append_jsonl
 from src.orchestrator import run_pipeline
 from src.universe.admission import check_market_cap_admission, fetch_market_cap
+from src.governance.attribution_log import log_screen_decision
 from src.cadence import (
     load_state, is_due, update_state, apply_force,
     compute_next_due, save_state,
@@ -287,6 +288,24 @@ def main():
         # Append to signal log
         _log_signal(ticker, today, rating, conf_before, conf_after,
                     quintile, direction, len(aligned), len(contradicting))
+
+        # Attribution log (PART E) — record the screen decision for later analysis.
+        # themes/archetypes are not cheaply available at this layer (would need the
+        # classifier), so [] is passed; regime is a governance-stage concept → None.
+        try:
+            log_screen_decision(
+                ticker=ticker, rating=rating, confidence=conf_after,
+                dcf_upside=entry.get("expected_return"),
+                themes=[], archetypes=[],
+                regime=None, regime_confidence=None,
+                signals={
+                    "momentum_quintile": quintile,
+                    "revision_direction": direction,
+                    "alignment": entry.get("alignment_score"),
+                },
+            )
+        except Exception:
+            pass   # attribution logging must never break the screen
 
     if force_rescreen_list or any(c["before"] != c["after"] for c in confidence_changes):
         save_state(state)

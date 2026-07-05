@@ -72,6 +72,30 @@ def main() -> None:
         results, current_positions, spy_price, today
     )
 
+    # ── Attribution snapshot (PART E, additive) ────────────────────────────────
+    # entry_signals is attached HERE (orchestration layer) rather than inside the
+    # lock-protected open_position/close_position — it is a pure additive field and
+    # does not alter any entry/exit decision input or threshold.
+    signals_by_ticker = {
+        r["ticker"]: {
+            "momentum_quintile": r.get("momentum_quintile"),
+            "revision_direction": r.get("revision_direction"),
+            "confidence_before": r.get("confidence_before"),
+            "confidence_after": r.get("confidence"),
+            "dcf_upside": r.get("expected_return"),
+            "cohort_outlier": r.get("cohort_outlier", False),
+        }
+        for r in results if r.get("ticker")
+    }
+    for t in opened:
+        if t in new_positions:
+            new_positions[t]["entry_signals"] = signals_by_ticker.get(t)
+    # carry the closed position's entry_signals through onto its trade record
+    for trade in closed_trades:
+        prev = current_positions.get(trade["ticker"])
+        if prev and prev.get("entry_signals") is not None:
+            trade["entry_signals"] = prev["entry_signals"]
+
     # Persist
     save_positions(new_positions)
     for trade in closed_trades:
