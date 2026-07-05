@@ -1,0 +1,40 @@
+entries:
+- id: '001'
+  created: '2026-07-05'
+  hypothesis: '12-1 month cross-sectional momentum predicts forward excess return
+    in large-cap US equities: Q1-Q5 monthly net spread > 0 with Newey-West t >= 2.0.'
+  mechanism: Underreaction to persistent fundamental trends by attention-constrained
+    investors; the counterparty is a disposition-prone holder who sells winners early
+    and holds losers. The edge erodes as the trade crowds and as turnover costs bite.
+  universe: large-cap US equities (config/universe.yaml)
+  window: monthly rebalance, 2018-2024 backtest
+  metric: Q1-Q5 monthly net-of-cost spread; Newey-West HAC t-stat (lag 6)
+  threshold: net spread > 0 AND t >= 2.0
+  analysis_plan_sha: 5d2f34ef3a408504ba2c3b5414188f87867ea8ddbef4c27687d2227741039b38
+  status: FAILED
+  result_ref: research/momentum_validation/MEMO_momentum.md
+  status_events:
+  - ts: '2026-07-05'
+    status: FAILED
+  prev_hash: '0000000000000000000000000000000000000000000000000000000000000000'
+  content_hash: 99093ba856e338fd5416b5c064cae5809c95ea3ec2398313126cdcf644d5477c
+- id: '002'
+  created: '2026-07-05'
+  hypothesis: 'Post-earnings-announcement drift: large positive earnings surprises
+    are followed by positive net-of-cost excess return over the drift window in the
+    traded universe.'
+  mechanism: Slow information diffusion and analyst anchoring leave surprises under-priced
+    at the event; the counterparty is the under-reactor. In liquid large caps the
+    drift is largely arbitraged away, so net-of-cost edge is thin.
+  universe: US equities with scheduled earnings events (swing-bot universe)
+  window: event-driven backtest
+  metric: mean net-of-cost excess return over the drift window vs benchmark
+  threshold: positive net excess clearing the significance bar
+  analysis_plan_sha: a613b487c51612cbe181cbd734a7cfabb0ca6804da3e640727bcc1269e800b46
+  status: FAILED
+  result_ref: swing-bot/backtest/PEAD_RESULTS.md
+  status_events:
+  - ts: '2026-07-05'
+    status: FAILED
+  prev_hash: 99093ba856e338fd5416b5c064cae5809c95ea3ec2398313126cdcf644d5477c
+  content_hash: 537f95c3f1b006e61bd708c46dba73f9641dc533f15d26e4e9dc51320b3973e1
