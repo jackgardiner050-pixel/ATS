@@ -37,6 +37,15 @@ VALID_COHORTS = ("legacy_pre_fix", "cohort_1")
 # Positions opened under the current (post-fix, locked) ruleset belong to cohort_1.
 NEW_POSITION_COHORT = "cohort_1"
 
+# Legacy Cohort forced sunset (observation protocol §1.2): every legacy_pre_fix
+# position force-closes on/after this date, regardless of rating and INDEPENDENT of
+# the exit_rules_v2 flag. Named + auditable here rather than buried as a literal.
+LEGACY_SUNSET_DATE = date(2026, 8, 23)
+
+# Exit-reason vocabulary. RATING_DOWNGRADE + the exit_rules_v2 reasons, plus the
+# flag-independent Legacy Cohort sunset.
+EXIT_REASONS = ("RATING_DOWNGRADE", "PT_HIT", "TIME_STOP", "STALE", "FORCED_SUNSET")
+
 
 # ─── Entry / exit gates ───────────────────────────────────────────────────────
 
@@ -271,9 +280,16 @@ def process_screener_results(
     opened: list[str] = []
     closed: list[str] = []
 
+    _today_d = date.fromisoformat(today)   # unconditional — used by the §1.2 sunset pass
     _today_date = date.fromisoformat(today) if exit_rules_v2 else None
     _v2_params = (exit_v2_params or DEFAULT_EXIT_V2_PARAMS) if exit_rules_v2 else None
     _evaluated: set[str] = set()
+
+    def _is_legacy_sunset(pos: dict) -> bool:
+        # Legacy positions on/after the sunset are handled ONLY by the forced-sunset
+        # pass below (which takes precedence over rating/v2 exits), so the main loop
+        # leaves them untouched.
+        return pos.get("cohort") == "legacy_pre_fix" and _today_d >= LEGACY_SUNSET_DATE
 
     for r in screener_results:
         if not r.get("ok") or r.get("status") in ("SKIPPED", "ERROR"):
@@ -287,7 +303,9 @@ def process_screener_results(
         if price is None or math.isnan(float(price)):
             continue
 
-        if ticker in positions:
+        if ticker in positions and _is_legacy_sunset(positions[ticker]):
+            pass  # deferred to the forced-sunset pass — do not exit via rating/v2 first
+        elif ticker in positions:
             # exit_rules_v2 is scoped to cohort_1 ONLY. Legacy (and any non-cohort_1)
             # positions are governed by their fixed sunset (protocol §1.2), never by
             # PT_HIT / TIME_STOP / STALE — so they always exit via the RATING_DOWNGRADE
@@ -346,6 +364,34 @@ def process_screener_results(
                 closed_trades.append(trade)
                 closed.append(ticker)
                 del positions[ticker]
+
+    # ── Legacy Cohort forced sunset (protocol §1.2) — UNCONDITIONAL, flag-independent.
+    # On/after LEGACY_SUNSET_DATE, force-close every legacy_pre_fix position regardless
+    # of rating and regardless of exit_rules_v2. cohort_1 is never touched here.
+    if _today_d >= LEGACY_SUNSET_DATE:
+        _screen_px = {
+            r["ticker"]: r["current_price"] for r in screener_results
+            if r.get("current_price") is not None
+            and not (isinstance(r["current_price"], float) and math.isnan(r["current_price"]))
+        }
+        for ticker in list(positions.keys()):
+            pos = positions[ticker]
+            if pos.get("cohort") != "legacy_pre_fix":
+                continue
+            px = _screen_px.get(ticker)
+            if px is None and price_lookup:
+                px = price_lookup(ticker)
+            if px is None:
+                logger.warning("forced_sunset: no price for legacy %s — holding until priced", ticker)
+                continue
+            trade = close_position(
+                pos, exit_date=today, exit_price=px,
+                exit_rating=pos.get("entry_rating", "?"),
+                spy_exit_price=spy_price, exit_reason="FORCED_SUNSET",
+            )
+            closed_trades.append(trade)
+            closed.append(ticker)
+            del positions[ticker]
 
     return positions, closed_trades, opened, closed
 
