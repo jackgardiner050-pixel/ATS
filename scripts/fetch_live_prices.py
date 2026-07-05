@@ -12,6 +12,10 @@ from datetime import date, datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scripts._common import get_print
+print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
+
 _AGENT = Path(__file__).resolve().parent.parent
 _DOCS_DATA = _AGENT / "docs" / "data"
 _DOCS_DATA.mkdir(parents=True, exist_ok=True)

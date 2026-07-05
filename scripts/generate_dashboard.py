@@ -26,6 +26,10 @@ from typing import Optional
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scripts._common import get_print
+print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
+
 # Olympus display-layer — fail-soft; rest of dashboard still renders if unavailable
 try:
     from _olympus import (

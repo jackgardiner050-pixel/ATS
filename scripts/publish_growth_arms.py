@@ -17,6 +17,9 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
+from scripts._common import get_print
+print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
 _ARM_DIR = _ROOT / "olympus" / "olympus" / "data"
 _OUT = _ROOT / "docs" / "data" / "growth_arms_live.json"
 _SCORECARD_TARGET = 30
