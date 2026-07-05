@@ -38,3 +38,29 @@ entries:
     status: FAILED
   prev_hash: 99093ba856e338fd5416b5c064cae5809c95ea3ec2398313126cdcf644d5477c
   content_hash: 537f95c3f1b006e61bd708c46dba73f9641dc533f15d26e4e9dc51320b3973e1
+- id: '003'
+  created: '2026-07-05'
+  hypothesis: STRONG_BUY-gated entries (MED/HIGH confidence) beat SPY TR net of costs
+    over a 52-week window, per the pre-declared OBSERVATION_PROTOCOL §5 success gate.
+  mechanism: A causal-reasoning rating engine emits ratings with a pre-logged falsifiable
+    invalidation line; the tested claim is that its STRONG_BUY gate carries information
+    vs SPY TR. Per §3 power reality a 52-week window CANNOT establish alpha != 0 (realistic
+    skill alpha ~1-4%/yr sits below the ~8-16% ann. detection floor); it establishes
+    process integrity, cost realism, and a ~30-60-trade calibration sample. No counterparty
+    edge is asserted beyond the engine's rating skill.
+  universe: ~20-stock equal-weight book from the locked universe (config/universe.yaml),
+    benchmarked vs SPY TR
+  window: 52 weeks (1 year)
+  metric: TWR vs SPY TR (dividends included); Information Ratio; hit-rate of closed
+    trades (alpha vs SPY); PT-calibration Spearman (implied-upside decile vs realized)
+  threshold: 'SUCCESS (all at window end >=52wk): IR >= 0.5; Max-DD ratio <= 1.2;
+    PT calibration Spearman >= 0.30; Hit-rate >= 50% over >=30 closed trades; zero
+    process violations'
+  analysis_plan_sha: 28b02e6d01c6c8c3f6544b7c3c1e4d9b4563bc6cacb35da8787410a46df2b605
+  status: TESTING
+  result_ref: docs/OBSERVATION_PROTOCOL.md
+  status_events:
+  - ts: '2026-07-05'
+    status: TESTING
+  prev_hash: 537f95c3f1b006e61bd708c46dba73f9641dc533f15d26e4e9dc51320b3973e1
+  content_hash: 765840bdba4e4eae38dcd6271f38bdb0d0224dd460755de0f0670a73867594a8

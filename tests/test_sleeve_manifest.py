@@ -93,11 +93,11 @@ def _doc_kill_bullets() -> list[str]:
 
 def test_oracle_v1_loads_stage_and_alias():
     m = load_manifest(ROOT / "config" / "sleeves" / "oracle_v1.yaml")
-    assert m["sleeve_id"] == "oracle_v1" and m["stage"] == "S2"
+    assert m["sleeve_id"] == "oracle_v1" and m["stage"] == "S1"
     assert m["benchmark"] == "SPY_TR" and m["registry_ref"]
     from src.sleeves.cohort import same_cohort
     assert same_cohort("cohort_1", "oracle_v1_c1")     # legacy alias holds
-    print("  ✓ oracle_v1 loads (S2); cohort_1 ↔ oracle_v1_c1 alias holds")
+    print("  ✓ oracle_v1 loads (S1 after reconciliation); cohort_1 ↔ oracle_v1_c1 alias holds")
 
 
 def test_oracle_kill_criteria_match_protocol_section5_verbatim():

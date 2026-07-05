@@ -9,12 +9,14 @@ thesis: >
   A causal-reasoning rating engine emits STRONG_BUY/BUY/HOLD/SELL with a falsifiable
   invalidation line logged before the outcome; STRONG_BUY entries at MED/HIGH confidence
   carry information — realized total return beats SPY TR over a 52-week forward window.
-registry_ref: "003"                      # retroactive hypothesis entry for the Oracle system
+registry_ref: "003"                      # Oracle/Cohort-1 hypothesis (registry entry 003, TESTING)
 universe_ref: config/universe.yaml
 strategy_module: src.paper_trading
 cadence: weekly
 benchmark: SPY_TR
-stage: S2
+# downgraded S2→S1 2026-07-05: registry entry did not yet exist; Cohort-1 hypothesis is
+# genuinely TESTING, not PASSED, per observation protocol §5 — S2 was premature retrofit.
+stage: S1
 created: "2026-07-05"
 locked: true
 
