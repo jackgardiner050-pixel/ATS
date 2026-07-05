@@ -43,7 +43,8 @@ def sleeve_registry_violations(sleeves_dir, registry_entries) -> list[str]:
 def _reg(tmp_path):
     reg = tmp_path / "registry.yaml"
     common = dict(created="2026-07-05", hypothesis="h", mechanism="m", universe="u",
-                  window="w", metric="me", threshold="t", analysis_plan_sha="sha")
+                  window="w", metric="me", threshold="t", analysis_plan_sha="sha",
+                  interpretation_contract={"licenses": "x", "does_not_license": "y"})
     add_entry({**common, "id": "P1", "status": "PASSED"}, path=reg)
     add_entry({**common, "id": "T1", "status": "TESTING"}, path=reg)
     return load_registry(reg)

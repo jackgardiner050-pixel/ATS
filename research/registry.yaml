@@ -64,3 +64,27 @@ entries:
     status: TESTING
   prev_hash: 537f95c3f1b006e61bd708c46dba73f9641dc533f15d26e4e9dc51320b3973e1
   content_hash: 765840bdba4e4eae38dcd6271f38bdb0d0224dd460755de0f0670a73867594a8
+migrations:
+- type: backfill_interpretation_contract
+  ts: '2026-07-06'
+  note: 'F5: interpretation_contract added as a required field; backfilled onto pre-existing
+    001-003 via append (entries NOT edited).'
+  contracts:
+    '001':
+      licenses: a tradeable long-short quintile spread net of costs in this large-cap
+        universe over the tested 2018-2024 window
+      does_not_license: any claim about momentum's cause, its persistence beyond this
+        universe/window, or its survival at other cap sizes or rebalance frequencies
+    '002':
+      licenses: an exploitable net-of-cost drift after large positive earnings surprises
+        in the tested event universe
+      does_not_license: any claim that the drift generalizes to negative surprises
+        or other universes, or persists against the arbitrage documented in the result
+    '003':
+      licenses: process integrity, cost realism, and a calibration sample; a PASS
+        would license only 'the STRONG_BUY gate cleared the pre-declared §5 gates
+        over one 52-week window'
+      does_not_license: any claim that alpha != 0 is statistically established, or
+        that the result generalizes beyond the single observed window (§3 power reality)
+  prev_hash: '0000000000000000000000000000000000000000000000000000000000000000'
+  hash: e535fb6e397631d655431160b10799d96d7c82f8d98594282261885a528b65b9

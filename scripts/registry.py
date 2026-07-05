@@ -60,9 +60,23 @@ def cmd_status(args) -> int:
 
 def cmd_stats(args) -> int:
     s = registry_stats(load_registry())
-    print(f"m (hypotheses ever)  : {s['m']}")
-    print(f"Bonferroni alpha     : {s['alpha']}")
-    print(f"pass rate (resolved) : {s['pass_rate']:.2%} ({s['passed']}/{s['resolved']})")
+    print(f"m (correction denominator, TESTING+)     : {s['m']}")
+    print(f"total entries registered (informational) : {s['total_registered']}")
+    print(f"Bonferroni alpha                         : {s['alpha']}")
+    print(f"pass rate (resolved)                     : {s['pass_rate']:.2%} ({s['passed']}/{s['resolved']})")
+    return 0
+
+
+def cmd_queue(args) -> int:
+    from src.research.registry import queue
+    q = queue(load_registry())
+    if not q:
+        print("no REGISTERED (Stage-0) entries to queue.")
+        return 0
+    print("REGISTERED entries by queue_priority (survival_prior × strategic_fit), descending:")
+    for r in q:
+        print(f"  {r['id']}: priority={r['queue_priority']} "
+              f"(prior={r['survival_prior']}, fit={r['strategic_fit']})")
     return 0
 
 
@@ -76,6 +90,7 @@ def main(argv=None) -> int:
     ps.add_argument("--result-ref", default=None)
     ps.set_defaults(fn=cmd_status)
     sub.add_parser("stats", help="print m, alpha, pass rate").set_defaults(fn=cmd_stats)
+    sub.add_parser("queue", help="rank REGISTERED entries by prior (informational)").set_defaults(fn=cmd_queue)
     args = ap.parse_args(argv)
     return args.fn(args)
 

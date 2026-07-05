@@ -75,7 +75,8 @@ def test_add_entry_refuses_missing_fields(tmp_path):
 def test_duplicate_id_refused(tmp_path):
     reg = _tmp_registry(tmp_path)
     full = dict(id="001", created="2026-07-05", hypothesis="h", mechanism="m", universe="u",
-                window="w", metric="me", threshold="t", analysis_plan_sha="sha")
+                window="w", metric="me", threshold="t", analysis_plan_sha="sha",
+                interpretation_contract={"licenses": "x", "does_not_license": "y"})
     with pytest.raises(ValueError, match="already exists"):
         add_entry(full, path=reg)
     print("  ✓ duplicate id refused (append-only)")
@@ -85,6 +86,7 @@ def test_status_forward_only_and_chain_survives(tmp_path):
     reg = _tmp_registry(tmp_path)
     add_entry(dict(id="T04", created="2026-07-05", hypothesis="h", mechanism="m", universe="u",
                    window="w", metric="me", threshold="t", analysis_plan_sha="sha",
+                   interpretation_contract={"licenses": "x", "does_not_license": "y"},
                    status="REGISTERED"), path=reg)
     advance_status("T04", "TESTING", path=reg)
     advance_status("T04", "PASSED", result_ref="runs/x.md", path=reg)

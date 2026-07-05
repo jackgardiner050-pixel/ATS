@@ -83,6 +83,11 @@ DEFAULT_REGISTRY = Path(__file__).resolve().parent.parent.parent / "research" / 
 IMMUTABLE_FIELDS = ("id", "created", "hypothesis", "mechanism", "universe", "window",
                     "metric", "threshold", "analysis_plan_sha")
 VALID_STATUS = ("REGISTERED", "TESTING", "FAILED", "PASSED", "RETIRED")
+# F7a — only entries that have INITIATED a test spend statistical credibility; REGISTERED
+# (Stage-0) is free. This set is the correction denominator, NOT len(entries).
+TESTING_OR_BEYOND = ("TESTING", "FAILED", "PASSED", "RETIRED")
+# F5 — every entry must declare what a PASS licenses and the nearest overclaim it does not.
+INTERPRETATION_SUBFIELDS = ("licenses", "does_not_license")
 # forward-only transitions — a status may advance, never revert
 _ALLOWED_TRANSITIONS = {
     "REGISTERED": {"TESTING", "RETIRED"},
@@ -94,21 +99,59 @@ _ALLOWED_TRANSITIONS = {
 
 
 def entry_content_hash(entry: dict, prev_hash: str) -> str:
-    """Hash over the IMMUTABLE fields only (status/result_ref advance, so are excluded)."""
+    """Hash over the IMMUTABLE fields only. interpretation_contract is deliberately NOT
+    immutable (F5): it is backfilled onto 001-003 via an appended SCHEMA_MIGRATION, so
+    keeping it out of the hash preserves those entries' content_hashes unchanged."""
     body = {k: entry.get(k) for k in IMMUTABLE_FIELDS}
     return record_hash(prev_hash, body)
 
 
-def load_registry(path: str | Path = DEFAULT_REGISTRY) -> list[dict]:
+def _load_doc(path: str | Path) -> dict:
     p = Path(path)
     if not p.exists():
-        return []
-    return (yaml.safe_load(p.read_text()) or {}).get("entries", [])
+        return {"entries": [], "migrations": []}
+    d = yaml.safe_load(p.read_text()) or {}
+    return {"entries": d.get("entries", []), "migrations": d.get("migrations", [])}
 
 
-def _save_registry(entries: list[dict], path: str | Path) -> None:
+def _save_doc(entries: list[dict], migrations: list[dict], path: str | Path) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(yaml.safe_dump({"entries": entries}, sort_keys=False, allow_unicode=True))
+    doc = {"entries": entries}
+    if migrations:
+        doc["migrations"] = migrations
+    Path(path).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True))
+
+
+def load_registry_raw(path: str | Path = DEFAULT_REGISTRY) -> list[dict]:
+    """Entries exactly as stored (NO migration overlay). Used by the WRITE path so a
+    backfilled contract is never persisted back into an entry's record."""
+    return _load_doc(path)["entries"]
+
+
+def load_migrations(path: str | Path = DEFAULT_REGISTRY) -> list[dict]:
+    return _load_doc(path)["migrations"]
+
+
+def _overlay_interpretation(entries: list[dict], migrations: list[dict]) -> list[dict]:
+    """Overlay backfilled interpretation_contracts (from SCHEMA_MIGRATION events) onto any
+    entry that lacks one inline. Entry records are copied, never mutated in place."""
+    backfill: dict[str, dict] = {}
+    for mg in migrations:
+        if mg.get("type") == "backfill_interpretation_contract":
+            backfill.update(mg.get("contracts") or {})
+    out = []
+    for e in entries:
+        e = dict(e)
+        if not e.get("interpretation_contract") and e.get("id") in backfill:
+            e["interpretation_contract"] = backfill[e["id"]]
+        out.append(e)
+    return out
+
+
+def load_registry(path: str | Path = DEFAULT_REGISTRY) -> list[dict]:
+    """Entries WITH interpretation_contract resolved (inline or backfilled). Read path."""
+    doc = _load_doc(path)
+    return _overlay_interpretation(doc["entries"], doc["migrations"])
 
 
 def verify_registry_chain(entries: list[dict]) -> tuple[bool, str | None]:
@@ -124,29 +167,77 @@ def verify_registry_chain(entries: list[dict]) -> tuple[bool, str | None]:
     return True, None
 
 
+def verify_migration_chain(migrations: list[dict]) -> tuple[bool, str | None]:
+    """SCHEMA_MIGRATION events are themselves an append-only hash chain."""
+    prev = GENESIS_HASH
+    for i, mg in enumerate(migrations):
+        if mg.get("prev_hash") != prev:
+            return False, f"migration {i}: prev_hash mismatch"
+        body = {k: v for k, v in mg.items() if k not in ("prev_hash", "hash")}
+        if mg.get("hash") != record_hash(mg["prev_hash"], body):
+            return False, f"migration {i}: hash mismatch (tampered)"
+        prev = mg["hash"]
+    return True, None
+
+
+def _validate_interpretation_contract(ic: object) -> None:
+    if not isinstance(ic, dict):
+        raise ValueError("interpretation_contract must be a mapping with "
+                         "'licenses' and 'does_not_license'")
+    for k in INTERPRETATION_SUBFIELDS:
+        if not ic.get(k):
+            raise ValueError(f"interpretation_contract missing '{k}' — declare, in plain "
+                             "language, what a PASS licenses and the nearest overclaim it does not")
+
+
 def add_entry(fields: dict, path: str | Path = DEFAULT_REGISTRY) -> dict:
-    """Append a new hypothesis entry. Refuses if any immutable field is missing/empty."""
+    """Append a new hypothesis entry. Refuses if any immutable field OR the
+    interpretation_contract (F5) is missing."""
     missing = [f for f in IMMUTABLE_FIELDS if not fields.get(f)]
     if missing:
         raise ValueError(f"cannot register: missing required field(s) {missing} — "
                          "a hypothesis needs id, a testable sentence, mechanism, universe, "
                          "window, metric, threshold, and a frozen analysis_plan_sha")
+    ic = fields.get("interpretation_contract")
+    if not ic:
+        raise ValueError("cannot register: missing required interpretation_contract "
+                         "{licenses, does_not_license} (F5)")
+    _validate_interpretation_contract(ic)
     status = fields.get("status", "REGISTERED")
     if status not in VALID_STATUS:
         raise ValueError(f"invalid status {status!r}; expected one of {VALID_STATUS}")
-    entries = load_registry(path)
+    doc = _load_doc(path)
+    entries = doc["entries"]
     if any(e["id"] == fields["id"] for e in entries):
         raise ValueError(f"entry id {fields['id']!r} already exists (append-only)")
     prev = entries[-1]["content_hash"] if entries else GENESIS_HASH
     entry = {k: fields[k] for k in IMMUTABLE_FIELDS}
     entry["status"] = status
     entry["result_ref"] = fields.get("result_ref")
+    entry["interpretation_contract"] = ic               # inline, required (not hashed — see F5)
+    for opt in ("survival_prior", "strategic_fit"):     # F7d — optional queue inputs
+        if fields.get(opt) is not None:
+            entry[opt] = fields[opt]
     entry["status_events"] = [{"ts": fields["created"], "status": status}]
     entry["prev_hash"] = prev
     entry["content_hash"] = entry_content_hash(entry, prev)
     entries.append(entry)
-    _save_registry(entries, path)
+    _save_doc(entries, doc["migrations"], path)
     return entry
+
+
+def add_migration(migration: dict, path: str | Path = DEFAULT_REGISTRY) -> dict:
+    """Append a SCHEMA_MIGRATION event (hash-chained). Used to backfill interpretation
+    contracts onto pre-existing entries WITHOUT editing those entries (append-only)."""
+    doc = _load_doc(path)
+    migrations = doc["migrations"]
+    body = {k: v for k, v in migration.items() if k not in ("prev_hash", "hash")}
+    prev = migrations[-1]["hash"] if migrations else GENESIS_HASH
+    rec = {**body, "prev_hash": prev}
+    rec["hash"] = record_hash(prev, body)
+    migrations.append(rec)
+    _save_doc(doc["entries"], migrations, path)
+    return rec
 
 
 def advance_status(entry_id: str, new_status: str, result_ref: str | None = None,
@@ -154,7 +245,8 @@ def advance_status(entry_id: str, new_status: str, result_ref: str | None = None
     """Advance an entry's status (append an event, never edit). Forward-only."""
     if new_status not in VALID_STATUS:
         raise ValueError(f"invalid status {new_status!r}")
-    entries = load_registry(path)
+    doc = _load_doc(path)
+    entries = doc["entries"]
     for e in entries:
         if e["id"] == entry_id:
             cur = e.get("status", "REGISTERED")
@@ -165,17 +257,44 @@ def advance_status(entry_id: str, new_status: str, result_ref: str | None = None
                 e["result_ref"] = result_ref
             e.setdefault("status_events", []).append(
                 {"ts": ts, "status": new_status, "result_ref": result_ref})
-            _save_registry(entries, path)   # content_hash unaffected — immutable core intact
+            _save_doc(entries, doc["migrations"], path)  # content_hash unaffected
             return e
     raise ValueError(f"entry {entry_id!r} not found")
 
 
+def correction_m(entries: list[dict]) -> int:
+    """F7a — the multiple-testing denominator: entries at TESTING or beyond only."""
+    return sum(1 for e in entries if e.get("status") in TESTING_OR_BEYOND)
+
+
 def registry_stats(entries: list[dict]) -> dict:
-    """The honesty dashboard: m (total ever), current Bonferroni alpha, pass rate."""
+    """Honesty dashboard. m = correction denominator (TESTING+); total_registered is
+    informational (includes REGISTERED Stage-0 entries)."""
     from src.research.corrections import bonferroni_alpha
-    m = len(entries)
+    m = correction_m(entries)
     resolved = [e for e in entries if e.get("status") in ("PASSED", "FAILED")]
     passed = [e for e in entries if e.get("status") == "PASSED"]
-    return {"m": m, "alpha": bonferroni_alpha(m) if m else None,
+    return {"m": m, "total_registered": len(entries),
+            "alpha": bonferroni_alpha(m) if m else None,
             "pass_rate": (len(passed) / len(resolved)) if resolved else 0.0,
             "passed": len(passed), "resolved": len(resolved)}
+
+
+def queue_priority(entry: dict):
+    """F7d — computed (never stored): stated survival prior × cheapness/strategic-fit
+    factor if the entry provides one, else the prior alone. None if no prior stated."""
+    prior = entry.get("survival_prior")
+    if prior is None:
+        return None
+    return float(prior) * float(entry.get("strategic_fit", 1.0))
+
+
+def queue(entries: list[dict]) -> list[dict]:
+    """F7d — rank REGISTERED (not-yet-TESTING) entries by queue_priority, descending.
+    Informational only; advancing to TESTING remains a human act."""
+    reg = [e for e in entries if e.get("status") == "REGISTERED"]
+    ranked = sorted(reg, key=lambda e: (queue_priority(e) is not None, queue_priority(e) or 0.0),
+                    reverse=True)
+    return [{"id": e["id"], "queue_priority": queue_priority(e),
+             "survival_prior": e.get("survival_prior"),
+             "strategic_fit": e.get("strategic_fit", 1.0)} for e in ranked]
