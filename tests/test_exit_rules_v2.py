@@ -20,9 +20,10 @@ from src.paper_trading import (
 TODAY = date(2026, 1, 1)
 
 
-def _pos(ticker="ACM", entry_date="2025-12-15", pt=130.0, entry_price=100.0):
+def _pos(ticker="ACM", entry_date="2025-12-15", pt=130.0, entry_price=100.0,
+         cohort="cohort_1"):
     return open_position(ticker, entry_date, entry_price, "STRONG_BUY", "MED",
-                         pt, 500.0, cohort="cohort_1")
+                         pt, 500.0, cohort=cohort)
 
 
 def _params(**over):
@@ -137,6 +138,63 @@ def test_flag_on_missing_price_holds_with_warning():
     )
     assert closed == [] and "SKP" in positions      # WARN + hold on missing price
     print("  ✓ flag ON + missing price → WARN and hold (no close)")
+
+
+# ─── cohort-scope guard: legacy_pre_fix is structurally excluded from v2 ──────
+
+def test_pt_hit_closes_cohort1_but_not_legacy():
+    """Flag ON: identical PT_HIT condition → cohort_1 closes via PT_HIT, legacy does not."""
+    existing = {
+        "C1":  _pos("C1", pt=130.0, entry_price=100.0, cohort="cohort_1"),
+        "LEG": _pos("LEG", pt=130.0, entry_price=100.0, cohort="legacy_pre_fix"),
+    }
+    # both STRONG_BUY (no downgrade), both priced above target (PT_HIT condition)
+    results = [
+        {"ticker": "C1", "rating": "STRONG_BUY", "confidence": "MED", "current_price": 140.0,
+         "price_target": 130.0, "status": "DUE", "ok": True},
+        {"ticker": "LEG", "rating": "STRONG_BUY", "confidence": "MED", "current_price": 140.0,
+         "price_target": 130.0, "status": "DUE", "ok": True},
+    ]
+    positions, closed_trades, opened, closed = process_screener_results(
+        results, existing, 500.0, "2026-01-01", exit_rules_v2=True, exit_v2_params=_params())
+    assert "C1" in closed
+    assert next(t for t in closed_trades if t["ticker"] == "C1")["exit_reason"] == "PT_HIT"
+    assert "LEG" not in closed and "LEG" in positions    # legacy untouched by v2 PT_HIT
+    print("  ✓ PT_HIT closes cohort_1; legacy_pre_fix structurally excluded (still open)")
+
+
+def test_stale_closes_cohort1_but_not_legacy_second_pass():
+    """Flag ON, SKIPPED tickers (pass 2): STALE closes cohort_1, legacy is skipped."""
+    existing = {
+        "C1":  _pos("C1", pt=130.0, entry_price=100.0, cohort="cohort_1"),
+        "LEG": _pos("LEG", pt=130.0, entry_price=100.0, cohort="legacy_pre_fix"),
+    }
+    results = [
+        {"ticker": "C1", "rating": "STRONG_BUY", "confidence": "MED", "current_price": 100.0,
+         "price_target": 130.0, "status": "SKIPPED", "ok": True},
+        {"ticker": "LEG", "rating": "STRONG_BUY", "confidence": "MED", "current_price": 100.0,
+         "price_target": 130.0, "status": "SKIPPED", "ok": True},
+    ]
+    params = _params(last_screened={"C1": "2025-01-01", "LEG": "2025-01-01"})  # both stale
+    positions, closed_trades, opened, closed = process_screener_results(
+        results, existing, 500.0, "2026-01-01", exit_rules_v2=True, exit_v2_params=params,
+        price_lookup=lambda t: 80.0)   # below PT → STALE, not PT_HIT
+    assert "C1" in closed
+    assert next(t for t in closed_trades if t["ticker"] == "C1")["exit_reason"] == "STALE"
+    assert "LEG" not in closed and "LEG" in positions    # legacy skipped in pass 2
+    print("  ✓ STALE closes cohort_1 (pass 2); legacy_pre_fix skipped entirely")
+
+
+def test_legacy_still_exits_on_rating_downgrade_with_flag_on():
+    """The guard removes only the NEW v2 reasons from legacy — RATING_DOWNGRADE still fires."""
+    existing = {"LEG": _pos("LEG", pt=130.0, entry_price=100.0, cohort="legacy_pre_fix")}
+    results = [{"ticker": "LEG", "rating": "HOLD", "confidence": "MED", "current_price": 90.0,
+                "price_target": 130.0, "status": "DUE", "ok": True}]   # downgrade
+    positions, closed_trades, opened, closed = process_screener_results(
+        results, existing, 500.0, "2026-01-01", exit_rules_v2=True, exit_v2_params=_params())
+    assert "LEG" in closed                                  # still closes on downgrade
+    assert closed_trades[0]["exit_reason"] is None          # via should_exit path, not a v2 reason
+    print("  ✓ legacy still exits on RATING_DOWNGRADE (flag ON) — only PT_HIT/TIME_STOP/STALE removed")
 
 
 if __name__ == "__main__":
