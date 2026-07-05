@@ -73,3 +73,17 @@ per-file digest changed). `verify_protocol_lock.py --register` updated `ruleset_
 the `src/signals/momentum.py` digest (all other ruleset files unchanged);
 `verify_protocol_lock.py` exits 0 — new clean baseline. `_assign_quintiles` /
 `_fetch_single_return` were preserved unchanged.
+
+---
+
+## 2026-07-05 — Baseline re-registration ahead of exit_rules_v2 cohort-scope guard
+
+**Reason:** Planned re-registration ahead of exit_rules_v2 cohort-scope guard (fixing a
+gap where activation would have coupled Legacy Cohort positions to the new exit logic,
+contradicting protocol §1.2). Human-approved 2026-07-05.
+
+**Details:** `verify_protocol_lock.py --register` was run against the current pre-change
+state (lock byte-identical), confirming a clean baseline before the edit. The upcoming
+change gates `evaluate_exit_v2` in `src/paper_trading.py` (a ruleset_file) to
+`cohort_1` only. exit_rules_v2 remains false — this task fixes the gap, it does not
+activate the flag.
