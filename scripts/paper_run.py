@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from scripts._common import get_print
 print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
 
+from src.paper_trading import _paper_cost_bps, tr_fields
 from src.paper_trading import (
     fetch_spy_price,
     load_positions,
@@ -32,6 +33,26 @@ from src.paper_trading import (
 )
 
 _SCREEN_ROOT = Path(__file__).parent.parent / "runs" / "_screen"
+
+
+def _adj_close_on(ticker: str, day: str):
+    """First yfinance auto_adjust (total-return) close on/after `day`. None on failure."""
+    try:
+        import yfinance as yf
+        from datetime import timedelta
+        d = date.fromisoformat(str(day)[:10])
+        h = yf.Ticker(ticker).history(start=d.isoformat(),
+                                      end=(d + timedelta(days=7)).isoformat(), auto_adjust=True)
+        return float(h["Close"].iloc[0]) if h is not None and not h.empty else None
+    except Exception:
+        return None
+
+
+def _fetch_aligned_adjusted(ticker: str, entry_date: str, exit_date: str):
+    """(entry_adj, exit_adj, spy_entry_adj, spy_exit_adj) — stock and SPY from the
+    same source at the same two dates. None on any failure (→ trade stays spot_only)."""
+    return (_adj_close_on(ticker, entry_date), _adj_close_on(ticker, exit_date),
+            _adj_close_on("SPY", entry_date), _adj_close_on("SPY", exit_date))
 
 
 def _latest_summary() -> tuple[Path, dict]:
@@ -95,6 +116,15 @@ def main() -> None:
         prev = current_positions.get(trade["ticker"])
         if prev and prev.get("entry_signals") is not None:
             trade["entry_signals"] = prev["entry_signals"]
+
+    # ── Honest total-return capture (item 10) ─────────────────────────────────
+    # Capture stock AND SPY dividend-adjusted closes from the SAME source (yfinance
+    # auto_adjust) at the SAME two dates (entry, exit) — timestamp-aligned by date —
+    # and fill in the trade's TR fields via the shared tr_fields() math.
+    for trade in closed_trades:
+        adj = _fetch_aligned_adjusted(trade["ticker"], trade["entry_date"], trade["exit_date"])
+        if adj and all(a is not None for a in adj):
+            trade.update(tr_fields(*adj, cost_bps=trade.get("cost_bps") or _paper_cost_bps()))
 
     # Persist
     save_positions(new_positions)

@@ -56,6 +56,48 @@ def _num(x) -> str:
     return f"{x:.2f}" if x is not None else "—"
 
 
+def _primary_net_tr_alpha(trade: dict):
+    """Net total-return alpha if available, falling back to net spot, then gross.
+    Returns (value, label) so the report can say which basis was used."""
+    for key, label in (("alpha_tr_net", "net TR"), ("alpha_net", "net spot"),
+                       ("alpha", "gross spot")):
+        v = trade.get(key)
+        if v is not None:
+            return v, label
+    return None, None
+
+
+def print_net_tr_alpha_by_cohort(trades: list[dict]) -> None:
+    """PRIMARY metric per the honest-return work: net total-return alpha, shown per
+    cohort and NEVER blended (observation-protocol reporting rule)."""
+    from collections import defaultdict
+    print()
+    print("=" * 70)
+    print("  NET TR ALPHA (primary) — per cohort, never combined")
+    print("=" * 70)
+    if not trades:
+        print("  no closed trades yet")
+        return
+    by_cohort: dict[str, list[dict]] = defaultdict(list)
+    for t in trades:
+        by_cohort[t.get("cohort", "?")].append(t)
+    for cohort, label in _COHORT_SECTIONS:
+        ts = by_cohort.get(cohort, [])
+        print()
+        print(f"  ── {label} ──")
+        if not ts:
+            print("     no closed trades")
+            continue
+        pairs = [_primary_net_tr_alpha(t) for t in ts]
+        vals = [(v, lbl) for v, lbl in pairs if v is not None]
+        if not vals:
+            print("     no alpha available")
+            continue
+        mean = sum(v for v, _ in vals) / len(vals)
+        basis = vals[0][1]   # the strongest basis available across these trades
+        print(f"     n={len(vals)}  mean net-TR alpha = {mean*100:+.2f}%  (basis: {basis})")
+
+
 def print_portfolio_vs_spy(history_path: Path = _HISTORY_PATH) -> None:
     """Per-cohort TWR vs SPY TWR. Hard protocol rule: two separate sections, never
     a combined number or series. <5 snapshots for a cohort → 'insufficient history'."""
@@ -205,6 +247,9 @@ def main() -> None:
         print("  " + "-" * 84)
         print(f"  {'Summary':<8} n={n:<11} {'':>12} {avg_ret*100:>+7.2f}% {avg_alpha*100:>+7.2f}%"
               f"  win_rate={win_rate:.0f}%")
+
+    # ── Net total-return alpha (PRIMARY), per cohort, never blended ─────────────
+    print_net_tr_alpha_by_cohort(trades)
 
     # ── Portfolio vs SPY (per cohort, never combined) ──────────────────────────
     print_portfolio_vs_spy()

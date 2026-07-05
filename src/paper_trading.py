@@ -89,21 +89,83 @@ def open_position(
     }
 
 
+_COST_BPS_CACHE: Optional[float] = None
+
+
+def _paper_cost_bps() -> float:
+    """Round-trip cost per side, in bps, from config/portfolio.yaml (single source
+    of truth, shared with the NAV ledger). Cached; falls back to 20 on any error."""
+    global _COST_BPS_CACHE
+    if _COST_BPS_CACHE is None:
+        try:
+            cfg = yaml.safe_load(
+                (Path(__file__).parent.parent / "config" / "portfolio.yaml").read_text()
+            ) or {}
+            _COST_BPS_CACHE = float(cfg.get("paper_cost_bps", 20))
+        except Exception:
+            _COST_BPS_CACHE = 20.0
+    return _COST_BPS_CACHE
+
+
+def _r6(x):
+    return round(x, 6) if x is not None else None
+
+
+def tr_fields(entry_adj, exit_adj, spy_entry_adj, spy_exit_adj, cost_bps) -> dict:
+    """Dividend-adjusted total-return fields from aligned auto_adjust closes. Pure.
+    Shared by close_position and paper_run so the math has one home."""
+    rt_cost = 2 * cost_bps / 1e4
+    rt_tr = float(exit_adj) / float(entry_adj) - 1.0
+    spy_tr = float(spy_exit_adj) / float(spy_entry_adj) - 1.0
+    return {
+        "return_pct_tr": _r6(rt_tr),
+        "spy_return_tr": _r6(spy_tr),
+        "alpha_tr": _r6(rt_tr - spy_tr),
+        "return_pct_tr_net": _r6(rt_tr - rt_cost),
+        "alpha_tr_net": _r6(rt_tr - rt_cost - spy_tr),   # PRIMARY: net total-return alpha
+        "capture_basis": "adjusted",
+    }
+
+
 def close_position(
     position: dict,
     exit_date: str,
     exit_price: float,
     exit_rating: str,
     spy_exit_price: float,
+    cost_bps: Optional[float] = None,
+    entry_price_adj: Optional[float] = None,
+    exit_price_adj: Optional[float] = None,
+    spy_entry_adj: Optional[float] = None,
+    spy_exit_adj: Optional[float] = None,
 ) -> dict:
-    """Compute return and SPY alpha, return a closed trade record. Pure — no I/O."""
+    """Compute returns + SPY alpha, return a closed trade record. Pure (only a
+    cached config read for the default cost).
+
+    Honest accounting — all ADDITIVE; the original gross-spot fields are kept
+    unchanged for continuity:
+      return_pct / spy_return_pct / alpha  — gross, spot (unchanged)
+      return_pct_net / alpha_net           — gross minus 2×cost_bps/1e4 (round trip)
+      return_pct_tr / spy_return_tr / alpha_tr        — dividend-adjusted total return
+      return_pct_tr_net / alpha_tr_net                — TR minus round-trip cost (PRIMARY)
+    cost_bps reuses config/portfolio.yaml paper_cost_bps. TR fields require the four
+    aligned *_adj closes (captured together in paper_run); None when unavailable.
+    """
     entry_price    = position["entry_price"]
     spy_entry      = position["spy_entry_price"]
+    if cost_bps is None:
+        cost_bps = _paper_cost_bps()
+    rt_cost = 2 * cost_bps / 1e4
+
     return_pct     = float(exit_price) / entry_price - 1.0
     spy_return_pct = float(spy_exit_price) / spy_entry - 1.0
     alpha          = return_pct - spy_return_pct
 
-    return {
+    tr = None
+    if None not in (entry_price_adj, exit_price_adj, spy_entry_adj, spy_exit_adj):
+        tr = tr_fields(entry_price_adj, exit_price_adj, spy_entry_adj, spy_exit_adj, cost_bps)
+
+    record = {
         "ticker":          position["ticker"],
         "cohort":          position.get("cohort"),   # inherit the position's cohort
         "direction":       position["direction"],
@@ -119,8 +181,19 @@ def close_position(
         "return_pct":      round(return_pct, 6),
         "spy_return_pct":  round(spy_return_pct, 6),
         "alpha":           round(alpha, 6),
+        # ── honest accounting (additive) ──
+        "cost_bps":        cost_bps,
+        "return_pct_net":  round(return_pct - rt_cost, 6),
+        "alpha_net":       round(alpha - rt_cost, 6),
+        "return_pct_tr":     (tr or {}).get("return_pct_tr"),
+        "spy_return_tr":     (tr or {}).get("spy_return_tr"),
+        "alpha_tr":          (tr or {}).get("alpha_tr"),
+        "return_pct_tr_net": (tr or {}).get("return_pct_tr_net"),
+        "alpha_tr_net":      (tr or {}).get("alpha_tr_net"),
+        "capture_basis":     (tr or {}).get("capture_basis", "spot_only"),
         "constraints":     _CONSTRAINTS,
     }
+    return record
 
 
 # ─── Core processing (pure — no I/O) ─────────────────────────────────────────
