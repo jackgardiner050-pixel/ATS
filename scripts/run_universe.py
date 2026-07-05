@@ -20,6 +20,7 @@ print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
 import yaml
 from src.io_utils import append_jsonl
 from src.orchestrator import run_pipeline
+from src.universe.admission import check_market_cap_admission, fetch_market_cap
 from src.cadence import (
     load_state, is_due, update_state, apply_force,
     compute_next_due, save_state,
@@ -99,6 +100,11 @@ def main():
     if args.limit:
         tickers = tickers[:args.limit]
 
+    # Load screener settings (market-cap admission band — PART A)
+    _settings_path = Path(__file__).parent.parent / "config" / "settings.yaml"
+    with open(_settings_path) as f:
+        screener_settings = (yaml.safe_load(f) or {}).get("screener", {})
+
     # Load cadence state
     state = load_state()
 
@@ -120,6 +126,7 @@ def main():
     n_screened = 0
     n_skipped = 0
     n_broken = 0
+    n_excluded_mcap = 0
 
     # ─── Phase 1: Valuation pipeline ─────────────────────────────────────────
     for i, ticker in enumerate(tickers, 1):
@@ -148,6 +155,22 @@ def main():
                 print(f"[{i}/{n_total}] {ticker:<6} SKIPPED  (next due {rec.get('next_due_date', '?')})")
             continue
 
+        # ── Market-cap admission (PART A) — exclude out-of-band names pre-rating ──
+        market_cap = fetch_market_cap(ticker)
+        admitted, mcap_reason = check_market_cap_admission(ticker, market_cap, screener_settings)
+        if not admitted:
+            n_excluded_mcap += 1
+            print(f"[{i}/{n_total}] {ticker:<6} EXCLUDED_MCAP ({mcap_reason}, mcap={market_cap})")
+            results.append({
+                "ticker": ticker, "rating": "EXCLUDED", "confidence": "?",
+                "current_price": None, "price_target": None, "expected_return": None,
+                "status": "EXCLUDED_MCAP", "ok": True,
+                "exclusion_reason": mcap_reason, "market_cap": market_cap,
+                "momentum_quintile": None, "revision_direction": None,
+            })
+            continue
+        mcap_unverified = (mcap_reason == "mcap_unverified")
+
         status = "FORCED" if forced else "DUE"
         print(f"[{i}/{n_total}] {ticker}...", end=" ", flush=True)
         try:
@@ -168,6 +191,8 @@ def main():
                 "ok": True,
                 "cohort_outlier": r.get("assumptions", {}).get("cohort_outlier", False),
                 "_run_dir": r.get("_run_dir"),
+                "market_cap": market_cap,
+                "mcap_unverified": mcap_unverified,
                 "momentum_quintile": None,    # filled in Phase 3
                 "revision_direction": None,   # filled in Phase 3
             })
@@ -187,7 +212,7 @@ def main():
 
     # ─── Phase 2: Universe momentum (single batch) ───────────────────────────
     screened_tickers = [r["ticker"] for r in results
-                        if r.get("ok") and r.get("status") not in ("SKIPPED", "ERROR")]
+                        if r.get("ok") and r.get("status") not in ("SKIPPED", "ERROR", "EXCLUDED_MCAP")]
     if screened_tickers:
         print(f"\n  Computing 12m momentum for {len(tickers)} universe tickers...")
         momentum_data = compute_universe_momentum(tickers)
@@ -202,7 +227,7 @@ def main():
         print(f"  Computing analyst revisions + confidence escalation...")
 
     for entry in results:
-        if not entry.get("ok") or entry.get("status") in ("SKIPPED", "ERROR"):
+        if not entry.get("ok") or entry.get("status") in ("SKIPPED", "ERROR", "EXCLUDED_MCAP"):
             # Carry forward momentum for skipped tickers (for display)
             if entry.get("status") == "SKIPPED":
                 mom = momentum_data.get(entry["ticker"], {})
@@ -280,7 +305,7 @@ def main():
 
     print()
     print("=" * 90)
-    print(f"  SCREEN SUMMARY — {n_total} tickers  |  screened={n_screened}  skipped={n_skipped}  broken={n_broken}")
+    print(f"  SCREEN SUMMARY — {n_total} tickers  |  screened={n_screened}  skipped={n_skipped}  broken={n_broken}  excluded_mcap={n_excluded_mcap}")
     print("=" * 90)
 
     hdr = f"  {'Ticker':<8} {'Status':<8} {'Rating':<14} {'Conf':<7} {'Mom':>4} {'Rev':>4} {'Price':>10} {'PT':>10} {'Return':>10}"
@@ -341,7 +366,8 @@ def main():
     with open(screen_dir / "summary.json", "w") as f:
         json.dump(
             {"timestamp": ts, "results": results,
-             "stats": {"screened": n_screened, "skipped": n_skipped, "broken": n_broken},
+             "stats": {"screened": n_screened, "skipped": n_skipped, "broken": n_broken,
+                       "excluded_mcap": n_excluded_mcap},
              "confidence_changes": confidence_changes},
             f, indent=2, default=str,
         )

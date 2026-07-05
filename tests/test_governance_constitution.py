@@ -237,3 +237,18 @@ class TestConfidenceQuality:
 
     def test_empty_counts_returns_no_warnings(self):
         assert check_confidence_quality({}, _valid_constitution()) == []
+
+
+class TestScreenerMarketCapFloor:
+    """Read-only invariant (PART A): the documented micro-cap floor stays sane.
+
+    Asserts config/settings.yaml min_market_cap_usd >= 100M. This never edits the
+    yaml (that file is protocol-locked) — it only reads and asserts.
+    """
+
+    def test_settings_min_market_cap_floor_at_least_100m(self):
+        settings_path = Path(__file__).parent.parent / "config" / "settings.yaml"
+        settings = yaml.safe_load(settings_path.read_text())
+        raw = settings["screener"]["min_market_cap_usd"]
+        floor = float(str(raw).replace("_", ""))   # tolerate underscore-string
+        assert floor >= 100_000_000, f"min_market_cap_usd too low: {floor}"
