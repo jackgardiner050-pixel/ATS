@@ -58,6 +58,51 @@ def should_exit(rating: str) -> bool:
     return rating not in ("STRONG_BUY", "BUY")
 
 
+# ─── Exit rules v2 (feature-flagged OFF — see config/settings.yaml exit_rules_v2) ──
+#
+# PLACEHOLDER defaults below are NOT derived from the live book / realized P&L — they
+# are round, conservative starting points that need human calibration before the flag
+# is ever turned on.
+DEFAULT_EXIT_V2_PARAMS = {
+    "pt_fraction": 1.0,     # PT_HIT at 100% of target — PLACEHOLDER, needs human calibration
+    "max_hold_days": 365,   # TIME_STOP after 1y — PLACEHOLDER
+    "stale_days": 28,       # STALE after 28d unscreened — PLACEHOLDER (matches cadence table)
+    "last_screened": {},    # {ticker: iso date}, resolved from data/screen_state.yaml by caller
+}
+
+
+def _to_date(v):
+    if v is None:
+        return None
+    if isinstance(v, date):
+        return v
+    try:
+        return date.fromisoformat(str(v)[:10])
+    except ValueError:
+        return None
+
+
+def evaluate_exit_v2(position: dict, price, rating: str, today: date, params: dict):
+    """Pure exit evaluator. Returns (should_close: bool, reason: str|None).
+
+    Precedence: RATING_DOWNGRADE > PT_HIT > TIME_STOP > STALE. Reads no realized P&L.
+    RATING_DOWNGRADE reuses the existing should_exit rule, unchanged.
+    """
+    p = params or DEFAULT_EXIT_V2_PARAMS
+    if should_exit(rating):
+        return True, "RATING_DOWNGRADE"
+    pt = position.get("price_target")
+    if price is not None and pt and float(price) >= float(pt) * p.get("pt_fraction", 1.0):
+        return True, "PT_HIT"
+    entry = _to_date(position.get("entry_date"))
+    if entry and (today - entry).days > p.get("max_hold_days", 365):
+        return True, "TIME_STOP"
+    ls = _to_date(p.get("last_screened", {}).get(position.get("ticker")))
+    if ls and (today - ls).days > p.get("stale_days", 28):
+        return True, "STALE"
+    return False, None
+
+
 # ─── Position lifecycle ───────────────────────────────────────────────────────
 
 def open_position(
@@ -138,6 +183,7 @@ def close_position(
     exit_price_adj: Optional[float] = None,
     spy_entry_adj: Optional[float] = None,
     spy_exit_adj: Optional[float] = None,
+    exit_reason: Optional[str] = None,
 ) -> dict:
     """Compute returns + SPY alpha, return a closed trade record. Pure (only a
     cached config read for the default cost).
@@ -191,6 +237,7 @@ def close_position(
         "return_pct_tr_net": (tr or {}).get("return_pct_tr_net"),
         "alpha_tr_net":      (tr or {}).get("alpha_tr_net"),
         "capture_basis":     (tr or {}).get("capture_basis", "spot_only"),
+        "exit_reason":       exit_reason,
         "constraints":     _CONSTRAINTS,
     }
     return record
@@ -203,6 +250,9 @@ def process_screener_results(
     current_positions: dict[str, dict],
     spy_price: float,
     today: str,
+    exit_rules_v2: bool = False,
+    exit_v2_params: Optional[dict] = None,
+    price_lookup=None,
 ) -> tuple[dict[str, dict], list[dict], list[str], list[str]]:
     """Apply entry/exit rules to fresh screener output.
 
@@ -210,12 +260,20 @@ def process_screener_results(
     Skipped tickers leave existing positions undisturbed — we wait for the
     next screen before deciding to close.
 
+    exit_rules_v2 (default OFF): when True, exits are decided by evaluate_exit_v2 and
+    ALL open positions are evaluated every run (including SKIPPED / unscreened tickers,
+    priced via price_lookup). Flag OFF is byte-identical to the original behavior.
+
     Returns (new_positions, closed_trades, opened_tickers, closed_tickers).
     """
     positions = dict(current_positions)
     closed_trades: list[dict] = []
     opened: list[str] = []
     closed: list[str] = []
+
+    _today_date = date.fromisoformat(today) if exit_rules_v2 else None
+    _v2_params = (exit_v2_params or DEFAULT_EXIT_V2_PARAMS) if exit_rules_v2 else None
+    _evaluated: set[str] = set()
 
     for r in screener_results:
         if not r.get("ok") or r.get("status") in ("SKIPPED", "ERROR"):
@@ -230,13 +288,19 @@ def process_screener_results(
             continue
 
         if ticker in positions:
-            if should_exit(rating):
+            if exit_rules_v2:
+                _close, _reason = evaluate_exit_v2(positions[ticker], price, rating, _today_date, _v2_params)
+                _evaluated.add(ticker)
+            else:
+                _close, _reason = should_exit(rating), None
+            if _close:
                 trade = close_position(
                     positions[ticker],
                     exit_date=today,
                     exit_price=price,
                     exit_rating=rating,
                     spy_exit_price=spy_price,
+                    exit_reason=_reason,
                 )
                 closed_trades.append(trade)
                 closed.append(ticker)
@@ -254,6 +318,27 @@ def process_screener_results(
                     spy_entry_price=spy_price,
                 )
                 opened.append(ticker)
+
+    # exit_rules_v2 second pass — positions not seen in this screen (SKIPPED/unscreened)
+    if exit_rules_v2:
+        for ticker in list(positions.keys()):
+            if ticker in _evaluated:
+                continue
+            pos = positions[ticker]
+            price = price_lookup(ticker) if price_lookup else None
+            if price is None:
+                logger.warning("exit_rules_v2: no price for %s — holding", ticker)
+                continue
+            rating = pos.get("entry_rating", "?")
+            _close, _reason = evaluate_exit_v2(pos, price, rating, _today_date, _v2_params)
+            if _close:
+                trade = close_position(
+                    pos, exit_date=today, exit_price=price, exit_rating=rating,
+                    spy_exit_price=spy_price, exit_reason=_reason,
+                )
+                closed_trades.append(trade)
+                closed.append(ticker)
+                del positions[ticker]
 
     return positions, closed_trades, opened, closed
 

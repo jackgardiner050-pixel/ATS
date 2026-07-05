@@ -18,6 +18,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from scripts._common import get_print
@@ -46,6 +48,30 @@ def _adj_close_on(ticker: str, day: str):
         return float(h["Close"].iloc[0]) if h is not None and not h.empty else None
     except Exception:
         return None
+
+
+def _previous_close(ticker: str):
+    """yfinance previousClose for the exit-rules-v2 fallback price. None on failure."""
+    try:
+        import yfinance as yf
+        v = (yf.Ticker(ticker).info or {}).get("previousClose")
+        return float(v) if v else None
+    except Exception:
+        return None
+
+
+def _exit_v2_config():
+    """(enabled, params, price_lookup) for exit_rules_v2. Dormant while the flag is
+    false in config/settings.yaml (the committed default)."""
+    settings = yaml.safe_load(
+        (Path(__file__).parent.parent / "config" / "settings.yaml").read_text()) or {}
+    if not settings.get("exit_rules_v2", False):
+        return False, None, None
+    from src.paper_trading import DEFAULT_EXIT_V2_PARAMS
+    from src.cadence import load_state
+    state = load_state()
+    last_screened = {t: rec.get("last_screen_date") for t, rec in state.items()}
+    return True, {**DEFAULT_EXIT_V2_PARAMS, "last_screened": last_screened}, _previous_close
 
 
 def _fetch_aligned_adjusted(ticker: str, entry_date: str, exit_date: str):
@@ -89,8 +115,12 @@ def main() -> None:
     current_positions = load_positions()
     print(f"  Open positions before run: {len(current_positions)}")
 
+    _v2_on, _v2_params, _v2_lookup = _exit_v2_config()
+    if _v2_on:
+        print("  exit_rules_v2: ON")
     new_positions, closed_trades, opened, closed = process_screener_results(
-        results, current_positions, spy_price, today
+        results, current_positions, spy_price, today,
+        exit_rules_v2=_v2_on, exit_v2_params=_v2_params, price_lookup=_v2_lookup,
     )
 
     # ── Attribution snapshot (PART E, additive) ────────────────────────────────

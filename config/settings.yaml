@@ -33,6 +33,12 @@ screener:
   max_market_cap_usd: 200_000_000_000  # ignore mega-caps
   peer_match_method: "sic"      # match peers by SIC industry code
 
+# Exit-model v2 (PT_HIT / TIME_STOP / STALE alongside RATING_DOWNGRADE).
+# DEFAULT OFF — must stay false until the PLACEHOLDER thresholds in
+# src/paper_trading.DEFAULT_EXIT_V2_PARAMS are calibrated by a human. When false,
+# exit behavior is byte-identical to the original RATING_DOWNGRADE-only rule.
+exit_rules_v2: false
+
 # Telegram cockpit — Phase 1 (weekly digest + rating change alerts)
 # Credentials come from .env on the droplet (never committed to git).
 telegram:
