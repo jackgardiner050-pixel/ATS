@@ -71,6 +71,11 @@ fi
 log "Step 5: generate_dashboard.py"
 python3 scripts/generate_dashboard.py 2>&1 | tee -a "${LOGFILE}"
 
+# ── 5b. Backup data/ ──────────────────────────────────────────────────────────
+log "Step 5b: backup_data.py"
+python3 scripts/backup_data.py 2>&1 | tee -a "${LOGFILE}" || \
+  log "WARNING: backup_data.py exited non-zero — continuing"
+
 # ── 6. Git commit + push ──────────────────────────────────────────────────────
 log "Step 6: git commit + push"
 cd "${REPO_ROOT}"
