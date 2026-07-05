@@ -18,6 +18,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from scripts._common import get_print
+print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
+
 try:
     import yfinance as yf
 except ImportError:

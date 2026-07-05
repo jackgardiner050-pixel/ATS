@@ -29,6 +29,8 @@ from __future__ import annotations
 import json
 import math
 from datetime import datetime, timedelta, UTC
+
+from src.io_utils import append_jsonl
 from pathlib import Path
 from typing import Optional
 
@@ -382,8 +384,7 @@ def log_regime(result: dict, path: Path | None = None) -> None:
     """Append one regime classification result to regime_log.jsonl."""
     log_path = path or _REGIME_LOG
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(log_path, "a") as f:
-        f.write(json.dumps(result) + "\n")
+    append_jsonl(log_path, result)
 
 
 def run_regime_engine(persist: bool = True) -> dict:

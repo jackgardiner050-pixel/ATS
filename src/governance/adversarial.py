@@ -21,6 +21,8 @@ from __future__ import annotations
 import json
 import os
 from datetime import datetime, UTC
+
+from src.io_utils import append_jsonl
 from pathlib import Path
 from typing import Optional
 
@@ -221,8 +223,7 @@ def run_adversarial_review(
 def _persist(result: dict) -> None:
     """Append to adversarial_log.jsonl only — never touch core data."""
     _DATA_PATH.mkdir(parents=True, exist_ok=True)
-    with open(_ADVERSARIAL_LOG, "a") as f:
-        f.write(json.dumps(result) + "\n")
+    append_jsonl(_ADVERSARIAL_LOG, result)
 
 
 def load_latest_adversarial(path: Path | None = None) -> Optional[dict]:

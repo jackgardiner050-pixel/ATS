@@ -20,6 +20,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from scripts._common import get_print
+print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
+
 from src.paper_trading import (
     fetch_spy_price,
     load_positions,

@@ -23,6 +23,9 @@ from pathlib import Path
 _ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(_ROOT))
 
+from scripts._common import get_print
+print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
+
 from src.governance.constitution import load_constitution, run_all_checks
 from src.governance.regime import run_regime_engine
 from src.governance.exposure import run_exposure_analysis

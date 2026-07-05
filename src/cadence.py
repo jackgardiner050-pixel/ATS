@@ -11,6 +11,8 @@ from typing import Optional
 
 import yaml
 
+from src.io_utils import atomic_write_text
+
 STATE_PATH = Path(__file__).parent.parent / "data" / "screen_state.yaml"
 
 # Cadence table: (rating, confidence) → interval in days
@@ -57,10 +59,9 @@ def load_state(path: Optional[Path] = None) -> dict[str, dict]:
 def save_state(state: dict[str, dict], path: Optional[Path] = None) -> None:
     """Persist state dict to screen_state.yaml."""
     p = path or STATE_PATH
-    p.parent.mkdir(parents=True, exist_ok=True)
     records = sorted(state.values(), key=lambda r: r.get("ticker", ""))
-    with open(p, "w") as f:
-        yaml.dump({"state": records}, f, default_flow_style=False, sort_keys=False)
+    text = yaml.dump({"state": records}, default_flow_style=False, sort_keys=False)
+    atomic_write_text(p, text)
 
 
 def compute_next_due(rating: str, confidence: str, last_screen_date: date) -> date:

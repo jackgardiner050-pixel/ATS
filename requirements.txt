@@ -1,14 +1,52 @@
-# Pinned to known-good version — edgartools upstream has had silent behavioral
-# changes between minor releases (EDGAR filing parser internals, XML schema handling).
-# Do not loosen this pin without running the full test suite against the new version.
+# Runtime dependencies — pinned to the exact versions currently installed and
+# importable in this environment (a `pip freeze` filtered to packages actually
+# imported by src/ and scripts/). Regenerate the pins after any deliberate
+# upgrade; re-run the full test suite before committing a bump.
+#
+# Direct imports were verified with:
+#   grep -rE '(import|from) <pkg>' src/ scripts/ gaia/
+# Anything not imported (numpy, matplotlib, python-dateutil, python-telegram-bot)
+# was dropped — see the notes at the bottom.
+
+# --- Core data / SEC ---------------------------------------------------------
+# edgartools: EDGAR/XBRL financial-statement extraction (src/data/edgar_client.py).
+# Upstream has had silent behavioral changes between minor releases (filing
+# parser internals, XML schema handling) — do NOT loosen this pin without
+# running the full test suite against the new version.
 edgartools==5.31.5
-openpyxl>=3.1
-pandas>=2.0
-numpy>=1.26
-matplotlib>=3.8
-pyyaml>=6.0
-python-dateutil>=2.8
-requests>=2.31
-anthropic>=0.34  # optional, for LLM narrative
-yfinance>=0.2.43  # for live market prices
-python-telegram-bot>=20.3  # Phase 1: weekly digest + alerts (send-only)
+
+# pandas: DataFrame handling for EDGAR history and price/return math
+# (src/data/edgar_client.py, scripts/fetch_live_prices.py, scripts/publish_gaia.py).
+# Pulls numpy in transitively — numpy is not imported directly, so it is not pinned here.
+pandas==3.0.3
+
+# openpyxl: writes the financial model workbook model.xlsx
+# (src/agents/model.py, src/agents/valuation.py).
+openpyxl==3.1.5
+
+# pyyaml: reads/writes every config/*.yaml and data/*.yaml (universe, peers,
+# screen_state, paper_positions, ...). Imported as `yaml` across 17 files.
+pyyaml==6.0.3
+
+# --- Market data -------------------------------------------------------------
+# yfinance: live prices, 5d liveness checks, momentum, earnings calendar
+# (src/paper_trading.py, src/cadence.py, src/signals/*, ...). 16 files.
+yfinance==1.4.0
+
+# --- Networking --------------------------------------------------------------
+# requests: send-only Telegram HTTP calls (src/telegram/client.py). The
+# python-telegram-bot library is NOT used — the client posts via the Bot API
+# with plain requests, so only requests is required.
+requests==2.34.2
+
+# --- Optional: LLM narrative / adversarial critique --------------------------
+# anthropic: only imported by src/governance/adversarial.py, and only exercised
+# when --adversarial is passed with ANTHROPIC_API_KEY set. Optional at runtime,
+# but pinned so the optional path is reproducible.
+anthropic==0.104.1
+
+# --- Dropped (were listed before but not imported by any module) -------------
+#   numpy               — transitive via pandas; not imported directly
+#   matplotlib          — charts agent is planned, not built (no import today)
+#   python-dateutil     — not imported; datetime stdlib is used throughout
+#   python-telegram-bot — superseded by plain `requests` in src/telegram/client.py
