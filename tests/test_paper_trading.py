@@ -17,6 +17,8 @@ from src.paper_trading import (
     save_positions,
     load_trades,
     append_trade,
+    validate_position,
+    validate_trade,
 )
 
 
@@ -325,6 +327,182 @@ def test_load_trades_missing_file(tmp_path):
     print("  ✓ load_trades returns empty list for missing file")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# Coverage gaps — NaN, SKIPPED-hold, duplicate rows, empty input, precision
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_process_skips_nan_price():
+    """A NaN current_price must be skipped (no open), like None."""
+    results = [_make_result("ACM", "STRONG_BUY", "MED", price=float("nan"))]
+    positions, closed, opened, _ = process_screener_results(results, {}, 500.0, "2025-04-01")
+    assert positions == {}
+    assert opened == []
+    print("  ✓ NaN current_price is skipped (no open)")
+
+
+def test_skipped_status_holds_existing_position():
+    """A SKIPPED row for an existing position holds it — no close, unchanged."""
+    existing = {"ACM": _make_position("ACM", entry_price=72.0)}
+    results = [_make_result("ACM", "STRONG_SELL", "HIGH", price=60.0, status="SKIPPED")]
+    positions, closed_trades, opened, closed = process_screener_results(
+        results, existing, 500.0, "2025-05-01"
+    )
+    assert "ACM" in positions
+    assert positions["ACM"]["entry_price"] == 72.0   # untouched
+    assert not closed_trades and not opened and not closed
+    print("  ✓ SKIPPED row holds an existing position (no close even on STRONG_SELL)")
+
+
+def test_process_duplicate_ticker_first_opens_rest_hold():
+    """Duplicate STRONG_BUY rows → one position; first occurrence sets entry data.
+
+    Defined behavior: positions is keyed by ticker, so a ticker can never open
+    twice. The first eligible row opens it; a later same-ticker STRONG_BUY row
+    finds it already open and holds (idempotent), so the FIRST row's entry_price
+    is the one retained.
+    """
+    results = [
+        _make_result("ACM", "STRONG_BUY", "MED", price=72.0),
+        _make_result("ACM", "STRONG_BUY", "MED", price=99.0),   # duplicate
+    ]
+    positions, closed_trades, opened, closed = process_screener_results(
+        results, {}, 500.0, "2025-04-01"
+    )
+    assert list(positions.keys()) == ["ACM"]
+    assert opened == ["ACM"]                 # opened exactly once
+    assert positions["ACM"]["entry_price"] == 72.0   # first row wins
+    assert not closed_trades
+    print("  ✓ duplicate STRONG_BUY rows → single position, first row's entry retained")
+
+
+def test_process_duplicate_ticker_downgrade_after_open_closes():
+    """Rows apply in order: an open followed by a same-ticker downgrade closes it."""
+    results = [
+        _make_result("ACM", "STRONG_BUY", "MED", price=72.0),   # opens
+        _make_result("ACM", "HOLD", "MED", price=80.0),         # then downgrades → close
+    ]
+    positions, closed_trades, opened, closed = process_screener_results(
+        results, {}, 500.0, "2025-04-01"
+    )
+    assert "ACM" not in positions
+    assert opened == ["ACM"]
+    assert closed == ["ACM"]
+    assert len(closed_trades) == 1
+    assert closed_trades[0]["entry_price"] == 72.0   # entry from the opening row
+    print("  ✓ duplicate rows apply in order: open then downgrade → closed")
+
+
+def test_process_empty_screener_results_noop():
+    """Empty screener output leaves existing positions untouched, opens/closes nothing."""
+    existing = {"ACM": _make_position("ACM", entry_price=72.0)}
+    positions, closed_trades, opened, closed = process_screener_results(
+        [], existing, 500.0, "2025-04-01"
+    )
+    assert positions == existing
+    assert not closed_trades and not opened and not closed
+    print("  ✓ empty screener results → no-op")
+
+
+def test_yaml_roundtrip_preserves_price_target_precision(tmp_path):
+    """price_target float precision survives a save → load round-trip."""
+    p = tmp_path / "positions.yaml"
+    pos = open_position(
+        ticker="ACM", entry_date="2025-01-01", entry_price=100.0,
+        entry_rating="STRONG_BUY", entry_confidence="MED",
+        price_target=123.456789012345, spy_entry_price=503.121314,
+    )
+    save_positions({"ACM": pos}, path=p)
+    loaded = load_positions(path=p)
+    assert loaded["ACM"]["price_target"] == 123.456789012345
+    assert loaded["ACM"]["spy_entry_price"] == 503.121314
+    print("  ✓ YAML round-trip preserves price_target float precision")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Schema validation + malformed-record resilience
+# ─────────────────────────────────────────────────────────────────────────────
+
+def test_validate_position_accepts_valid_record():
+    validate_position(_make_position("ACM"))   # must not raise
+    print("  ✓ validate_position accepts a well-formed record")
+
+
+def test_validate_position_rejects_missing_key_and_bad_type():
+    import pytest
+    with pytest.raises(ValueError):
+        validate_position({"ticker": "ACM"})                     # missing keys
+    bad = _make_position("ACM")
+    bad["entry_price"] = "cheap"                                  # wrong type
+    with pytest.raises(ValueError):
+        validate_position(bad)
+    with pytest.raises(ValueError):
+        validate_position("not a dict")
+    print("  ✓ validate_position rejects missing keys / wrong types / non-dict")
+
+
+def test_validate_trade_accepts_and_rejects():
+    import pytest
+    pos = _make_position("ACM", entry_price=100.0, spy_entry=500.0)
+    trade = close_position(pos, "2025-05-01", 115.0, "HOLD", 510.0)
+    validate_trade(trade)                                        # must not raise
+    del trade["alpha"]
+    with pytest.raises(ValueError):
+        validate_trade(trade)
+    print("  ✓ validate_trade accepts a real trade, rejects a missing field")
+
+
+def test_load_trades_skips_malformed_lines(tmp_path):
+    """Bad JSON and schema-invalid lines are skipped, not fatal; line numbers logged."""
+    pos = _make_position("ACM", entry_price=100.0, spy_entry=500.0)
+    import json
+    good = json.dumps(close_position(pos, "2025-05-01", 115.0, "HOLD", 510.0))
+    p = tmp_path / "trades.jsonl"
+    p.write_text(good + "\n" + "{ this is not json\n" + '{"ticker": "X"}\n' + good + "\n")
+    loaded = load_trades(path=p)
+    assert len(loaded) == 2                     # only the two valid lines survive
+    assert all(t["ticker"] == "ACM" for t in loaded)
+    print("  ✓ load_trades skips malformed lines, never crashes")
+
+
+def test_load_positions_skips_invalid_record(tmp_path):
+    import yaml
+    good = _make_position("GOOD")
+    p = tmp_path / "positions.yaml"
+    p.write_text(yaml.dump({"positions": [good, {"ticker": "BAD"}]}))
+    loaded = load_positions(path=p)
+    assert set(loaded.keys()) == {"GOOD"}       # BAD (missing keys) dropped
+    print("  ✓ load_positions skips schema-invalid records")
+
+
+def test_save_positions_crash_between_tmp_and_replace_keeps_valid_file(tmp_path, monkeypatch):
+    """Simulate kill -9 after the tmp write but before os.replace.
+
+    The target positions file must remain the previous *valid* content — never a
+    truncated half-write — and the incomplete write must live in the .tmp sidecar.
+    """
+    import src.io_utils as io_utils
+    p = tmp_path / "positions.yaml"
+    save_positions({"ACM": _make_position("ACM", entry_price=100.0)}, path=p)
+    original = p.read_text()
+
+    def _boom(src, dst):
+        raise OSError("simulated crash mid-save")
+
+    monkeypatch.setattr(io_utils.os, "replace", _boom)
+    try:
+        save_positions({"ACM": _make_position("ACM", entry_price=999.0)}, path=p)
+    except OSError:
+        pass  # the crash we simulated
+
+    # Target untouched and still loads as the OLD, valid book.
+    assert p.read_text() == original
+    loaded = load_positions(path=p)
+    assert loaded["ACM"]["entry_price"] == 100.0
+    # The partial write went to the sidecar, not the live file.
+    assert (tmp_path / "positions.yaml.tmp").exists()
+    print("  ✓ crash between tmp-write and replace never truncates the live file")
+
+
 if __name__ == "__main__":
     import tempfile, pathlib
 
@@ -352,6 +530,14 @@ if __name__ == "__main__":
     test_process_skips_error_tickers()
     test_process_skips_none_price()
     test_idempotency_paper_run_twice_no_changes()
+    test_process_skips_nan_price()
+    test_skipped_status_holds_existing_position()
+    test_process_duplicate_ticker_first_opens_rest_hold()
+    test_process_duplicate_ticker_downgrade_after_open_closes()
+    test_process_empty_screener_results_noop()
+    test_validate_position_accepts_valid_record()
+    test_validate_position_rejects_missing_key_and_bad_type()
+    test_validate_trade_accepts_and_rejects()
 
     with tempfile.TemporaryDirectory() as td:
         tp = pathlib.Path(td)
@@ -359,5 +545,10 @@ if __name__ == "__main__":
         test_append_and_load_trades(tp)
         test_load_positions_missing_file(tp)
         test_load_trades_missing_file(tp)
+        test_yaml_roundtrip_preserves_price_target_precision(tp)
+        test_load_trades_skips_malformed_lines(tp)
+        test_load_positions_skips_invalid_record(tp)
 
+    # Note: test_save_positions_crash_between_tmp_and_replace_keeps_valid_file
+    # uses pytest's monkeypatch fixture — run it via `pytest` (not this __main__).
     print("All paper trading tests passed.")
