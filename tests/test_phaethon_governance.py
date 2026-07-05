@@ -23,13 +23,25 @@ SCREENER = {"min_market_cap_usd": 500_000_000, "max_market_cap_usd": 200_000_000
 
 # ─── ACCEPTANCE: current Arm B data → NONCONFORMING banner ───────────────────
 
-def test_current_arm_b_data_is_nonconforming():
+def test_restated_arm_b_leverage_fixed_concentration_still_flags():
+    """Post-cash-fix: the LIVE arm B series is restated — leverage resolved (≤100%), but
+    still NONCONFORMING for concentration (new info, not the leverage bug)."""
     d = json.loads((ROOT / "docs" / "data" / "phaethon_b_live.json").read_text())
+    assert "restated" in d and "cash-accounting bug fixed" in d["restated"]
     gov = run_governance(d["holdings"], SCREENER, CONSTITUTION, check_mcap=False)
-    assert gov["conforming"] is False
-    assert gov["status"].startswith("NONCONFORMING — ")
-    assert "gross exposure 138.0%" in gov["status"]     # cash −38% → 138% gross
-    print(f"  ✓ current arm B → {gov['status'][:60]}…")
+    assert gov["gross_exposure_pct"] <= 100.5              # leverage FIXED
+    assert gov["conforming"] is False and "MAX_SINGLE_POSITION" in gov["status"]  # concentration
+    print(f"  ✓ restated arm B: leverage fixed, still flags concentration — {gov['status'][:50]}…")
+
+
+def test_archived_pre_restatement_arm_b_shows_original_138pct():
+    """The original (pre-restatement) figures are preserved in the archive: the 138%
+    leverage bug is auditable, not silently rewritten."""
+    arch = ROOT / "docs/data/archive/phaethon_b_live_pre_restatement_2026-07-05.json"
+    d = json.loads(arch.read_text())
+    gov = run_governance(d["holdings"], SCREENER, CONSTITUTION, check_mcap=False)
+    assert "gross exposure 138.0%" in gov["status"]        # the original bug, archived
+    print("  ✓ archive preserves the original 138% leverage (auditable)")
 
 
 def test_leverage_conforming_when_under_100():
@@ -89,15 +101,21 @@ def test_arm_b_labels_and_cohort():
     print("  ✓ arm B → aggressive-B / phaethon_b")
 
 
-def test_assemble_arm_injects_status_and_validates():
-    bk = _book(-38.0, {"X": (1.0, 138.0, 100.0)})   # 138% gross → NONCONFORMING
-    out = assemble_arm({"n_positions": 1}, bk, "B", SCREENER, CONSTITUTION,
+def test_assemble_arm_restates_bounds_and_validates():
+    # leveraged book (bought 2×6000 on ~10000) → restatement rejects the over-cash buy,
+    # so gross exposure is brought back within 100% (leverage fix applied on publish).
+    bk = {"cash": -2000.0, "holdings": {
+        "A": {"shares": 1, "entry_price": 6000, "last_price": 6100, "entry_date": "2026-06-24"},
+        "B": {"shares": 1, "entry_price": 6000, "last_price": 5900, "entry_date": "2026-06-29"}}}
+    out = assemble_arm({"n_positions": 2}, bk, "B", SCREENER, CONSTITUTION,
                        check_mcap=False, as_of="2026-07-05")
-    assert out["status"].startswith("NONCONFORMING")
-    assert out["governance"]["gross_exposure_pct"] == 138.0
+    assert out["restated"].startswith("restated 2026-07-05, cash-accounting bug fixed")
+    assert [r["ticker"] for r in out["restated_rejected_over_cash"]] == ["B"]   # over-cash rejected
+    assert out["governance"]["gross_exposure_pct"] <= 100.5                     # leverage fixed
+    assert out["n_positions"] == len(out["holdings"]) == 1
     for h in out["holdings"]:
-        validate_phaethon_holding(h)              # cohort-tagged, valid
-    print("  ✓ assemble_arm injects status + passes cohort validation")
+        validate_phaethon_holding(h)
+    print("  ✓ assemble_arm restates (rejects over-cash), bounds gross, tags cohort")
 
 
 # ─── schema + sanitize ───────────────────────────────────────────────────────

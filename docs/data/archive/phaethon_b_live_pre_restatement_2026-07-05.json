@@ -1,0 +1,124 @@
+{
+  "arm": "aggressive-B",
+  "label": "Aggressive (B)",
+  "mandate": "+10%/qtr, concentrated",
+  "n_positions": 17,
+  "holdings": [
+    {
+      "ticker": "CEG",
+      "bought_at": 254.83,
+      "last": 239.25,
+      "weight_pct": 13.5
+    },
+    {
+      "ticker": "GEV",
+      "bought_at": 933.61,
+      "last": 1113.11,
+      "weight_pct": 8.4
+    },
+    {
+      "ticker": "COHR",
+      "bought_at": 376.99,
+      "last": 333.36,
+      "weight_pct": 5.9
+    },
+    {
+      "ticker": "VRT",
+      "bought_at": 300.57,
+      "last": 300.53,
+      "weight_pct": 7.5
+    },
+    {
+      "ticker": "GOOGL",
+      "bought_at": 363.31,
+      "last": 359.91,
+      "weight_pct": 13.7
+    },
+    {
+      "ticker": "ANET",
+      "bought_at": 169.09,
+      "last": 159.99,
+      "weight_pct": 8.2
+    },
+    {
+      "ticker": "VST",
+      "bought_at": 153.52,
+      "last": 151.05,
+      "weight_pct": 8.2
+    },
+    {
+      "ticker": "TSM",
+      "bought_at": 467.67,
+      "last": 434.16,
+      "weight_pct": 8.7
+    },
+    {
+      "ticker": "MU",
+      "bought_at": 1211.38,
+      "last": 975.56,
+      "weight_pct": 0.8
+    },
+    {
+      "ticker": "AMZN",
+      "bought_at": 232.79,
+      "last": 242.67,
+      "weight_pct": 10.6
+    },
+    {
+      "ticker": "MSFT",
+      "bought_at": 367.34,
+      "last": 390.49,
+      "weight_pct": 9.2
+    },
+    {
+      "ticker": "PLTR",
+      "bought_at": 119.5,
+      "last": 129.3,
+      "weight_pct": 6.5
+    },
+    {
+      "ticker": "FSLR",
+      "bought_at": 232.8,
+      "last": 224.57,
+      "weight_pct": 8.6
+    },
+    {
+      "ticker": "ENPH",
+      "bought_at": 48.34,
+      "last": 43.07,
+      "weight_pct": 6.0
+    },
+    {
+      "ticker": "REGN",
+      "bought_at": 631.81,
+      "last": 654.27,
+      "weight_pct": 7.8
+    },
+    {
+      "ticker": "JPM",
+      "bought_at": 329.39,
+      "last": 334.47,
+      "weight_pct": 6.9
+    },
+    {
+      "ticker": "ISRG",
+      "bought_at": 405.97,
+      "last": 426.01,
+      "weight_pct": 7.5
+    }
+  ],
+  "cash_pct": -38.0,
+  "active_return_pct": -0.56,
+  "vs_qqq_pp": -1.63,
+  "trend": "FLAT vs QQQ",
+  "n_marks": 25,
+  "halted": false,
+  "drawdown_pct": -5.91,
+  "kill_switch": "-25% peak-to-trough",
+  "mode": "paper/simulated",
+  "isolated": true,
+  "forward_only": true,
+  "research_grade": true,
+  "benchmark": "QQQ",
+  "as_of": "2026-07-04"
+}

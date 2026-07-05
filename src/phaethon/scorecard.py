@@ -64,5 +64,10 @@ def render_arm(scorecard: dict, book: dict, arm: str, as_of: str | None = None) 
         "kill_switch": "-25% peak-to-trough" if agg else "n/a (disciplined arm)",
         "mode": "paper/simulated", "isolated": True, "forward_only": True,
         "research_grade": True, "benchmark": "QQQ",
+        # Single clearly-labeled headline benchmark per book (see docs/PHAETHON_BENCHMARK_MEMO.md):
+        # Phaethon's primary is QQQ (growth/tech mandate); Olympus's is SPY TR. Dual-display
+        # is allowed but the headline figure is vs the primary. Labeling only — no history rewrite.
+        "benchmark_primary": "QQQ",
+        "benchmark_headline": "active return vs QQQ (primary)",
         "as_of": as_of or date.today().isoformat(),
     }

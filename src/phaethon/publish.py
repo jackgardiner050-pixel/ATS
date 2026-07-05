@@ -22,9 +22,12 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from scripts._common import get_print
 from src.io_utils import atomic_write_text
+from datetime import date
+
 from src.phaethon.scorecard import render_arm
 from src.phaethon.governance import run_governance
 from src.phaethon.schema import validate_phaethon_holding
+from src.phaethon.ledger import restate_book
 
 print = get_print(__file__)  # noqa: A001
 
@@ -43,9 +46,21 @@ def sanitize_findings(text: str) -> list[str]:
 
 def assemble_arm(scorecard: dict, book: dict, arm: str, screener_settings: dict,
                  constitution: dict, mcap_fetch=None, check_mcap: bool = True,
-                 as_of: str | None = None) -> dict:
-    """Render one arm + attach governance status + validate cohort tags. Pure-ish."""
+                 as_of: str | None = None, restate: bool = True) -> dict:
+    """Render one arm + attach governance status + validate cohort tags. Pure-ish.
+
+    restate=True applies the cash-accounting fix (src/phaethon/ledger.restate_book):
+    over-cash buys are rejected so cash_pct ∈ [0,100%] and gross ≤ 100%. The output is
+    marked 'restated' with the rejected orders and the original figures preserved by the
+    caller (archive). A within-cash book is unchanged (no false rejections)."""
+    rejected = []
+    if restate:
+        book, rejected = restate_book(book)
     arm_json = render_arm(scorecard, book, arm, as_of=as_of)
+    if restate:
+        arm_json["restated"] = f"restated {as_of or date.today().isoformat()}, cash-accounting bug fixed"
+        arm_json["restated_rejected_over_cash"] = rejected
+        arm_json["n_positions"] = len(arm_json["holdings"])   # reflect the corrected book
     gov = run_governance(arm_json["holdings"], screener_settings, constitution,
                          mcap_fetch=mcap_fetch, check_mcap=check_mcap)
     arm_json["status"] = gov["status"]                       # drives the red banner
