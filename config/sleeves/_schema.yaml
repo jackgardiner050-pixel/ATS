@@ -1,0 +1,33 @@
+# Sleeve manifest schema — every config/sleeves/<id>.yaml is validated against this by
+# src/sleeves/manifest.py. The sleeve framework GENERALIZES the protocol_lock /
+# paper_trading / OBSERVATION_PROTOCOL machinery; it does not replace it. Nothing here
+# modifies a protocol-locked file.
+#
+# admission_rule is quoted verbatim when a manifest is refused for missing the two
+# non-negotiable fields (registry_ref, kill_criteria).
+
+admission_rule: >
+  ADMISSION: a sleeve may not load without (a) a registered, falsifiable hypothesis
+  (registry_ref → research/registry) and (b) non-empty, pre-registered kill_criteria.
+  No sleeve runs capital — paper or real — without a hypothesis it can fail and the
+  numeric conditions under which it will be stopped. This is Themis admission; there is
+  no default and no exception.
+
+fields:
+  sleeve_id:        {type: str,  required: true}
+  thesis:           {type: str,  required: true}
+  registry_ref:     {type: str,  required: true}   # hypothesis id — admission rule
+  universe_ref:     {type: str,  required: false}
+  strategy_module:  {type: str,  required: true}
+  cadence:          {type: str,  required: true}
+  benchmark:        {type: str,  required: false, default: SPY_TR}
+  kill_criteria:    {type: list, required: true, non_empty: true}   # admission rule
+  correlation_prior:
+    type: dict
+    required: true
+    fields:
+      expected_overlap_sleeves: {type: list, required: true}   # may be empty ([]) but must be present
+      declared_dominant_factor: {type: str,  required: true}
+  stage:            {type: str,  required: true, enum: [S0, S1, S2, S3]}
+  created:          {type: str,  required: true}
+  locked:           {type: bool, required: true}

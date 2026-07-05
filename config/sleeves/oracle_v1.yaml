@@ -1,0 +1,31 @@
+# Retrofit manifest for the EXISTING system (the Oracle causal-rating paper book / Cohort-1).
+# This is DESCRIPTION, not modification — no behavior change to the running cohort. The
+# cohort keeps writing cohort_1 (the locked ruleset's tag); oracle_v1_c1 is its new-style
+# alias (see src/sleeves/cohort.py). kill_criteria are transcribed VERBATIM from
+# docs/OBSERVATION_PROTOCOL.md §5 (KILL).
+
+sleeve_id: oracle_v1
+thesis: >
+  A causal-reasoning rating engine emits STRONG_BUY/BUY/HOLD/SELL with a falsifiable
+  invalidation line logged before the outcome; STRONG_BUY entries at MED/HIGH confidence
+  carry information — realized total return beats SPY TR over a 52-week forward window.
+registry_ref: "003"                      # retroactive hypothesis entry for the Oracle system
+universe_ref: config/universe.yaml
+strategy_module: src.paper_trading
+cadence: weekly
+benchmark: SPY_TR
+stage: S2
+created: "2026-07-05"
+locked: true
+
+correlation_prior:
+  expected_overlap_sleeves: []           # first sleeve — no declared overlap yet
+  declared_dominant_factor: large-cap quality/growth (single-name causal theses)
+
+# VERBATIM from OBSERVATION_PROTOCOL.md §5 — KILL (stop immediately, post-mortem, no new
+# entries — if ANY):
+kill_criteria:
+  - "Realized annualized excess (TWR vs SPY TR) < −10%, sustained 2 consecutive weekly marks."
+  - "Max-DD ratio > 1.5 (book draws down >1.5× SPY over the same window)."
+  - "Hit-rate < 35% after ≥20 closed trades."
+  - "Any process violation: an untagged/mistagged record; an entry/exit not matching the locked ruleset; a lock_sha mismatch; a calibration-class engine change shipped mid-window (§6); a rating emitted from a silently-swallowed engine exception."
