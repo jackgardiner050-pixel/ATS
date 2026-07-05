@@ -288,7 +288,12 @@ def process_screener_results(
             continue
 
         if ticker in positions:
-            if exit_rules_v2:
+            # exit_rules_v2 is scoped to cohort_1 ONLY. Legacy (and any non-cohort_1)
+            # positions are governed by their fixed sunset (protocol §1.2), never by
+            # PT_HIT / TIME_STOP / STALE — so they always exit via the RATING_DOWNGRADE
+            # path, whatever the flag state. The exclusion is structural (cohort-gated),
+            # not by convention.
+            if exit_rules_v2 and positions[ticker].get("cohort") == "cohort_1":
                 _close, _reason = evaluate_exit_v2(positions[ticker], price, rating, _today_date, _v2_params)
                 _evaluated.add(ticker)
             else:
@@ -325,6 +330,8 @@ def process_screener_results(
             if ticker in _evaluated:
                 continue
             pos = positions[ticker]
+            if pos.get("cohort") != "cohort_1":
+                continue   # non-cohort_1 (e.g. legacy_pre_fix) is out of v2 scope (§1.2)
             price = price_lookup(ticker) if price_lookup else None
             if price is None:
                 logger.warning("exit_rules_v2: no price for %s — holding", ticker)
