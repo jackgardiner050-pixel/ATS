@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 import math
 from datetime import datetime, timedelta
+
+from src.io_utils import append_jsonl
 from pathlib import Path
 from typing import Optional
 
@@ -390,7 +392,6 @@ def run_exposure_analysis(
 
     if persist:
         _DATA_PATH.mkdir(parents=True, exist_ok=True)
-        with open(_EXPOSURE_LOG, "a") as f:
-            f.write(json.dumps(result) + "\n")
+        append_jsonl(_EXPOSURE_LOG, result)
 
     return result

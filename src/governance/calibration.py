@@ -19,6 +19,8 @@ import json
 from datetime import datetime, UTC
 from pathlib import Path
 
+from src.io_utils import append_jsonl
+
 import yaml
 
 _SIGNAL_LOG = Path(__file__).parent.parent.parent / "data" / "signal_log.jsonl"
@@ -218,7 +220,6 @@ def run_calibration(
 
     if persist:
         _DATA_PATH.mkdir(parents=True, exist_ok=True)
-        with open(_CALIB_LOG, "a") as f:
-            f.write(json.dumps(result) + "\n")
+        append_jsonl(_CALIB_LOG, result)
 
     return result

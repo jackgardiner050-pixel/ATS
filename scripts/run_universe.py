@@ -18,6 +18,7 @@ from scripts._common import get_print
 print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
 
 import yaml
+from src.io_utils import append_jsonl
 from src.orchestrator import run_pipeline
 from src.cadence import (
     load_state, is_due, update_state, apply_force,
@@ -58,7 +59,6 @@ def _log_signal(
     momentum_quintile, revision_direction: str,
     n_aligned: int, n_contradicted: int,
 ) -> None:
-    _SIGNAL_LOG.parent.mkdir(parents=True, exist_ok=True)
     record = {
         "ticker": ticker,
         "date": str(today),
@@ -69,8 +69,7 @@ def _log_signal(
         "revision_direction": revision_direction,
         "alignment_score": f"+{n_aligned} aligned, -{n_contradicted} contradicted",
     }
-    with open(_SIGNAL_LOG, "a") as f:
-        f.write(json.dumps(record) + "\n")
+    append_jsonl(_SIGNAL_LOG, record)
 
 
 def main():

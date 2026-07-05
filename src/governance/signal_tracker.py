@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import json
 import math
+
+from src.io_utils import append_jsonl
 from datetime import datetime, UTC
 from pathlib import Path
 
@@ -301,7 +303,6 @@ def run_signal_tracker(
 
     if persist:
         _DATA_PATH.mkdir(parents=True, exist_ok=True)
-        with open(_SIGNAL_TRACKER_LOG, "a") as f:
-            f.write(json.dumps(result) + "\n")
+        append_jsonl(_SIGNAL_TRACKER_LOG, result)
 
     return result

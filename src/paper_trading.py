@@ -20,6 +20,8 @@ from typing import Optional
 
 import yaml
 
+from src.io_utils import append_jsonl, atomic_write_text
+
 POSITIONS_PATH = Path(__file__).parent.parent / "data" / "paper_positions.yaml"
 TRADES_PATH    = Path(__file__).parent.parent / "data" / "paper_trades.jsonl"
 
@@ -180,12 +182,11 @@ def load_positions(path: Optional[Path] = None) -> dict[str, dict]:
 
 
 def save_positions(positions: dict[str, dict], path: Optional[Path] = None) -> None:
-    """Persist open positions to YAML."""
+    """Persist open positions to YAML atomically (tmp + os.replace)."""
     p = path or POSITIONS_PATH
-    p.parent.mkdir(parents=True, exist_ok=True)
     records = sorted(positions.values(), key=lambda r: r["ticker"])
-    with open(p, "w") as f:
-        yaml.dump({"positions": records}, f, default_flow_style=False, sort_keys=False)
+    text = yaml.dump({"positions": records}, default_flow_style=False, sort_keys=False)
+    atomic_write_text(p, text)
 
 
 def load_trades(path: Optional[Path] = None) -> list[dict]:
@@ -203,11 +204,9 @@ def load_trades(path: Optional[Path] = None) -> list[dict]:
 
 
 def append_trade(trade: dict, path: Optional[Path] = None) -> None:
-    """Append one closed trade to the JSONL log."""
+    """Append one closed trade to the JSONL log, fsync'd before returning."""
     p = path or TRADES_PATH
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "a") as f:
-        f.write(json.dumps(trade, default=str) + "\n")
+    append_jsonl(p, trade, default=str)
 
 
 def fetch_spy_price() -> Optional[float]:

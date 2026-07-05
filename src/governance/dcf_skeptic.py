@@ -28,6 +28,8 @@ from __future__ import annotations
 import json
 import math
 import statistics
+
+from src.io_utils import append_jsonl
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, UTC
 from pathlib import Path
@@ -724,8 +726,7 @@ def _persist_stress_log(result: StressAdjustedValuation) -> None:
         "sensitivity_summary": result.sensitivity_summary,
         "diagnostic_only": True,
     }
-    with open(_STRESS_LOG, "a") as f:
-        f.write(json.dumps(entry) + "\n")
+    append_jsonl(_STRESS_LOG, entry)
 
 
 def load_stress_log(path: Path | None = None) -> list[dict]:

@@ -13,6 +13,8 @@ from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any
 
+from src.io_utils import append_jsonl
+
 _ROOT = Path(__file__).parent.parent.parent
 _DEFAULT_LOG = _ROOT / "data" / "attribution_log.jsonl"
 
@@ -87,7 +89,6 @@ def log_governance_run(
 def _append(record: dict[str, Any], log_path: Path) -> None:
     try:
         log_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(log_path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(record, default=str) + "\n")
+        append_jsonl(log_path, record, default=str)
     except Exception:
         pass  # attribution logging must not break the pipeline
