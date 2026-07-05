@@ -104,3 +104,16 @@ forced-sunset mechanism. `verify_protocol_lock.py --register` updated `ruleset_s
 exit_rules_v2 stays false (activation is a separate subsequent step). NOTE: the forced-sunset
 mechanism (§1.2, force-close legacy on 2026-08-23) does NOT yet exist as code — flagged as a
 separate gap, not built here.
+
+---
+
+## 2026-07-05 — Baseline re-registration ahead of Legacy Cohort forced-sunset mechanism
+
+**Reason:** Planned re-registration ahead of Legacy Cohort forced-sunset mechanism
+(protocol §1.2, previously unimplemented gap). Human-approved 2026-07-05.
+
+**Details:** `verify_protocol_lock.py --register` was run against the current pre-change
+state (lock byte-identical), confirming a clean baseline. The upcoming change adds an
+unconditional forced-sunset pass to `process_screener_results` in `src/paper_trading.py`
+(a ruleset_file): legacy_pre_fix positions force-close on/after LEGACY_SUNSET_DATE
+(2026-08-23) with exit_reason FORCED_SUNSET, independent of the exit_rules_v2 flag.
