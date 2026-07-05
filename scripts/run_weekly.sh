@@ -39,6 +39,11 @@ log "Repo: ${REPO_ROOT}"
 log "Log: ${LOGFILE}"
 cd "${REPO_ROOT}"
 
+# ── 0. Universe liveness check (warn-only, never blocks) ──────────────────────
+log "Step 0: check_universe_liveness.py"
+python3 scripts/check_universe_liveness.py 2>&1 | tee -a "${LOGFILE}" || \
+  log "WARNING: liveness check exited non-zero — continuing (warn-only)"
+
 # ── 1. Universe screener ──────────────────────────────────────────────────────
 log "Step 1: run_universe.py"
 python3 scripts/run_universe.py 2>&1 | tee -a "${LOGFILE}"
