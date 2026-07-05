@@ -151,5 +151,3 @@ Planned / not built:
 
 The MVP runs end-to-end on financial data + DCF + comps + rating. Research/charts/summary/validator
 stages are still templates in the parent `build_agx_*.py` scripts and are not yet ported.
-</content>
-</invoke>
