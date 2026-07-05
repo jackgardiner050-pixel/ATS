@@ -23,3 +23,22 @@ records the deliberate decision that the two upcoming, reviewed edits to locked 
 `config/settings.yaml` exit_rules_v2, default OFF) are approved and forthcoming. The
 lock is re-registered again — establishing a new clean baseline — only AFTER both
 changes land together, not after each individual change.
+
+---
+
+## 2026-07-05 — Re-registration after items 10 & 4 (new baseline)
+
+**Reason:** Re-registration after items 10 (honest return math) and 4 (exit-rules-v2,
+flag OFF) — human-approved 2026-07-05 batch.
+
+**Details:** Both reviewed changes have now landed:
+- `src/paper_trading.py` close_position — net/gross returns, dividend-adjusted total
+  return, cost haircut (item 10).
+- `src/paper_trading.py` evaluate_exit_v2 + process_screener_results gating, and
+  `config/settings.yaml` `exit_rules_v2: false` (item 4, flag OFF, not activated).
+
+`verify_protocol_lock.py --register` was run against this combined state, updating the
+`ruleset_sha` and the per-file digests for `src/paper_trading.py` and
+`config/settings.yaml` (all other ruleset files unchanged). This is the new clean
+baseline; `verify_protocol_lock.py` exits 0. Any further change to a locked file will
+again require a deliberate re-registration.
