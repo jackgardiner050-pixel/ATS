@@ -67,15 +67,17 @@ def should_exit(rating: str) -> bool:
     return rating not in ("STRONG_BUY", "BUY")
 
 
-# ─── Exit rules v2 (feature-flagged OFF — see config/settings.yaml exit_rules_v2) ──
+# ─── Exit rules v2 (ACTIVE for Cohort-1 — see config/settings.yaml exit_rules_v2: true) ──
 #
-# PLACEHOLDER defaults below are NOT derived from the live book / realized P&L — they
-# are round, conservative starting points that need human calibration before the flag
-# is ever turned on.
+# Calibrated & FROZEN at Cohort-1 inception (day-0 re-registration 2026-07-05). These are
+# the values recorded in docs/OBSERVATION_PROTOCOL.md §2.2; they must not drift from that
+# block for the life of the Cohort-1 window (guarded by tests/test_cohort1_exit_rules_active.py).
+# The cohort-scope guard in process_screener_results confines v2 to cohort_1; the Legacy
+# Cohort is untouched (RATING_DOWNGRADE only) until its §1.2 forced sunset.
 DEFAULT_EXIT_V2_PARAMS = {
-    "pt_fraction": 1.0,     # PT_HIT at 100% of target — PLACEHOLDER, needs human calibration
-    "max_hold_days": 365,   # TIME_STOP after 1y — PLACEHOLDER
-    "stale_days": 28,       # STALE after 28d unscreened — PLACEHOLDER (matches cadence table)
+    "pt_fraction": 1.0,     # PT_HIT at 100% of target (calibrated, frozen at inception)
+    "max_hold_days": 270,   # TIME_STOP after 270d (calibrated from placeholder 365; frozen)
+    "stale_days": 28,       # STALE after 28d unscreened (calibrated; matches cadence table; frozen)
     "last_screened": {},    # {ticker: iso date}, resolved from data/screen_state.yaml by caller
 }
 

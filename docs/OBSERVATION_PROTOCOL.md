@@ -44,6 +44,20 @@ a valid cohort tag. Tagging is a gate, not a naming habit.
 2.2 **Frozen at inception:** universe membership, entry/exit rules, cadence table, and rating-engine
 math are fixed by the `lock_sha`. Every Cohort-1 record carries `cohort: cohort_1`.
 
+**exit_rules_v2 — ACTIVE for Cohort-1, parameters frozen at inception (2026-07-05):**
+`config/settings.yaml` sets `exit_rules_v2: true`, and `src/paper_trading.DEFAULT_EXIT_V2_PARAMS`
+is frozen at the calibrated values below for the life of the window (any change forces a
+re-registered Cohort-2, per §6):
+
+    pt_fraction   = 1.0     # PT_HIT at 100% of price target
+    max_hold_days = 270     # TIME_STOP after 270 days
+    stale_days    = 28      # STALE after 28 days unscreened
+
+Exit precedence is `RATING_DOWNGRADE > PT_HIT > TIME_STOP > STALE`. The cohort-scope guard
+confines v2 to `cohort_1` only; the **Legacy Cohort is exempt** (RATING_DOWNGRADE-only) until
+its §1.2 forced sunset. v2 is activated at inception so the window produces closed-trade
+evidence under the full exit ladder rather than the downgrade-only rule.
+
 ## 3. Observation window — **52 weeks** (1 year)
 
 Recommended at the top of the 26–52 range to maximize n, span a full earnings/seasonal cycle, and

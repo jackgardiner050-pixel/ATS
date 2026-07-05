@@ -131,3 +131,28 @@ legacy_pre_fix positions on/after that date with exit_reason `FORCED_SUNSET`, re
 of rating and regardless of the exit_rules_v2 flag. cohort_1 is unaffected.
 `verify_protocol_lock.py --register` updated `ruleset_sha` and the `src/paper_trading.py`
 digest; `verify_protocol_lock.py` exits 0 — new clean baseline. The §1.2 gap is now closed.
+
+---
+
+## 2026-07-05 — Day-0 re-registration: exit_rules_v2 ACTIVATED for Cohort-1
+
+**Reason:** Deliberate day-0 re-registration before Cohort-1 inception: exit rules v2
+activated so the window produces closed-trade evidence under the full exit ladder
+(RATING_DOWNGRADE > PT_HIT > TIME_STOP > STALE) rather than the downgrade-only rule.
+No cohort data existed at re-registration (verified): `data/paper_positions.yaml` had
+0 `cohort_1` positions (12 legacy_pre_fix), and `data/paper_trades.jsonl` had 0
+`cohort_1` trades (file absent). Human-approved 2026-07-05.
+
+**Details:** Three locked files changed and were re-registered together:
+- `config/settings.yaml` — `exit_rules_v2: false → true`.
+- `src/paper_trading.py` — `DEFAULT_EXIT_V2_PARAMS.max_hold_days` calibrated `365 → 270`
+  (pt_fraction 1.0 and stale_days 28 unchanged); comments de-PLACEHOLDER'd; params
+  declared frozen for the window.
+- `docs/OBSERVATION_PROTOCOL.md` §2.2 — records the frozen parameter block verbatim
+  (pt_fraction=1.0, max_hold_days=270, stale_days=28) as fixed at inception.
+
+The cohort-scope guard (confining v2 to `cohort_1`) and the §1.2 forced-sunset mechanism
+are already in place on this base, so activation does NOT expose the Legacy Cohort to v2.
+`verify_protocol_lock.py --register` updated `protocol_sha` (OBSERVATION_PROTOCOL.md) and
+`ruleset_sha` (settings.yaml + paper_trading.py digests); `verify_protocol_lock.py` exits
+0 — new clean baseline. `tests/test_cohort1_exit_rules_active.py` guards config↔doc drift.
