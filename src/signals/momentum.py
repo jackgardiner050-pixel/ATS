@@ -2,6 +2,15 @@
 
 Excludes the most recent calendar month to avoid short-term reversal contamination.
 Quintile 1 = top performers (highest return), Quintile 5 = bottom.
+
+STATUS — OBSERVATION-ONLY (2026-07-05, item 8): this quintile is still computed and
+recorded (for the attribution pipeline), but it NO LONGER influences entry confidence.
+Validation (signal-validation-studies branch: Q1−Q5 net-of-cost spread Newey-West
+t=0.09, n=121, 2015-2025 over the 147-name universe) found no statistically significant
+edge, so per the pre-committed decision frame (t<2 ⇒ neutralize) the momentum→confidence
+link was removed in src/signals/escalation.py (see docs/PROTOCOL_CHANGELOG.md). The
+quintile-computation logic below is deliberately preserved; do not re-couple it to
+confidence without fresh, significant evidence.
 """
 from __future__ import annotations
 import math

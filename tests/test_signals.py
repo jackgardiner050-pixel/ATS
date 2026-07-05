@@ -222,24 +222,26 @@ def test_escalation_cohort_outlier_leaves_broken():
 # Alignment rules
 # ─────────────────────────────────────────────────────────────────────────────
 
-def test_alignment_bullish_q1_aligned():
+def test_alignment_bullish_q1_now_neutral():
+    """Momentum neutralized (item 8): Q1 is observation-only, never aligned."""
     aligned, contradicting, neutral = get_signal_alignment("STRONG_BUY", 1, "FLAT")
-    assert "momentum_q1" in aligned
-    assert not contradicting
-    print("  ✓ STRONG_BUY + Q1 momentum → aligned")
+    assert "momentum_q1" in neutral        # recorded (observation-only)
+    assert "momentum_q1" not in aligned and not contradicting
+    print("  ✓ STRONG_BUY + Q1 momentum → NEUTRAL (observation-only)")
 
 
-def test_alignment_bullish_q5_contradicts():
+def test_alignment_bullish_q5_now_neutral():
     aligned, contradicting, neutral = get_signal_alignment("BUY", 5, "NO_COVERAGE")
-    assert "momentum_q5" in contradicting
-    assert not aligned
-    print("  ✓ BUY + Q5 momentum → contradicts")
+    assert "momentum_q5" in neutral
+    assert not aligned and not contradicting
+    print("  ✓ BUY + Q5 momentum → NEUTRAL (observation-only)")
 
 
-def test_alignment_bearish_q5_aligned():
+def test_alignment_bearish_q5_now_neutral():
     aligned, contradicting, neutral = get_signal_alignment("SELL", 5, "FLAT")
-    assert "momentum_q5" in aligned
-    print("  ✓ SELL + Q5 momentum → aligned")
+    assert "momentum_q5" in neutral
+    assert not aligned and not contradicting
+    print("  ✓ SELL + Q5 momentum → NEUTRAL (observation-only)")
 
 
 def test_alignment_bearish_positive_revision_contradicts():
@@ -312,9 +314,9 @@ if __name__ == "__main__":
     test_escalation_broken_unchanged()
     test_escalation_cohort_outlier_caps_at_low()
     test_escalation_cohort_outlier_leaves_broken()
-    test_alignment_bullish_q1_aligned()
-    test_alignment_bullish_q5_contradicts()
-    test_alignment_bearish_q5_aligned()
+    test_alignment_bullish_q1_now_neutral()
+    test_alignment_bullish_q5_now_neutral()
+    test_alignment_bearish_q5_now_neutral()
     test_alignment_bearish_positive_revision_contradicts()
     test_alignment_hold_all_neutral()
     test_hold_positive_revision_triggers_force_rescreen()

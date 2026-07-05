@@ -1,12 +1,20 @@
 """Signal-based confidence escalation and alignment scoring.
 
 Alignment rules (signals modify confidence, never the price target or rating):
-  Rating          Mom Q1      Mom Q5      Rev POSITIVE  Rev NEGATIVE
-  STRONG_BUY/BUY  aligned     contradicts aligned       contradicts
-  HOLD            neutral     neutral     neutral*       neutral*
-  SELL/S_SELL     contradicts aligned     contradicts   aligned
+  Rating          Mom (any Q)   Rev POSITIVE  Rev NEGATIVE
+  STRONG_BUY/BUY  neutral       aligned       contradicts
+  HOLD            neutral       neutral*      neutral*
+  SELL/S_SELL     neutral       contradicts   aligned
 
   *HOLD + sharp revision → flag force_rescreen (see should_force_rescreen).
+
+  MOMENTUM IS OBSERVATION-ONLY (2026-07-05, item 8): the momentum quintile is always
+  classified NEUTRAL — it is still computed and recorded for attribution but no longer
+  escalates confidence. Validation (signal-validation-studies: Q1−Q5 net-of-cost spread
+  Newey-West t=0.09, n=121, 2015-2025) found no significant edge, so per the
+  pre-committed decision frame (t<2 ⇒ neutralize) momentum no longer moves confidence.
+  Only analyst revisions remain a directional confidence signal. Do NOT re-couple
+  momentum without fresh, significant evidence.
 
 Escalation:
   2+ aligned signals   → bump confidence up   (LOW→MED, MED→HIGH)
@@ -36,25 +44,13 @@ def get_signal_alignment(
     is_bullish = rating in ("STRONG_BUY", "BUY")
     is_bearish = rating in ("SELL", "STRONG_SELL")
 
-    # Momentum signal — only Q1 (top) and Q5 (bottom) are directional
+    # Momentum signal — OBSERVATION-ONLY (2026-07-05, item 8). The quintile is still
+    # computed and RECORDED (in `neutral`, so it flows to attribution / recommendation
+    # signal lists) but it is never aligned/contradicting, so it can no longer change
+    # the confidence tier. Rationale + evidence: module docstring. Do not re-couple
+    # without fresh, significant evidence (current: Q1−Q5 spread t=0.09, n=121).
     if momentum_quintile is not None:
-        label = f"momentum_q{momentum_quintile}"
-        if momentum_quintile == 1:
-            if is_bullish:
-                aligned.append(label)
-            elif is_bearish:
-                contradicting.append(label)
-            else:
-                neutral.append(label)
-        elif momentum_quintile == 5:
-            if is_bearish:
-                aligned.append(label)
-            elif is_bullish:
-                contradicting.append(label)
-            else:
-                neutral.append(label)
-        else:
-            neutral.append(label)
+        neutral.append(f"momentum_q{momentum_quintile}")
 
     # Revision signal — POSITIVE and NEGATIVE are directional; FLAT / NO_COVERAGE are neutral
     if revision_direction == "POSITIVE":
@@ -128,10 +124,10 @@ def build_signal_alignment_list(
     _REASONS: dict[tuple[str, str], str] = {
         ("momentum_q1", "aligned"):       f"Q1 momentum ({momentum_quintile}) supports bullish rating {rating}",
         ("momentum_q1", "contradicts"):   f"Q1 momentum ({momentum_quintile}) contradicts bearish rating {rating}",
-        ("momentum_q1", "neutral"):       f"Q1 momentum ({momentum_quintile}); HOLD rating is neutral",
+        ("momentum_q1", "neutral"):       f"Momentum Q{momentum_quintile} — observation-only (does not affect confidence)",
         ("momentum_q5", "aligned"):       f"Q5 momentum ({momentum_quintile}) supports bearish rating {rating}",
         ("momentum_q5", "contradicts"):   f"Q5 momentum ({momentum_quintile}) contradicts bullish rating {rating}",
-        ("momentum_q5", "neutral"):       f"Q5 momentum ({momentum_quintile}); HOLD rating is neutral",
+        ("momentum_q5", "neutral"):       f"Momentum Q{momentum_quintile} — observation-only (does not affect confidence)",
         ("revision_positive", "aligned"):      f"Positive analyst revisions support bullish {rating}",
         ("revision_positive", "contradicts"):  f"Positive analyst revisions contradict bearish {rating}",
         ("revision_positive", "neutral"):      f"Positive revisions on HOLD — flagging for re-screen",
