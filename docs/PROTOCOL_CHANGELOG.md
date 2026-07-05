@@ -42,3 +42,18 @@ flag OFF) — human-approved 2026-07-05 batch.
 `config/settings.yaml` (all other ruleset files unchanged). This is the new clean
 baseline; `verify_protocol_lock.py` exits 0. Any further change to a locked file will
 again require a deliberate re-registration.
+
+---
+
+## 2026-07-05 — Baseline re-registration ahead of momentum-signal neutralization
+
+**Reason:** Planned re-registration ahead of momentum-signal neutralization (item 8
+finding: Q1−Q5 spread t=0.09, n=121). Evidence: signal-validation-studies branch.
+Human-approved 2026-07-05.
+
+**Details:** `verify_protocol_lock.py --register` was run against the current
+(pre-change) state and reproduced the existing hashes (lock byte-identical),
+confirming a clean baseline before the edit. The upcoming change adds an
+observation-only status note to `src/signals/momentum.py` (a ruleset_file) and
+neutralizes the momentum→confidence link in `src/signals/escalation.py` (NOT a
+ruleset_file). The lock is re-registered again after the change lands.
