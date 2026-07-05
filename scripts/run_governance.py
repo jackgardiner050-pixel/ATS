@@ -79,12 +79,35 @@ def _build_constitution_report(exposure_result: dict, calib_result: dict):
         # Fallback to universe-wide distribution from signal log
         confidence_counts = calib_result.get("confidence_distribution", {})
 
+    # Rating-distribution governor (PART D): counts from the latest screen summary.
+    rating_counts = _latest_rating_counts()
+
     return run_all_checks(
         position_weights=position_weights,
         theme_weights=theme_weights,
         factor_weights=factor_weights,
         confidence_counts=confidence_counts,
+        rating_counts=rating_counts or None,
     )
+
+
+def _latest_rating_counts() -> dict[str, int]:
+    """Rating counts from the most recent runs/_screen/*/summary.json (empty if none)."""
+    import json
+    summaries = sorted((_ROOT / "runs" / "_screen").glob("*/summary.json"),
+                       key=lambda p: p.stat().st_mtime, reverse=True)
+    if not summaries:
+        return {}
+    try:
+        data = json.loads(summaries[0].read_text())
+    except Exception:
+        return {}
+    counts: dict[str, int] = {}
+    for r in data.get("results", []):
+        rating = r.get("rating")
+        if rating in ("STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL"):
+            counts[rating] = counts.get(rating, 0) + 1
+    return counts
 
 
 def main():
@@ -376,6 +399,7 @@ def main():
             constitution_report=constitution_report,
             portfolio_result=portfolio_result,
             universe_result=universe_result,
+            rating_counts=_latest_rating_counts(),
         )
         print(report)
 

@@ -510,6 +510,37 @@ def _format_universe_intelligence(universe_result: Optional[dict]) -> str:
     return "\n".join(lines)
 
 
+def _format_rating_distribution_card(rating_counts: Optional[dict]) -> str:
+    """Calibration card: STRONG_BUY and extreme-tail fractions vs warn thresholds."""
+    from src.governance.constitution import (
+        compute_rating_distribution,
+        check_rating_distribution,
+        DEFAULT_WARN_STRONG_BUY_FRACTION,
+        DEFAULT_WARN_EXTREME_TAIL_FRACTION,
+    )
+    lines = ["── RATING DISTRIBUTION (calibration) ──────────────────────────────────"]
+    if not rating_counts:
+        lines.append("  no screen rating data available")
+        return "\n".join(lines)
+    dist = compute_rating_distribution(rating_counts)
+    if dist["total"] == 0:
+        lines.append("  no directional ratings this run")
+        return "\n".join(lines)
+    warns = check_rating_distribution(rating_counts)
+    sb, tail = dist["strong_buy_fraction"], dist["extreme_tail_fraction"]
+    lines.append(f"  n rated: {dist['total']}")
+    lines.append(f"  STRONG_BUY   {_bar(sb)} {sb:.1%}  "
+                 f"(warn > {DEFAULT_WARN_STRONG_BUY_FRACTION:.0%})")
+    lines.append(f"  extreme tail {_bar(tail)} {tail:.1%}  "
+                 f"(warn > {DEFAULT_WARN_EXTREME_TAIL_FRACTION:.0%})")
+    if warns:
+        for w in warns:
+            lines.append(f"  ⚠ {w}")
+    else:
+        lines.append("  ✓ within warn thresholds")
+    return "\n".join(lines)
+
+
 def render_dashboard(
     regime_result: Optional[dict] = None,
     exposure_result: Optional[dict] = None,
@@ -519,6 +550,7 @@ def render_dashboard(
     constitution_report=None,
     portfolio_result: Optional[dict] = None,
     universe_result: Optional[dict] = None,
+    rating_counts: Optional[dict] = None,
 ) -> str:
     """Render the full anti-delusion dashboard to a string."""
     now = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
@@ -539,6 +571,8 @@ def render_dashboard(
         _format_signal_section(signal_result),
         "",
         _format_calibration_section(calib_result),
+        "",
+        _format_rating_distribution_card(rating_counts),
         "",
         _format_adversarial_section(adversarial_result),
         "",

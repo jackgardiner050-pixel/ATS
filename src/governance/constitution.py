@@ -140,6 +140,68 @@ def check_confidence_quality(
     return []
 
 
+# Diagnostic rating-distribution thresholds (Phase III). Values are from prior
+# review discussion — NOT fit to make the current (heavily extreme-tail) live
+# distribution look acceptable; they are EXPECTED to warn on it, and that is
+# correct behavior. Canonical home is config/constitution.yaml, but that file is
+# protocol-locked, so these default in code (exactly like WARN_CONFIDENCE_LOW_FRACTION
+# above). If the lock is deliberately re-registered, adding the same keys to
+# constitution.yaml will override these.
+DEFAULT_WARN_EXTREME_TAIL_FRACTION = 0.35
+DEFAULT_WARN_STRONG_BUY_FRACTION = 0.20
+
+_DIRECTIONAL_RATINGS = ("STRONG_BUY", "BUY", "HOLD", "SELL", "STRONG_SELL")
+
+
+def compute_rating_distribution(rating_counts: dict[str, int]) -> dict:
+    """Fractions used by the governor + dashboard card. Pure, no thresholds here."""
+    total = sum(rating_counts.get(r, 0) for r in _DIRECTIONAL_RATINGS)
+    if total == 0:
+        return {"total": 0, "strong_buy_fraction": 0.0, "extreme_tail_fraction": 0.0}
+    sb = rating_counts.get("STRONG_BUY", 0)
+    tail = sb + rating_counts.get("STRONG_SELL", 0)
+    return {
+        "total": total,
+        "strong_buy_fraction": sb / total,
+        "extreme_tail_fraction": tail / total,
+    }
+
+
+def check_rating_distribution(ratings, constitution: dict | None = None) -> list[str]:
+    """Warn when the rating distribution is dominated by STRONG_BUY or extreme tails.
+
+    `ratings` may be a counts dict {rating: n} or an iterable of rating strings.
+    Diagnostic only — never modifies ratings, positions, or trades. Zero rated →
+    no warnings and no division.
+    """
+    cfg = constitution or load_constitution()
+    tail_thr = float(cfg.get("WARN_EXTREME_TAIL_FRACTION", DEFAULT_WARN_EXTREME_TAIL_FRACTION))
+    sb_thr = float(cfg.get("WARN_STRONG_BUY_FRACTION", DEFAULT_WARN_STRONG_BUY_FRACTION))
+
+    if isinstance(ratings, dict):
+        counts = ratings
+    else:
+        from collections import Counter
+        counts = Counter(ratings)
+
+    dist = compute_rating_distribution(counts)
+    if dist["total"] == 0:
+        return []
+
+    warnings: list[str] = []
+    if dist["strong_buy_fraction"] > sb_thr:
+        warnings.append(
+            f"Rating distribution: {dist['strong_buy_fraction']:.1%} STRONG_BUY "
+            f"(warn threshold {sb_thr:.1%})"
+        )
+    if dist["extreme_tail_fraction"] > tail_thr:
+        warnings.append(
+            f"Rating distribution: {dist['extreme_tail_fraction']:.1%} extreme-tail "
+            f"(STRONG_BUY+STRONG_SELL) (warn threshold {tail_thr:.1%})"
+        )
+    return warnings
+
+
 def check_satellite_capital(
     low_confidence_fraction: float,
     constitution: dict | None = None,
@@ -161,6 +223,7 @@ def run_all_checks(
     factor_weights: dict[str, float],
     confidence_counts: dict[str, int],
     path: Path | None = None,
+    rating_counts: dict[str, int] | None = None,
 ) -> ConstitutionalReport:
     """Run all constitutional checks. Never raises — violations accumulate in report.
 
@@ -181,5 +244,7 @@ def run_all_checks(
         report.violations.extend(check_satellite_capital(low_broken_frac, cfg))
 
     report.warnings.extend(check_confidence_quality(confidence_counts, cfg))
+    if rating_counts is not None:
+        report.warnings.extend(check_rating_distribution(rating_counts, cfg))
 
     return report
