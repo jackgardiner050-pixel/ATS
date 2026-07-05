@@ -1,0 +1,18 @@
+# config/protocol_lock.yaml — LOCKED observation protocol.
+# See docs/OBSERVATION_PROTOCOL.md and scripts/verify_protocol_lock.py.
+# Verified by tests/test_protocol_lock.py — a drift here fails the suite.
+# Change ONLY via deliberate re-registration: run
+#   python scripts/verify_protocol_lock.py --register
+# then record the reason in the commit message. Never auto-update to go green.
+locked: true
+registered: '2026-07-05'
+protocol_sha: d6e7094ebcc61b39b1a787873e91dbde21f4475afa4b1ea95035d763598eeab4
+ruleset_sha: 83385a4a1f88a4637a0c75b1c31be121d3047c8177ab0f72034ca935096e4099
+ruleset_files:
+  src/paper_trading.py: 9a684618f92aa6e990adaee0b33402c92b5b0c7391dd235dce43c2394f5885ec
+  src/engine/calculator.py: 37f0d47e10f5c1f8d614ccd21d9627505270f31cf94173ce795deb91bbe30b88
+  src/signals/momentum.py: 82f473fa41abca72bd557e9b44f8d6435b808d8b1c95539ab8aab46a0ccd05a5
+  src/signals/revisions.py: 39f6397f0a529a664cf06de64761502ad0e660f6ddf7d0994b31002ec9f12448
+  config/constitution.yaml: 956772422677b93db1e6ff9fd96908bd2b42db5e8cd9ed4dcb6487a49ea858a0
+  config/settings.yaml: e44d6b9d6b4385877cece750a2a6aa5cf3ca89df712eddb23c59129a6c85529c
+  config/universe.yaml: fe4d601b2b807cced3ab9312b95ea3923cb4b52cce9ff724bf7358efbf6b09f7
