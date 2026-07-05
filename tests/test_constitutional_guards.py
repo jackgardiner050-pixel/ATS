@@ -146,6 +146,54 @@ def test_phaethon_no_live_pnl_read_in_prompt_paths():
     assert not offenders, "phaethon touches live P&L artifacts:\n" + "\n".join(offenders)
 
 
+# ─── 2c. Phaethon LEARNING mechanism firewall (OUTCOME_LEARNING_VIA_BOUNDARY_ONLY) ──
+
+# Human-side learning machinery — must be unreachable from any code that builds what
+# Phaethon actually sees. (journal is the human-side source these read.)
+LEARNING_MODULES = {"review_trigger", "lessons_ledger", "prediction_resolution",
+                    "learning_kill_switch", "journal"}
+# Phaethon-facing output / would-be context-builder modules.
+PHAETHON_FACING = {"publish", "scorecard", "governance", "schema", "ledger"}
+
+
+def _phaethon_import_graph():
+    graph = {}
+    for path in _py_files("src/phaethon"):
+        deps = set()
+        for name in _imported_names(path):
+            parts = name.split(".")
+            if parts[:2] == ["src", "phaethon"] and len(parts) >= 3:
+                deps.add(parts[2])
+        graph[path.stem] = deps
+    return graph
+
+
+def test_learning_modules_unreachable_from_phaethon_facing_code():
+    """AST/import-graph: no Phaethon-facing (or future context-builder) module can reach
+    any learning module — the outcome-learning channel never touches live context."""
+    graph = _phaethon_import_graph()
+    facing = {m for m in graph if m in PHAETHON_FACING
+              or any(k in m for k in ("evidence", "context", "prompt"))}
+    reachable, stack = set(), list(facing)
+    while stack:
+        for d in graph.get(stack.pop(), ()):
+            if d not in reachable:
+                reachable.add(d); stack.append(d)
+    breach = reachable & LEARNING_MODULES
+    assert not breach, f"Phaethon-facing code can reach learning modules: {sorted(breach)}"
+
+
+def test_learning_modules_write_only_human_side():
+    """The ledger/report never write into docs/data (the dashboard/panel Phaethon-facing
+    path) or an evidence pack — only data/phaethon + runs/phaethon (human-side)."""
+    for name in LEARNING_MODULES:
+        p = ROOT / "src" / "phaethon" / f"{name}.py"
+        if p.exists():
+            text = p.read_text()
+            assert "docs/data" not in text, f"{name} writes to a Phaethon-facing path (docs/data)"
+            assert "evidence_pack" not in text, f"{name} references evidence_pack"
+
+
 # ─── 3. deploy.sh trading-droplet guards ─────────────────────────────────────
 
 def test_deploy_sh_has_both_trading_guards():

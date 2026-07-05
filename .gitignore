@@ -19,3 +19,9 @@ data/last_digest_state.json
 research/**/_price_cache.parquet
 research/**/run.log
 data/eps_trend_history.jsonl
+
+# Phaethon learning mechanism — runtime artifacts (human-side, generated)
+data/phaethon/*.jsonl
+data/phaethon/LEARNING_SUSPENDED
+data/phaethon/LEARNING_REINSTATEMENT_*.md
+runs/phaethon/
