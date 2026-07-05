@@ -1,0 +1,11 @@
+# Paper-book portfolio sizing + cost parameters.
+#
+# NOTE: this file is deliberately NOT part of config/protocol_lock.yaml's
+# ruleset_files, so tuning these values does not force a protocol re-registration.
+# (The alternative — putting these keys in config/settings.yaml — would change
+# ruleset_sha and break the lock.) These govern NAV *accounting only*; they never
+# touch entry/exit decisions, which live in the locked src/paper_trading.py.
+
+paper_nav_start: 100000        # notional book NAV at inception (per cohort)
+n_target_positions: 20         # equal-weight target book size
+paper_cost_bps: 20             # per-side fill haircut, basis points (NAV accounting only)

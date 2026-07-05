@@ -11,6 +11,7 @@ Usage:
 """
 from __future__ import annotations
 
+import json
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -21,6 +22,67 @@ from scripts._common import get_print
 print = get_print(__file__)  # noqa: A001 — ISO-ts + script-name log prefix
 
 from src.paper_trading import fetch_spy_price, load_positions, load_trades
+from src.portfolio.nav_ledger import compute_performance
+
+_HISTORY_PATH = Path(__file__).resolve().parent.parent / "data" / "nav_history.jsonl"
+_MIN_SNAPSHOTS = 5
+# Fixed display order + protocol-mandated labels. Legacy always carries its
+# "informational only" disclaimer; the two are ALWAYS separate sections.
+_COHORT_SECTIONS = [
+    ("cohort_1", "Cohort-1  (locked ruleset — the live experiment)"),
+    ("legacy_pre_fix", "Legacy Cohort  (informational only — NOT evidence of system validity)"),
+]
+
+
+def _load_nav_history(path: Path = _HISTORY_PATH) -> list[dict]:
+    if not path.exists():
+        return []
+    rows = []
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if line:
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                pass
+    return rows
+
+
+def _pct(x) -> str:
+    return f"{x * 100:+.2f}%" if x is not None else "—"
+
+
+def _num(x) -> str:
+    return f"{x:.2f}" if x is not None else "—"
+
+
+def print_portfolio_vs_spy(history_path: Path = _HISTORY_PATH) -> None:
+    """Per-cohort TWR vs SPY TWR. Hard protocol rule: two separate sections, never
+    a combined number or series. <5 snapshots for a cohort → 'insufficient history'."""
+    rows = _load_nav_history(history_path)
+    print()
+    print("=" * 70)
+    print("  PORTFOLIO vs SPY  —  per cohort, never combined")
+    print("=" * 70)
+    if not rows:
+        print("  No NAV history yet — run scripts/nav_snapshot.py post-close.")
+        return
+
+    for cohort, label in _COHORT_SECTIONS:
+        cohort_rows = [r for r in rows if r.get("cohort") == cohort]
+        print()
+        print(f"  ── {label} ──")
+        if len(cohort_rows) < _MIN_SNAPSHOTS:
+            print(f"     insufficient history: {len(cohort_rows)} snapshot(s) "
+                  f"(need ≥{_MIN_SNAPSHOTS}) — no metrics, not extrapolated")
+            continue
+        p = compute_performance(rows, cohort)
+        print(f"     n_days={p['n_days']}")
+        print(f"     TWR      {_pct(p['twr']):>9}    SPY TWR   {_pct(p['spy_twr']):>9}"
+              f"    excess {_pct(p['excess']):>9}")
+        print(f"     max_dd   {_pct(p['max_dd']):>9}    SPY max_dd {_pct(p['spy_max_dd']):>8}")
+        print(f"     IR       {_num(p['information_ratio']):>9}    Sharpe    {_num(p['sharpe']):>9}"
+              f"    TE     {_pct(p['tracking_error']):>9}")
 
 
 def _fetch_prices(tickers: list[str]) -> dict[str, float | None]:
@@ -143,6 +205,9 @@ def main() -> None:
         print("  " + "-" * 84)
         print(f"  {'Summary':<8} n={n:<11} {'':>12} {avg_ret*100:>+7.2f}% {avg_alpha*100:>+7.2f}%"
               f"  win_rate={win_rate:.0f}%")
+
+    # ── Portfolio vs SPY (per cohort, never combined) ──────────────────────────
+    print_portfolio_vs_spy()
 
     print()
     print("  Constraints: no_real_orders=True  no_live_pnl_learning=True")
