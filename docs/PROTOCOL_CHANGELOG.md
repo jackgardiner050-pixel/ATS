@@ -87,3 +87,20 @@ state (lock byte-identical), confirming a clean baseline before the edit. The up
 change gates `evaluate_exit_v2` in `src/paper_trading.py` (a ruleset_file) to
 `cohort_1` only. exit_rules_v2 remains false — this task fixes the gap, it does not
 activate the flag.
+
+---
+
+## 2026-07-05 — Re-registration after exit_rules_v2 cohort-scope guard
+
+**Reason:** Re-registered after exit_rules_v2 cohort-scope guard — v2 exit logic now
+structurally excludes `legacy_pre_fix` positions regardless of flag state. Protocol §1.2
+compliance restored. Human-approved 2026-07-05.
+
+**Details:** `src/paper_trading.py` `process_screener_results` now gates both v2 passes on
+`cohort == "cohort_1"`; legacy (and any non-cohort_1) positions are unreachable by
+PT_HIT/TIME_STOP/STALE and continue to exit only via RATING_DOWNGRADE + their (separate)
+forced-sunset mechanism. `verify_protocol_lock.py --register` updated `ruleset_sha` and the
+`src/paper_trading.py` digest; `verify_protocol_lock.py` exits 0 — new clean baseline.
+exit_rules_v2 stays false (activation is a separate subsequent step). NOTE: the forced-sunset
+mechanism (§1.2, force-close legacy on 2026-08-23) does NOT yet exist as code — flagged as a
+separate gap, not built here.
