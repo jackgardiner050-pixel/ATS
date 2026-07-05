@@ -37,7 +37,7 @@ screener:
 # DEFAULT OFF — must stay false until the PLACEHOLDER thresholds in
 # src/paper_trading.DEFAULT_EXIT_V2_PARAMS are calibrated by a human. When false,
 # exit behavior is byte-identical to the original RATING_DOWNGRADE-only rule.
-exit_rules_v2: false
+exit_rules_v2: true
 
 # Telegram cockpit — Phase 1 (weekly digest + rating change alerts)
 # Credentials come from .env on the droplet (never committed to git).
