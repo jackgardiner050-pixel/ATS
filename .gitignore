@@ -14,3 +14,8 @@ data/governance/
 data/governance_journal/
 data/attribution_log.jsonl
 data/last_digest_state.json
+
+# research study caches / logs (results CSVs ARE committed)
+research/**/_price_cache.parquet
+research/**/run.log
+data/eps_trend_history.jsonl
