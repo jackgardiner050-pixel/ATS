@@ -117,3 +117,17 @@ state (lock byte-identical), confirming a clean baseline. The upcoming change ad
 unconditional forced-sunset pass to `process_screener_results` in `src/paper_trading.py`
 (a ruleset_file): legacy_pre_fix positions force-close on/after LEGACY_SUNSET_DATE
 (2026-08-23) with exit_reason FORCED_SUNSET, independent of the exit_rules_v2 flag.
+
+---
+
+## 2026-07-05 — Re-registration after Legacy Cohort forced-sunset mechanism
+
+**Reason:** Re-registered after Legacy Cohort forced-sunset mechanism (protocol §1.2
+compliance). Independent of exit_rules_v2 flag. Human-approved 2026-07-05.
+
+**Details:** `src/paper_trading.py` now defines `LEGACY_SUNSET_DATE = date(2026, 8, 23)`
+and an unconditional forced-sunset pass in `process_screener_results` that force-closes
+legacy_pre_fix positions on/after that date with exit_reason `FORCED_SUNSET`, regardless
+of rating and regardless of the exit_rules_v2 flag. cohort_1 is unaffected.
+`verify_protocol_lock.py --register` updated `ruleset_sha` and the `src/paper_trading.py`
+digest; `verify_protocol_lock.py` exits 0 — new clean baseline. The §1.2 gap is now closed.
