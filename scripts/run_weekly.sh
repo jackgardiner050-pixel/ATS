@@ -100,8 +100,17 @@ if git diff --cached --quiet; then
 else
   COMMIT_MSG="Weekly run ${LOG_DATE}: screener + paper + governance + dashboard"
   git commit -m "${COMMIT_MSG}" 2>&1 | tee -a "${LOGFILE}"
-  git push origin main 2>&1 | tee -a "${LOGFILE}"
-  log "Pushed to origin/main"
+
+  # Rebase-guarded publish: applies our commit on top of whatever the Phaethon panel cron
+  # (or any concurrent publisher) already pushed to main, rather than racing it. On a genuine
+  # conflict it aborts LOUD (Telegram alert) instead of force-pushing or dropping data; the
+  # local 'backup' remote (if configured) is an additive safety net. See scripts/git_publish_guarded.sh.
+  if bash scripts/git_publish_guarded.sh 2>&1 | tee -a "${LOGFILE}"; then
+    log "Published to origin/main (rebase-guarded)"
+  else
+    log "ERROR: guarded publish failed — an alert was sent; data is safe in the local backup."
+    exit 1
+  fi
 fi
 
 log "=== ATS Weekly Pipeline complete ==="
