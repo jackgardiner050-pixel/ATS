@@ -25,3 +25,11 @@ data/phaethon/*.jsonl
 data/phaethon/LEARNING_SUSPENDED
 data/phaethon/LEARNING_REINSTATEMENT_*.md
 runs/phaethon/
+
+# Hermes E1 live pilot — runtime artifacts (generated, never committed)
+data/live/*.jsonl
+data/live/*.yaml
+data/live/KILL
+data/live/HALT_DAILY
+data/live/HALT_WEEKLY
+data/live/RECONCILE_BLOCK

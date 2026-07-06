@@ -115,7 +115,7 @@ def check_breakers(pnl_state: dict, limits: dict) -> dict:
     """Evaluate the loss breakers against P&L state. Returns
     {halt: bool, kill: bool, reasons: [...]}. An unset (null) threshold is skipped.
 
-    pnl_state percentages are fractions, negative for a loss (e.g. -0.03 = down 3%).
+    pnl_state percentages are fractions, negative for a loss (a 5% loss is -0.05).
     """
     reasons: list[str] = []
     kill = False

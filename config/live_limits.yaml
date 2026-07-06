@@ -35,3 +35,15 @@ CUMULATIVE_KILL_PCT: null        # terminate the pilot if cumulative P&L <= -Z%
 # Same immutability treatment as the constitution hard booleans: any value other than
 # True is a violation the loader raises on. A human — never the system — places orders.
 HUMAN_EXECUTES_ALL_ORDERS: true
+
+# ─── Reconciliation (broker-statement CSV column mapping — generic parse) ─────
+broker_csv_columns:
+  ticker: ticker
+  qty: qty
+  price: price
+  date: date
+
+# ─── Terminal-kill resume gate (null until a completed post-mortem exists) ────
+# A cumulative-breach KILL is terminal: resume is refused until this points at a
+# completed post-mortem file. Set only by deliberate re-registration.
+POST_MORTEM_PATH: null
