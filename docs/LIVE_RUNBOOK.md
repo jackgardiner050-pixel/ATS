@@ -64,3 +64,19 @@ set by re-registration. While any of `DAILY_LOSS_HALT_PCT`/`WEEKLY_LOSS_HALT_PCT
 `CUMULATIVE_KILL_PCT` is null, breaker evaluation **blocks card generation** rather than
 silently skipping the check. Do not fund the pilot until the drill passes AND the thresholds
 are set.
+
+### Operator kill/resume commands (`scripts/live_kill.py`)
+
+The KILL file is the single source of truth, so these work even with Telegram down:
+
+```
+python3 scripts/live_kill.py status                       # kill / HALT_DAILY / HALT_WEEKLY state
+python3 scripts/live_kill.py engage "<reason>"            # /kill — halts, KILLs pending cards, alerts
+python3 scripts/live_kill.py engage "<reason>" --terminal # cumulative-breach terminal kill
+python3 scripts/live_kill.py confirm-resume "<reason>"    # step 1 of 2 (logged); then MANUALLY rm data/live/KILL
+python3 scripts/live_kill.py clear-weekly "<reason>"      # clear HALT_WEEKLY (reason-gated)
+```
+
+Resume is deliberately two steps: `confirm-resume` (logged, with a reason) **and** manual
+deletion of `data/live/KILL`. A `--terminal` kill refuses `confirm-resume` until
+`POST_MORTEM_PATH` in `config/live_limits.yaml` points at a completed post-mortem.

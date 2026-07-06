@@ -101,3 +101,15 @@ def test_no_hardcoded_protocol_numbers_in_src():
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+def test_live_kill_cli_status_smoke(capsys):
+    import importlib.util, sys
+    from pathlib import Path
+    p = Path(__file__).parent.parent / "scripts" / "live_kill.py"
+    spec = importlib.util.spec_from_file_location("live_kill", p)
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    assert m.main(["status"]) == 0                       # operator status runs clean
+    out = capsys.readouterr().out
+    assert "kill" in out and "HALT_DAILY" in out
+    print("  ✓ live_kill.py status CLI wired")
