@@ -116,6 +116,36 @@ def spearman_ic(deciles, fwd):
     return s["d"].corr(s["f"], method="spearman") if len(s) > 2 else np.nan
 
 
+def summarize_results(df):
+    """Display-layer summary: rank IC + STRONG_BUY-band forward excess, ALL vs EX-FLAGGED.
+    Returns a list of per-label dicts (empty if too few OK rows). Pure — no extraction or
+    calculation logic changed.
+
+    Bug fix (display only): the `flagged` column arrives as OBJECT dtype — OK rows carry
+    python bools, but NO_DATA/NO_UPSIDE rows have no `flagged` key so pandas fills NaN and
+    the column becomes object. A plain `~ok["flagged"]` then does BITWISE not on the bools
+    (True→-2, False→-1) and pandas treats the result as column labels → KeyError at print.
+    We coerce to a real boolean mask first (robust to python-bool OR "True"/"False" text)."""
+    ok = df[df["status"] == "OK"].copy()
+    if len(ok) < 3 or not ok["fwd_excess_net"].notna().any():
+        return []
+    ok["flagged"] = ok["flagged"].astype(str).str.strip().str.lower().isin(("true", "1"))
+    out = []
+    for label, sub in (("ALL", ok), ("EX-FLAGGED", ok[~ok["flagged"]])):
+        sub = sub.dropna(subset=["fwd_excess_net"]).copy()
+        if len(sub) < 3:
+            out.append({"label": label, "n": len(sub), "skipped": True})
+            continue
+        sub["decile"] = pd.qcut(sub["implied_upside"].rank(method="first"),
+                                min(10, len(sub)), labels=False)
+        ic = spearman_ic(sub["decile"], sub["fwd_excess_net"])
+        sb = sub[sub["strong_buy"]]["fwd_excess_net"]
+        out.append({"label": label, "n": int(len(sub)), "rank_ic": float(ic),
+                    "sb_band_mean": (float(sb.mean()) if len(sb) else None),
+                    "sb_n": int(len(sb))})
+    return out
+
+
 def run(tickers, years) -> int:
     from src.data.extraction_invariants import run_invariants
     rows = []
@@ -153,22 +183,19 @@ def run(tickers, years) -> int:
     df.to_csv(HERE / "pt_calibration_results.csv", index=False)
     ok = df[df["status"] == "OK"].copy()
     print(f"[pt-calib] rows={len(df)} OK={len(ok)} NO_DATA={int((df['status']=='NO_DATA').sum())}")
-    if len(ok) >= 3 and ok["fwd_excess_net"].notna().any():
-        for label, sub in (("ALL", ok), ("EX-FLAGGED", ok[~ok["flagged"]])):
-            sub = sub.dropna(subset=["fwd_excess_net"])
-            if len(sub) < 3:
-                print(f"  {label}: n<3, skip"); continue
-            sub["decile"] = pd.qcut(sub["implied_upside"].rank(method="first"),
-                                    min(10, len(sub)), labels=False)
-            ic = spearman_ic(sub["decile"], sub["fwd_excess_net"])
-            sb = sub[sub["strong_buy"]]["fwd_excess_net"]
-            print(f"  {label}: n={len(sub)}  rank_IC={ic:+.3f}  "
-                  f"STRONG_BUY-band mean fwd excess={sb.mean()*100:+.2f}% (n={len(sb)})")
-        print("  DECISION: if STRONG_BUY-band mean excess (EX-FLAGGED) <= 0 → entry gate "
-              "UNVALIDATED; observation protocol is the only evidence path.")
-    else:
+    summary = summarize_results(df)
+    if not summary:
         print("  Insufficient OK rows to summarize — run the full universe on the droplet "
               "(EDGAR_IDENTITY set, hours). This subset only proves the pipeline.")
+    else:
+        for s in summary:
+            if s.get("skipped"):
+                print(f"  {s['label']}: n<3, skip"); continue
+            band = f"{s['sb_band_mean']*100:+.2f}%" if s["sb_band_mean"] is not None else "n/a"
+            print(f"  {s['label']}: n={s['n']}  rank_IC={s['rank_ic']:+.3f}  "
+                  f"STRONG_BUY-band mean fwd excess={band} (n={s['sb_n']})")
+        print("  DECISION: if STRONG_BUY-band mean excess (EX-FLAGGED) <= 0 → entry gate "
+              "UNVALIDATED; observation protocol is the only evidence path.")
     print(f"  Wrote {HERE/'pt_calibration_results.csv'}")
     return 0
 

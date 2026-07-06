@@ -1,0 +1,12 @@
+ticker,year,status,implied_upside,fwd_excess_net,flagged,strong_buy
+A,2018,OK,0.30,0.10,False,True
+B,2018,OK,0.25,0.05,True,True
+C,2018,OK,-0.10,-0.02,False,False
+D,2018,OK,0.40,0.50,True,True
+E,2018,OK,-0.30,0.01,False,False
+F,2018,OK,0.10,-0.05,False,False
+G,2018,OK,0.22,-0.01,False,True
+H,2018,OK,-0.50,0.03,False,False
+X,2018,NO_DATA,,,,
+Y,2018,NO_DATA,,,,
+Z,2018,NO_UPSIDE,,,,
