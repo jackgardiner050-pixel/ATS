@@ -1,11 +1,11 @@
 {
-  "fetched_at_utc": "2026-07-06T14:06:55Z",
-  "fetched_at_uk": "2026-07-06 15:06 BST",
+  "fetched_at_utc": "2026-07-06T15:10:04Z",
+  "fetched_at_uk": "2026-07-06 16:10 BST",
   "market_status": "open",
   "market_note": "US market open",
   "delay_warning": "Prices may be 15-min delayed (yfinance)",
   "spy_return_pct": null,
-  "spy_today_pct": 0.374,
+  "spy_today_pct": 0.612,
   "qqq_return_pct": null,
   "best_variant_id": "buy_and_hold_structural",
   "best_variant_return_pct": -9.98,
@@ -35,17 +35,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 284.6053,
-          "last_price": 324.4,
-          "return_pct": 13.982,
-          "unrealised_pnl": 174.78
+          "last_price": 325.87,
+          "return_pct": 14.499,
+          "unrealised_pnl": 181.23
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.0684,
-          "last_price": 27.235,
-          "return_pct": -2.969,
-          "unrealised_pnl": -37.11
+          "last_price": 27.215,
+          "return_pct": -3.04,
+          "unrealised_pnl": -38.01
         }
       ]
     },
@@ -72,17 +72,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 284.6053,
-          "last_price": 324.4,
-          "return_pct": 13.982,
-          "unrealised_pnl": 174.78
+          "last_price": 325.87,
+          "return_pct": 14.499,
+          "unrealised_pnl": 181.23
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.0684,
-          "last_price": 27.235,
-          "return_pct": -2.969,
-          "unrealised_pnl": -37.11
+          "last_price": 27.215,
+          "return_pct": -3.04,
+          "unrealised_pnl": -38.01
         }
       ]
     },
@@ -109,17 +109,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 284.6053,
-          "last_price": 324.4,
-          "return_pct": 13.982,
-          "unrealised_pnl": 174.78
+          "last_price": 325.87,
+          "return_pct": 14.499,
+          "unrealised_pnl": 181.23
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.0684,
-          "last_price": 27.235,
-          "return_pct": -2.969,
-          "unrealised_pnl": -37.11
+          "last_price": 27.215,
+          "return_pct": -3.04,
+          "unrealised_pnl": -38.01
         }
       ]
     },
@@ -146,17 +146,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 284.6053,
-          "last_price": 324.4,
-          "return_pct": 13.982,
-          "unrealised_pnl": 174.78
+          "last_price": 325.87,
+          "return_pct": 14.499,
+          "unrealised_pnl": 181.23
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.0684,
-          "last_price": 27.235,
-          "return_pct": -2.969,
-          "unrealised_pnl": -37.11
+          "last_price": 27.215,
+          "return_pct": -3.04,
+          "unrealised_pnl": -38.01
         }
       ]
     },
@@ -183,17 +183,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 284.6053,
-          "last_price": 324.4,
-          "return_pct": 13.982,
-          "unrealised_pnl": 174.78
+          "last_price": 325.87,
+          "return_pct": 14.499,
+          "unrealised_pnl": 181.23
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.0684,
-          "last_price": 27.235,
-          "return_pct": -2.969,
-          "unrealised_pnl": -37.11
+          "last_price": 27.215,
+          "return_pct": -3.04,
+          "unrealised_pnl": -38.01
         }
       ]
     },
@@ -220,17 +220,17 @@
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.4185,
-          "last_price": 27.235,
-          "return_pct": -4.165,
-          "unrealised_pnl": -52.06
+          "last_price": 27.215,
+          "return_pct": -4.235,
+          "unrealised_pnl": -52.94
         },
         {
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 309.9029,
-          "last_price": 324.4,
-          "return_pct": 4.678,
-          "unrealised_pnl": 58.47
+          "last_price": 325.87,
+          "return_pct": 5.152,
+          "unrealised_pnl": 64.4
         }
       ]
     },
@@ -257,17 +257,17 @@
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.4185,
-          "last_price": 27.235,
-          "return_pct": -4.165,
-          "unrealised_pnl": -52.06
+          "last_price": 27.215,
+          "return_pct": -4.235,
+          "unrealised_pnl": -52.94
         },
         {
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 309.9029,
-          "last_price": 324.4,
-          "return_pct": 4.678,
-          "unrealised_pnl": 58.47
+          "last_price": 325.87,
+          "return_pct": 5.152,
+          "unrealised_pnl": 64.4
         }
       ]
     },
@@ -294,17 +294,17 @@
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.4185,
-          "last_price": 27.235,
-          "return_pct": -4.165,
-          "unrealised_pnl": -52.06
+          "last_price": 27.215,
+          "return_pct": -4.235,
+          "unrealised_pnl": -52.94
         },
         {
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 309.9029,
-          "last_price": 324.4,
-          "return_pct": 4.678,
-          "unrealised_pnl": 58.47
+          "last_price": 325.87,
+          "return_pct": 5.152,
+          "unrealised_pnl": 64.4
         }
       ]
     },
@@ -331,17 +331,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 284.6053,
-          "last_price": 324.4,
-          "return_pct": 13.982,
-          "unrealised_pnl": 174.78
+          "last_price": 325.87,
+          "return_pct": 14.499,
+          "unrealised_pnl": 181.23
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 28.0684,
-          "last_price": 27.235,
-          "return_pct": -2.969,
-          "unrealised_pnl": -37.11
+          "last_price": 27.215,
+          "return_pct": -3.04,
+          "unrealised_pnl": -38.01
         }
       ]
     },
@@ -368,17 +368,17 @@
           "ticker": "VRT",
           "direction": "long",
           "entry_price": 316.2128,
-          "last_price": 324.4,
-          "return_pct": 2.589,
-          "unrealised_pnl": 32.36
+          "last_price": 325.87,
+          "return_pct": 3.054,
+          "unrealised_pnl": 38.17
         },
         {
           "ticker": "SMCI",
           "direction": "long",
           "entry_price": 41.6583,
-          "last_price": 27.235,
-          "return_pct": -34.623,
-          "unrealised_pnl": -432.79
+          "last_price": 27.215,
+          "return_pct": -34.671,
+          "unrealised_pnl": -433.39
         }
       ]
     },
