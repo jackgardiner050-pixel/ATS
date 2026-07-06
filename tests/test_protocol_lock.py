@@ -17,6 +17,7 @@ from scripts.verify_protocol_lock import (
     RULESET_FILES,
     LOCK_FILE,
     PROTOCOL_DOC,
+    LIVE_PILOT_DOC,
 )
 
 
@@ -31,7 +32,7 @@ def test_lock_matches_current_repo_state():
 def _mirror_repo(dst: Path) -> Path:
     """Copy the lock file, protocol doc, and every ruleset file into `dst`,
     preserving relative paths, so verify(root=dst) works in isolation."""
-    for rel in [LOCK_FILE, PROTOCOL_DOC, *RULESET_FILES]:
+    for rel in [LOCK_FILE, PROTOCOL_DOC, LIVE_PILOT_DOC, *RULESET_FILES]:
         src = REPO_ROOT / rel
         out = dst / rel
         out.parent.mkdir(parents=True, exist_ok=True)

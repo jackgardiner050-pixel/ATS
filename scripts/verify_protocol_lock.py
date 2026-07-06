@@ -70,6 +70,15 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 LOCK_FILE = "config/protocol_lock.yaml"
 PROTOCOL_DOC = "docs/OBSERVATION_PROTOCOL.md"
 
+# ─── Live Pilot lock (SEPARATE artifact within the same file) ────────────────
+# A clearly-named, independently-verifiable section that governs the live-pilot protocol
+# DOCUMENT only. It is NOT conflated with the Cohort-1 lock above: its own protocol_sha,
+# its own registration, its own re-registration. No ruleset_sha yet — the E1 execution
+# code (order cards / fill journal / reconciliation) does not exist; when built, add it to
+# this section's ruleset_files via a deliberate re-registration.
+LIVE_PILOT_KEY = "live_pilot"
+LIVE_PILOT_DOC = "docs/LIVE_PILOT_PROTOCOL.md"
+
 # The frozen ruleset — FIXED ORDER (the combined hash depends on it). Do not
 # reorder without a deliberate re-registration.
 RULESET_FILES = [
@@ -109,20 +118,33 @@ def compute_protocol_sha(root: Path = REPO_ROOT) -> str:
     return sha256_file(root / PROTOCOL_DOC)
 
 
+def compute_live_pilot_sha(root: Path = REPO_ROOT) -> str:
+    return sha256_file(root / LIVE_PILOT_DOC)
+
+
 # ─── Lock file I/O ───────────────────────────────────────────────────────────
 
 def load_lock(lock_path: Path) -> dict:
     return yaml.safe_load(lock_path.read_text()) or {}
 
 
-def build_lock(root: Path = REPO_ROOT, registered: str | None = None) -> dict:
-    return {
+def build_lock(root: Path = REPO_ROOT, registered: str | None = None,
+               lock_path: Path | None = None) -> dict:
+    data = {
         "locked": True,
         "registered": registered or str(date.today()),
         "protocol_sha": compute_protocol_sha(root),
         "ruleset_sha": compute_ruleset_sha(root),
         "ruleset_files": compute_ruleset_file_shas(root),
     }
+    # Preserve the SEPARATE live_pilot lock across a Cohort-1 re-registration — it is a
+    # distinct artifact and is never rebuilt or cleared by the Cohort-1 --register path.
+    lock_path = lock_path or (root / LOCK_FILE)
+    if lock_path.exists():
+        existing = load_lock(lock_path)
+        if LIVE_PILOT_KEY in existing:
+            data[LIVE_PILOT_KEY] = existing[LIVE_PILOT_KEY]
+    return data
 
 
 _LOCK_HEADER = (
@@ -137,12 +159,55 @@ _LOCK_HEADER = (
 
 def register(root: Path = REPO_ROOT, lock_path: Path | None = None,
              registered: str | None = None) -> Path:
-    """(Re)write the lock file from current repo state. Deliberate human action."""
+    """(Re)write the lock file from current repo state. Deliberate human action.
+    Preserves the separate live_pilot lock section."""
     lock_path = lock_path or (root / LOCK_FILE)
-    data = build_lock(root, registered)
+    data = build_lock(root, registered, lock_path)
     body = yaml.dump(data, sort_keys=False, default_flow_style=False)
     atomic_write_text(lock_path, _LOCK_HEADER + body)
     return lock_path
+
+
+def register_live_pilot(root: Path = REPO_ROOT, lock_path: Path | None = None,
+                        registered: str | None = None) -> Path:
+    """(Re)register ONLY the live_pilot lock section — protocol_sha of LIVE_PILOT_PROTOCOL.md.
+    Leaves the Cohort-1 lock untouched. Deliberate human action. No ruleset_sha yet: the E1
+    execution code does not exist, so this lock covers the PROTOCOL DOCUMENT only."""
+    lock_path = lock_path or (root / LOCK_FILE)
+    data = load_lock(lock_path) if lock_path.exists() else {}
+    data[LIVE_PILOT_KEY] = {
+        "locked": True,
+        "registered": registered or str(date.today()),
+        "protocol_doc": LIVE_PILOT_DOC,
+        "protocol_sha": compute_live_pilot_sha(root),
+        "ruleset_files": None,   # E1 execution code not built yet — document-only lock
+    }
+    body = yaml.dump(data, sort_keys=False, default_flow_style=False)
+    atomic_write_text(lock_path, _LOCK_HEADER + body)
+    return lock_path
+
+
+def verify_live_pilot(root: Path = REPO_ROOT, lock: dict | None = None) -> list[str]:
+    """Independently verify the live_pilot lock section. Returns a list of drift problems
+    (empty = clean, or the section is absent)."""
+    if lock is None:
+        lp_file = root / LOCK_FILE
+        lock = load_lock(lp_file) if lp_file.exists() else {}
+    lp = lock.get(LIVE_PILOT_KEY)
+    if not lp:
+        return []   # no live_pilot lock registered
+    problems: list[str] = []
+    if lp.get("locked") is not True:
+        problems.append("live_pilot: 'locked' is not true — the live pilot protocol is not locked")
+    if not (root / LIVE_PILOT_DOC).exists():
+        problems.append(f"MISSING  {LIVE_PILOT_DOC}  (locked live-pilot doc is gone)")
+        return problems
+    got = compute_live_pilot_sha(root)
+    exp = lp.get("protocol_sha", "")
+    if got != exp:
+        problems.append(
+            f"CHANGED  {LIVE_PILOT_DOC}  (live_pilot protocol_sha {exp[:12]}… → {got[:12]}…)")
+    return problems
 
 
 # ─── Verification ────────────────────────────────────────────────────────────
@@ -196,6 +261,9 @@ def verify(root: Path = REPO_ROOT, lock_path: Path | None = None) -> tuple[bool,
             f"with no single file pinpointed — check RULESET_FILES order / algorithm"
         )
 
+    # Live pilot lock — a separate, independently-verifiable artifact in the same file.
+    problems.extend(verify_live_pilot(root, lock))
+
     return (len(problems) == 0), problems
 
 
@@ -203,11 +271,19 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Verify (or --register) the protocol lock.")
     ap.add_argument("--register", action="store_true",
                     help="rewrite config/protocol_lock.yaml from current state (deliberate re-registration)")
+    ap.add_argument("--register-live-pilot", action="store_true",
+                    help="(re)register ONLY the live_pilot lock section (protocol_sha of LIVE_PILOT_PROTOCOL.md)")
     args = ap.parse_args()
 
     if args.register:
         path = register()
         print(f"Re-registered protocol lock → {path}")
+        print("  Record the reason for this re-registration in the commit message.")
+        return 0
+
+    if args.register_live_pilot:
+        path = register_live_pilot()
+        print(f"Re-registered live_pilot lock (LIVE_PILOT_PROTOCOL.md) → {path}")
         print("  Record the reason for this re-registration in the commit message.")
         return 0
 

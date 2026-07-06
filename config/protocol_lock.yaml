@@ -16,3 +16,9 @@ ruleset_files:
   config/constitution.yaml: 956772422677b93db1e6ff9fd96908bd2b42db5e8cd9ed4dcb6487a49ea858a0
   config/settings.yaml: dfaae10a900ed94aa0fb5b72ef5fbccfc363c5b03cdbec5217e05d9b663d33d2
   config/universe.yaml: fe4d601b2b807cced3ab9312b95ea3923cb4b52cce9ff724bf7358efbf6b09f7
+live_pilot:
+  locked: true
+  registered: '2026-07-06'
+  protocol_doc: docs/LIVE_PILOT_PROTOCOL.md
+  protocol_sha: 5ef93fce7da0057b44c0eaebbac3d91a5a38ecac6fec8ba7d42db7fecec93644
+  ruleset_files: null
