@@ -1,0 +1,37 @@
+# Live-Pilot Guard Layer — hard limits for the E1 human-executed live pilot.
+#
+# HUMAN-EDITABLE ONLY. Modeled on config/constitution.yaml — this file is the single
+# source of truth for the live pilot's hard limits and is never programmatically modified.
+# The loss-halt placeholders are set by the locked LIVE_PILOT_PROTOCOL.md (item 6), and
+# MAX_LIVE_CAPITAL_GBP is set by the operator — both only via deliberate re-registration.
+#
+# Effective: 2026-07-06 | Version: 1.0 (pilot)
+
+version: "1.0"
+effective_date: "2026-07-06"
+
+# ─── Execution stage (enum: E0 | E1 only) ────────────────────────────────────
+# E0 = shadow/no-capital; E1 = human places every order from system-generated cards.
+# E2 (autonomous execution) is NOT a valid value today — the loader REJECTS it: E2
+# requires constitution v3, so it cannot even parse under the current constitution.
+execution_stage: "E1"
+
+# ─── Capital (operator-set) ──────────────────────────────────────────────────
+# Placeholder 0 = pilot not funded. The loader refuses to generate order cards while
+# this is 0. Only the operator raises it, and only via re-registration (see protocol §2).
+MAX_LIVE_CAPITAL_GBP: 0
+
+# ─── Position + order-rate limits ────────────────────────────────────────────
+MAX_SINGLE_POSITION_LIVE: 0.10   # no single live position > 10% of live capital
+MAX_ORDERS_PER_WEEK: 5           # hard cap on order cards issued per calendar week
+
+# ─── Loss breakers (percentages — placeholders set by LIVE_PILOT_PROTOCOL.md §5, item 6) ──
+# null = not yet set by the locked live protocol; breaker checks skip an unset threshold.
+DAILY_LOSS_HALT_PCT: null        # halt new cards for the day if daily P&L <= -X%
+WEEKLY_LOSS_HALT_PCT: null       # halt new cards for the week if weekly P&L <= -Y%
+CUMULATIVE_KILL_PCT: null        # terminate the pilot if cumulative P&L <= -Z%
+
+# ─── Hard prohibition (boolean — must always be True) ────────────────────────
+# Same immutability treatment as the constitution hard booleans: any value other than
+# True is a violation the loader raises on. A human — never the system — places orders.
+HUMAN_EXECUTES_ALL_ORDERS: true

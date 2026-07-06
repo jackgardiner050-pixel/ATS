@@ -194,6 +194,22 @@ def test_learning_modules_write_only_human_side():
             assert "evidence_pack" not in text, f"{name} references evidence_pack"
 
 
+# ─── 2d. Live-pilot guard layer firewall ─────────────────────────────────────
+
+def test_live_layer_no_broker_and_no_decision_math():
+    """src/live holds NO broker libraries and imports NO decision math (engine/signals)
+    — it only guards; it must not touch the rating/signal machinery."""
+    offenders = []
+    for path in _py_files("src/live"):
+        for mod in _imported_names(path):
+            top = mod.split(".")[0]
+            if top in BROKER_LIBS or any(lib in mod for lib in BROKER_LIBS):
+                offenders.append(f"{path.relative_to(ROOT)}: broker import {mod}")
+            if mod.split(".")[:2] in (["src", "engine"], ["src", "signals"]):
+                offenders.append(f"{path.relative_to(ROOT)}: imports decision math {mod}")
+    assert not offenders, "live-layer guard breach:\n" + "\n".join(offenders)
+
+
 # ─── 3. deploy.sh trading-droplet guards ─────────────────────────────────────
 
 def test_deploy_sh_has_both_trading_guards():
