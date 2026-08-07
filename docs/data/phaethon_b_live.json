@@ -94,30 +94,6 @@
   "as_of": "2026-08-07",
   "restated": "restated 2026-08-07, cash-accounting bug fixed",
   "restated_rejected_over_cash": [],
-  "trimmed": "trimmed 2026-08-07 \u2014 CEG reduced 13.4% -> 10.0%; AMZN reduced 11.5% -> 10.0%; MSFT reduced 11.4% -> 10.0%, excess released to cash",
-  "trim_log": [
-    {
-      "ticker": "CEG",
-      "before_pct": 13.4,
-      "after_pct": 10.0,
-      "released_pct": 3.4,
-      "released_dollars": 352.63
-    },
-    {
-      "ticker": "AMZN",
-      "before_pct": 11.5,
-      "after_pct": 10.0,
-      "released_pct": 1.5,
-      "released_dollars": 153.09
-    },
-    {
-      "ticker": "MSFT",
-      "before_pct": 11.4,
-      "after_pct": 10.0,
-      "released_pct": 1.4,
-      "released_dollars": 140.63
-    }
-  ],
   "status": "CONFORMING",
   "governance": {
     "conforming": true,
