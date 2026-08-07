@@ -2,144 +2,81 @@
   "arm": "aggressive-B",
   "label": "Aggressive (B)",
   "mandate": "+10%/qtr, concentrated",
-  "cohort": "phaethon_b",
-  "n_positions": 11,
+  "n_positions": 10,
   "holdings": [
     {
       "ticker": "CEG",
-      "cohort": "phaethon_b",
       "bought_at": 254.83,
-      "last": 239.25,
-      "weight_pct": 13.5
+      "last": 261.1,
+      "weight_pct": 13.4
     },
     {
       "ticker": "GEV",
-      "cohort": "phaethon_b",
       "bought_at": 933.61,
-      "last": 1113.11,
-      "weight_pct": 8.4
-    },
-    {
-      "ticker": "COHR",
-      "cohort": "phaethon_b",
-      "bought_at": 376.99,
-      "last": 333.36,
-      "weight_pct": 5.9
-    },
-    {
-      "ticker": "VRT",
-      "cohort": "phaethon_b",
-      "bought_at": 300.57,
-      "last": 300.53,
-      "weight_pct": 7.5
-    },
-    {
-      "ticker": "GOOGL",
-      "cohort": "phaethon_b",
-      "bought_at": 363.31,
-      "last": 359.91,
-      "weight_pct": 13.8
+      "last": 1000.3,
+      "weight_pct": 7.3
     },
     {
       "ticker": "ANET",
-      "cohort": "phaethon_b",
       "bought_at": 169.09,
-      "last": 159.99,
-      "weight_pct": 8.2
+      "last": 192.32,
+      "weight_pct": 9.6
     },
     {
       "ticker": "VST",
-      "cohort": "phaethon_b",
       "bought_at": 153.52,
-      "last": 151.05,
-      "weight_pct": 8.2
-    },
-    {
-      "ticker": "TSM",
-      "cohort": "phaethon_b",
-      "bought_at": 467.67,
-      "last": 434.16,
-      "weight_pct": 8.7
-    },
-    {
-      "ticker": "MU",
-      "cohort": "phaethon_b",
-      "bought_at": 1211.38,
-      "last": 975.56,
-      "weight_pct": 0.8
+      "last": 141.38,
+      "weight_pct": 7.4
     },
     {
       "ticker": "AMZN",
-      "cohort": "phaethon_b",
       "bought_at": 232.79,
-      "last": 242.67,
-      "weight_pct": 10.6
+      "last": 272.26,
+      "weight_pct": 11.5
     },
     {
       "ticker": "MSFT",
-      "cohort": "phaethon_b",
       "bought_at": 367.34,
-      "last": 390.49,
-      "weight_pct": 9.2
+      "last": 499.86,
+      "weight_pct": 11.4
+    },
+    {
+      "ticker": "PLTR",
+      "bought_at": 119.5,
+      "last": 155.92,
+      "weight_pct": 7.5
+    },
+    {
+      "ticker": "FSLR",
+      "bought_at": 232.8,
+      "last": 244.14,
+      "weight_pct": 9.1
+    },
+    {
+      "ticker": "REGN",
+      "bought_at": 631.81,
+      "last": 772.11,
+      "weight_pct": 8.9
+    },
+    {
+      "ticker": "JPM",
+      "bought_at": 329.39,
+      "last": 356.3,
+      "weight_pct": 7.1
     }
   ],
-  "cash_pct": 5.1,
-  "active_return_pct": -0.56,
-  "vs_qqq_pp": -1.63,
-  "trend": "FLAT vs QQQ",
-  "n_marks": 25,
+  "cash_pct": 6.9,
+  "active_return_pct": 12.48,
+  "vs_qqq_pp": 11.12,
+  "trend": "IMPROVING vs QQQ",
+  "n_marks": 50,
   "halted": false,
-  "drawdown_pct": -5.91,
+  "drawdown_pct": -2.8,
   "kill_switch": "-25% peak-to-trough",
   "mode": "paper/simulated",
   "isolated": true,
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "benchmark_primary": "QQQ",
-  "benchmark_headline": "active return vs QQQ (primary)",
-  "as_of": "2026-07-05",
-  "restated": "restated 2026-07-05, cash-accounting bug fixed",
-  "restated_rejected_over_cash": [
-    {
-      "ticker": "PLTR",
-      "entry_notional": 601.72,
-      "reason": "would breach cash: cost 601.72 > available 513.01"
-    },
-    {
-      "ticker": "FSLR",
-      "entry_notional": 902.28,
-      "reason": "would breach cash: cost 902.28 > available 513.01"
-    },
-    {
-      "ticker": "ENPH",
-      "entry_notional": 683.7,
-      "reason": "would breach cash: cost 683.70 > available 513.01"
-    },
-    {
-      "ticker": "REGN",
-      "entry_notional": 756.43,
-      "reason": "would breach cash: cost 756.43 > available 513.01"
-    },
-    {
-      "ticker": "JPM",
-      "entry_notional": 683.53,
-      "reason": "would breach cash: cost 683.53 > available 513.01"
-    },
-    {
-      "ticker": "ISRG",
-      "entry_notional": 719.85,
-      "reason": "would breach cash: cost 719.85 > available 513.01"
-    }
-  ],
-  "status": "NONCONFORMING \u2014 CEG at 13.5% > MAX_SINGLE_POSITION 10%; GOOGL at 13.8% > MAX_SINGLE_POSITION 10%; AMZN at 10.6% > MAX_SINGLE_POSITION 10%",
-  "governance": {
-    "conforming": false,
-    "violations": [
-      "CEG at 13.5% > MAX_SINGLE_POSITION 10%",
-      "GOOGL at 13.8% > MAX_SINGLE_POSITION 10%",
-      "AMZN at 10.6% > MAX_SINGLE_POSITION 10%"
-    ],
-    "gross_exposure_pct": 94.8
-  }
+  "as_of": "2026-08-07"
 }
