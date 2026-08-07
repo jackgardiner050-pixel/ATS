@@ -2,81 +2,70 @@
   "arm": "aggressive-B",
   "label": "Aggressive (B)",
   "mandate": "+10%/qtr, concentrated",
-  "cohort": "phaethon_b",
   "n_positions": 10,
   "holdings": [
     {
       "ticker": "CEG",
-      "cohort": "phaethon_b",
       "bought_at": 254.83,
       "last": 261.1,
-      "weight_pct": 10.0
+      "weight_pct": 13.4
     },
     {
       "ticker": "GEV",
-      "cohort": "phaethon_b",
       "bought_at": 933.61,
       "last": 1000.3,
       "weight_pct": 7.3
     },
     {
       "ticker": "ANET",
-      "cohort": "phaethon_b",
       "bought_at": 169.09,
       "last": 192.32,
       "weight_pct": 9.6
     },
     {
       "ticker": "VST",
-      "cohort": "phaethon_b",
       "bought_at": 153.52,
       "last": 141.38,
       "weight_pct": 7.4
     },
     {
       "ticker": "AMZN",
-      "cohort": "phaethon_b",
       "bought_at": 232.79,
       "last": 272.26,
-      "weight_pct": 10.0
+      "weight_pct": 11.5
     },
     {
       "ticker": "MSFT",
-      "cohort": "phaethon_b",
       "bought_at": 367.34,
       "last": 499.86,
-      "weight_pct": 10.0
+      "weight_pct": 11.4
     },
     {
       "ticker": "PLTR",
-      "cohort": "phaethon_b",
       "bought_at": 119.5,
       "last": 155.92,
       "weight_pct": 7.5
     },
     {
       "ticker": "FSLR",
-      "cohort": "phaethon_b",
       "bought_at": 232.8,
       "last": 244.14,
       "weight_pct": 9.1
     },
     {
       "ticker": "REGN",
-      "cohort": "phaethon_b",
       "bought_at": 631.81,
       "last": 772.11,
       "weight_pct": 8.9
     },
     {
       "ticker": "JPM",
-      "cohort": "phaethon_b",
       "bought_at": 329.39,
       "last": 356.3,
       "weight_pct": 7.1
     }
   ],
-  "cash_pct": 13.1,
+  "cash_pct": 6.9,
   "active_return_pct": 12.48,
   "vs_qqq_pp": 11.12,
   "trend": "IMPROVING vs QQQ",
@@ -89,39 +78,5 @@
   "forward_only": true,
   "research_grade": true,
   "benchmark": "QQQ",
-  "benchmark_primary": "QQQ",
-  "benchmark_headline": "active return vs QQQ (primary)",
-  "as_of": "2026-08-07",
-  "restated": "restated 2026-08-07, cash-accounting bug fixed",
-  "restated_rejected_over_cash": [],
-  "trimmed": "trimmed 2026-08-07 \u2014 CEG reduced 13.4% -> 10.0%; AMZN reduced 11.5% -> 10.0%; MSFT reduced 11.4% -> 10.0%, excess released to cash",
-  "trim_log": [
-    {
-      "ticker": "CEG",
-      "before_pct": 13.4,
-      "after_pct": 10.0,
-      "released_pct": 3.4,
-      "released_dollars": 352.63
-    },
-    {
-      "ticker": "AMZN",
-      "before_pct": 11.5,
-      "after_pct": 10.0,
-      "released_pct": 1.5,
-      "released_dollars": 153.09
-    },
-    {
-      "ticker": "MSFT",
-      "before_pct": 11.4,
-      "after_pct": 10.0,
-      "released_pct": 1.4,
-      "released_dollars": 140.63
-    }
-  ],
-  "status": "CONFORMING",
-  "governance": {
-    "conforming": true,
-    "violations": [],
-    "gross_exposure_pct": 86.9
-  }
+  "as_of": "2026-08-07"
 }

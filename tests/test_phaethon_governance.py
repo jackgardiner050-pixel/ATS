@@ -1,7 +1,9 @@
 """Phaethon governance + render tests (migration under governance).
 
 ACCEPTANCE: running governance against the current phaethon_b_live.json data produces
-the NONCONFORMING banner (gross exposure 138%).
+CONFORMING — both the leverage bug (2026-07-05) and the concentration breach it had been
+masking (CEG/AMZN/MSFT > MAX_SINGLE_POSITION, fixed by the 2026-08-07 trim) are resolved.
+Both original breaches remain auditable in docs/data/archive/, never silently rewritten.
 """
 import json
 import sys
@@ -21,17 +23,19 @@ CONSTITUTION = {"MAX_SINGLE_POSITION": 0.10}
 SCREENER = {"min_market_cap_usd": 500_000_000, "max_market_cap_usd": 200_000_000_000}
 
 
-# ─── ACCEPTANCE: current Arm B data → NONCONFORMING banner ───────────────────
+# ─── ACCEPTANCE: current Arm B data → CONFORMING (leverage + concentration both fixed) ─
 
-def test_restated_arm_b_leverage_fixed_concentration_still_flags():
-    """Post-cash-fix: the LIVE arm B series is restated — leverage resolved (≤100%), but
-    still NONCONFORMING for concentration (new info, not the leverage bug)."""
+def test_restated_and_trimmed_arm_b_is_conforming():
+    """Post-cash-fix + post-trim: the LIVE arm B series is restated (leverage resolved,
+    ≤100%) AND trimmed (concentration resolved, ≤ MAX_SINGLE_POSITION) — CONFORMING."""
     d = json.loads((ROOT / "docs" / "data" / "phaethon_b_live.json").read_text())
     assert "restated" in d and "cash-accounting bug fixed" in d["restated"]
+    assert "trimmed" in d and "excess released to cash" in d["trimmed"]
     gov = run_governance(d["holdings"], SCREENER, CONSTITUTION, check_mcap=False)
     assert gov["gross_exposure_pct"] <= 100.5              # leverage FIXED
-    assert gov["conforming"] is False and "MAX_SINGLE_POSITION" in gov["status"]  # concentration
-    print(f"  ✓ restated arm B: leverage fixed, still flags concentration — {gov['status'][:50]}…")
+    assert gov["conforming"] is True and gov["status"] == "CONFORMING"   # concentration FIXED
+    assert all(h["weight_pct"] <= 10.0 + 1e-9 for h in d["holdings"])
+    print(f"  ✓ restated + trimmed arm B: CONFORMING — gross={gov['gross_exposure_pct']}%")
 
 
 def test_archived_pre_restatement_arm_b_shows_original_138pct():
@@ -42,6 +46,18 @@ def test_archived_pre_restatement_arm_b_shows_original_138pct():
     gov = run_governance(d["holdings"], SCREENER, CONSTITUTION, check_mcap=False)
     assert "gross exposure 138.0%" in gov["status"]        # the original bug, archived
     print("  ✓ archive preserves the original 138% leverage (auditable)")
+
+
+def test_archived_pre_trim_arm_b_shows_original_concentration_breach():
+    """The pre-trim figures are preserved in the archive: the CEG/AMZN/MSFT concentration
+    breach that restatement had been masking is auditable, not silently rewritten."""
+    arch = ROOT / "docs/data/archive/phaethon_b_live_pre_trim_2026-08-07.json"
+    d = json.loads(arch.read_text())
+    gov = run_governance(d["holdings"], SCREENER, CONSTITUTION, check_mcap=False)
+    assert gov["conforming"] is False
+    over_cap = {v.split(" at ")[0] for v in gov["violations"] if "MAX_SINGLE_POSITION" in v}
+    assert over_cap == {"CEG", "AMZN", "MSFT"}
+    print(f"  ✓ archive preserves the original concentration breach ({sorted(over_cap)}, auditable)")
 
 
 def test_leverage_conforming_when_under_100():
@@ -116,6 +132,22 @@ def test_assemble_arm_restates_bounds_and_validates():
     for h in out["holdings"]:
         validate_phaethon_holding(h)
     print("  ✓ assemble_arm restates (rejects over-cash), bounds gross, tags cohort")
+
+
+def test_assemble_arm_attaches_trim_note_and_log_when_provided():
+    """trim_note/trim_log are opt-in (see scripts/phaethon/trim_arm_b_to_cap.py) — absent
+    on every normal daily publish, attached verbatim when a one-off trim just ran."""
+    bk = _book(100.0, {"ACM": (1.0, 50.0, 40.0)})
+    out = assemble_arm({"n_positions": 1}, bk, "A", SCREENER, CONSTITUTION,
+                       check_mcap=False, as_of="2026-07-05",
+                       trim_note="trimmed 2026-07-05 — TEST", trim_log=[{"ticker": "ACM"}])
+    assert out["trimmed"] == "trimmed 2026-07-05 — TEST"
+    assert out["trim_log"] == [{"ticker": "ACM"}]
+
+    out_normal = assemble_arm({"n_positions": 1}, bk, "A", SCREENER, CONSTITUTION,
+                              check_mcap=False, as_of="2026-07-05")
+    assert "trimmed" not in out_normal and "trim_log" not in out_normal
+    print("  ✓ trim fields are opt-in and don't appear on a normal (non-trim) publish")
 
 
 # ─── schema + sanitize ───────────────────────────────────────────────────────
