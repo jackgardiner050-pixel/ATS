@@ -1,27 +1,27 @@
 {
-  "fetched_at_utc": "2026-08-27T13:30:33Z",
-  "fetched_at_uk": "2026-08-27 14:30 BST",
+  "fetched_at_utc": "2026-08-27T16:34:53Z",
+  "fetched_at_uk": "2026-08-27 17:34 BST",
   "market_status": "open",
   "market_note": "US market open",
   "systems": {
     "ats": {
-      "portfolio_return_pct": 2.352,
-      "portfolio_today_pct": 0.208,
-      "alpha_vs_spy_pct": -0.717,
+      "portfolio_return_pct": 1.82,
+      "portfolio_today_pct": -0.938,
+      "alpha_vs_spy_pct": -1.603,
       "n_positions": 12
     },
     "scai": {
-      "portfolio_return_pct": -6.542,
-      "portfolio_today_pct": 0.465,
-      "spy_return_pct": 3.982,
-      "alpha_vs_spy_pct": -10.524,
+      "portfolio_return_pct": -8.486,
+      "portfolio_today_pct": -1.694,
+      "spy_return_pct": 4.34,
+      "alpha_vs_spy_pct": -12.826,
       "n_baskets": 1
     },
     "hermes": {
-      "portfolio_return_pct": -6.542,
-      "portfolio_today_pct": 0.465,
-      "spy_return_pct": 3.982,
-      "alpha_vs_spy_pct": -10.524,
+      "portfolio_return_pct": -8.486,
+      "portfolio_today_pct": -1.694,
+      "spy_return_pct": 4.34,
+      "alpha_vs_spy_pct": -12.826,
       "n_baskets": 1
     },
     "hermes_v3": {
