@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-09-01T17:44:28Z",
+  "generated_at_utc": "2026-09-01T19:01:19Z",
   "inception": "2026-06-05",
   "days": 88,
   "mode": "paper/simulated",
@@ -7,12 +7,12 @@
     "ticker": "VWRP",
     "name": "Vanguard FTSE All-World UCITS ETF (Acc)",
     "ocf_pct": 0.22,
-    "return_pct": 1.363
+    "return_pct": null
   },
   "qqq": {
     "ticker": "QQQ",
     "name": "Nasdaq-100 (QQQ)",
-    "return_pct": 0.561
+    "return_pct": null
   },
   "cores": [
     {
@@ -30,14 +30,14 @@
         "AGBP": 0.05,
         "SGLN": 0.05
       },
-      "return_pct": 0.861,
-      "n_priced": 3,
-      "vs_benchmark_pp": -0.502,
-      "vs_qqq_pp": 0.3,
+      "return_pct": null,
+      "n_priced": 0,
+      "vs_benchmark_pp": null,
+      "vs_qqq_pp": null,
       "drift_pp": {
-        "global_equity": 0.32,
-        "global_bonds": -0.14,
-        "real_asset": -0.18
+        "global_equity": 0.0,
+        "global_bonds": 0.0,
+        "real_asset": 0.0
       },
       "needs_rebalance": false
     },
@@ -56,14 +56,14 @@
         "AGBP": 0.15,
         "SGLN": 0.05
       },
-      "return_pct": 0.534,
-      "n_priced": 3,
-      "vs_benchmark_pp": -0.829,
-      "vs_qqq_pp": -0.027,
+      "return_pct": null,
+      "n_priced": 0,
+      "vs_benchmark_pp": null,
+      "vs_qqq_pp": null,
       "drift_pp": {
-        "global_equity": 0.55,
-        "global_bonds": -0.38,
-        "real_asset": -0.17
+        "global_equity": 0.0,
+        "global_bonds": 0.0,
+        "real_asset": 0.0
       },
       "needs_rebalance": false
     },
@@ -82,14 +82,14 @@
         "AGBP": 0.25,
         "SGLN": 0.05
       },
-      "return_pct": 0.208,
-      "n_priced": 3,
-      "vs_benchmark_pp": -1.155,
-      "vs_qqq_pp": -0.353,
+      "return_pct": null,
+      "n_priced": 0,
+      "vs_benchmark_pp": null,
+      "vs_qqq_pp": null,
       "drift_pp": {
-        "global_equity": 0.71,
-        "global_bonds": -0.56,
-        "real_asset": -0.15
+        "global_equity": 0.0,
+        "global_bonds": 0.0,
+        "real_asset": 0.0
       },
       "needs_rebalance": false
     }
