@@ -39,11 +39,14 @@ def holdings_view(book: dict, arm: str, tv: float | None = None) -> list[dict]:
     ]
 
 
-def render_arm(scorecard: dict, book: dict, arm: str, as_of: str | None = None) -> dict:
+def render_arm(scorecard: dict, book: dict, arm: str, as_of: str | None = None,
+               data_status: str | None = None, stale_days: int = 0, stale_days_effective: int = 0) -> dict:
     """Build the per-arm dashboard JSON. Frozen render of the original build() output,
     with cohort tags added on holdings. `status` is added later by the governance layer.
 
-    arm is 'A' (disciplined) or 'B' (aggressive)."""
+    arm is 'A' (disciplined) or 'B' (aggressive).
+    stale_days: raw trading-day count (for truthful data-age display in banner).
+    stale_days_effective: raw minus expected_lag_days (used for FRESH/STALE decision)."""
     tv = total_value(book)
     agg = (arm == "B")
     hold = holdings_view(book, arm, tv)
@@ -70,4 +73,7 @@ def render_arm(scorecard: dict, book: dict, arm: str, as_of: str | None = None) 
         "benchmark_primary": "QQQ",
         "benchmark_headline": "active return vs QQQ (primary)",
         "as_of": as_of or date.today().isoformat(),
+        "data_status": data_status or "FRESH",
+        "stale_days": stale_days,
+        "stale_days_effective": stale_days_effective,
     }
