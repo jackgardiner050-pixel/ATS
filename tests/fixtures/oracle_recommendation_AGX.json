@@ -1,0 +1,70 @@
+{
+  "ticker": "AGX",
+  "_run_dir": "runs/AGX/20260902_134700",
+  "company_name": "Argan Inc",
+  "valuation_date": "20260902_134700",
+  "current_price": 205.0,
+  "rating": "BUY",
+  "confidence": "MED",
+  "confidence_flags": [
+    "thin_peer_cohort"
+  ],
+  "price_target_12m": 227.7474218501168,
+  "expected_return": 0.11096303341520386,
+  "confidence_v2": "MED_HIGH",
+  "confidence_v2_flags": [
+    "methods_converge_tightly",
+    "thin_peer_cohort",
+    "confidence_v2_score_73"
+  ],
+  "fixed_numbers": {
+    "ticker": "AGX",
+    "current_price": 205.0,
+    "diluted_shares_mm": 14.0,
+    "dcf_price_gordon": 169.13988872339402,
+    "dcf_price_exit": 215.4155129627875,
+    "dcf_price_blended": 192.27770084309077,
+    "comps_price_median_ev_ebitda": 238.35714285714286,
+    "comps_price_75th_ev_ebitda": 313.7857142857143,
+    "comps_price_median_pe": 255.08571428571426,
+    "price_target_12m": 227.7474218501168,
+    "expected_return": 0.11096303341520386,
+    "rating": "BUY",
+    "dcf_gordon_range": [
+      143.76890541488493,
+      169.13988872339402,
+      219.88185534041224
+    ],
+    "dcf_exit_range": [
+      183.10318601836937,
+      215.4155129627875,
+      258.498615555345
+    ],
+    "comps_range": [
+      238.35714285714286,
+      269.07619047619045,
+      313.7857142857143
+    ],
+    "consensus_range": [
+      220,
+      270.5,
+      321
+    ],
+    "valuation_gap": 0.11096303341520386,
+    "catalyst_score": 0.0,
+    "risk_score": 0.0,
+    "momentum_score": 0.0,
+    "notes": [],
+    "confidence": "MED",
+    "confidence_flags": [
+      "thin_peer_cohort"
+    ]
+  },
+  "files": {
+    "model_xlsx": "runs/AGX/20260902_134700/AGX_model.xlsx"
+  },
+  "constraints": {
+    "no_orders_placed": true,
+    "no_live_pnl_learning": true
+  }
+}
