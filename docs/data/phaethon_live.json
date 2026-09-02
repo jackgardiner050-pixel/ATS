@@ -9,106 +9,106 @@
       "ticker": "CEG",
       "cohort": "phaethon_a",
       "bought_at": 257.48,
-      "last": 280.31,
+      "last": 290.04,
       "weight_pct": 5.0
     },
     {
       "ticker": "ANET",
       "cohort": "phaethon_a",
       "bought_at": 156.13,
-      "last": 189.26,
-      "weight_pct": 4.6
+      "last": 186.1,
+      "weight_pct": 4.5
     },
     {
       "ticker": "GEV",
       "cohort": "phaethon_a",
       "bought_at": 939.65,
-      "last": 898.53,
-      "weight_pct": 3.9
+      "last": 921.94,
+      "weight_pct": 4.0
     },
     {
       "ticker": "AMZN",
       "cohort": "phaethon_a",
       "bought_at": 253.57,
-      "last": 254.92,
+      "last": 254.98,
       "weight_pct": 2.6
     },
     {
       "ticker": "AVGO",
       "cohort": "phaethon_a",
       "bought_at": 385.73,
-      "last": 369.68,
+      "last": 367.24,
       "weight_pct": 1.1
     },
     {
       "ticker": "VST",
       "cohort": "phaethon_a",
       "bought_at": 153.52,
-      "last": 138.08,
+      "last": 143.46,
       "weight_pct": 1.1
     },
     {
       "ticker": "LLY",
       "cohort": "phaethon_a",
       "bought_at": 1129.35,
-      "last": 1160.0,
+      "last": 1160.08,
       "weight_pct": 1.1
     },
     {
       "ticker": "MSFT",
       "cohort": "phaethon_a",
       "bought_at": 367.34,
-      "last": 501.02,
+      "last": 496.82,
       "weight_pct": 1.8
     },
     {
       "ticker": "FSLR",
       "cohort": "phaethon_a",
       "bought_at": 232.8,
-      "last": 199.65,
-      "weight_pct": 2.6
+      "last": 202.6,
+      "weight_pct": 2.7
     },
     {
       "ticker": "VRTX",
       "cohort": "phaethon_a",
       "bought_at": 499.65,
-      "last": 547.65,
+      "last": 556.75,
       "weight_pct": 2.6
     },
     {
       "ticker": "REGN",
       "cohort": "phaethon_a",
       "bought_at": 631.81,
-      "last": 823.82,
-      "weight_pct": 2.9
+      "last": 852.03,
+      "weight_pct": 3.0
     },
     {
       "ticker": "V",
       "cohort": "phaethon_a",
       "bought_at": 341.65,
-      "last": 372.67,
+      "last": 378.4,
       "weight_pct": 1.3
     },
     {
       "ticker": "PANW",
       "cohort": "phaethon_a",
       "bought_at": 330.3,
-      "last": 362.09,
-      "weight_pct": 1.3
+      "last": 328.48,
+      "weight_pct": 1.2
     },
     {
       "ticker": "ZS",
       "cohort": "phaethon_a",
       "bought_at": 141.82,
-      "last": 178.37,
-      "weight_pct": 1.4
+      "last": 172.73,
+      "weight_pct": 1.3
     }
   ],
-  "cash_pct": 66.6,
-  "active_return_pct": 7.63,
-  "vs_qqq_pp": 9.86,
+  "cash_pct": 66.7,
+  "active_return_pct": 8.43,
+  "vs_qqq_pp": 10.44,
   "trend": "IMPROVING vs QQQ",
-  "n_marks": 76,
+  "n_marks": 77,
   "halted": null,
   "drawdown_pct": null,
   "kill_switch": "n/a (disciplined arm)",
@@ -119,13 +119,18 @@
   "benchmark": "QQQ",
   "benchmark_primary": "QQQ",
   "benchmark_headline": "active return vs QQQ (primary)",
-  "as_of": "2026-09-01",
-  "restated": "restated 2026-09-01, cash-accounting bug fixed",
+  "as_of": "2026-09-02",
+  "data_status": "FRESH",
+  "stale_days": 0,
+  "stale_days_effective": 0,
+  "restated": "restated 2026-09-02, cash-accounting bug fixed",
   "restated_rejected_over_cash": [],
   "status": "CONFORMING",
   "governance": {
     "conforming": true,
     "violations": [],
-    "gross_exposure_pct": 33.3
-  }
+    "gross_exposure_pct": 33.3,
+    "evaluated_as_of": "2026-09-02"
+  },
+  "evaluated_as_of": "2026-09-02"
 }

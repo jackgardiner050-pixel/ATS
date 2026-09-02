@@ -91,13 +91,18 @@
   "benchmark": "QQQ",
   "benchmark_primary": "QQQ",
   "benchmark_headline": "active return vs QQQ (primary)",
-  "as_of": "2026-09-01",
-  "restated": "restated 2026-09-01, cash-accounting bug fixed",
+  "as_of": "2026-08-06",
+  "data_status": "STALE",
+  "stale_days": 19,
+  "stale_days_effective": 18,
+  "restated": "restated 2026-08-06, cash-accounting bug fixed",
   "restated_rejected_over_cash": [],
   "status": "CONFORMING",
   "governance": {
     "conforming": true,
     "violations": [],
-    "gross_exposure_pct": 86.9
-  }
+    "gross_exposure_pct": 86.9,
+    "evaluated_as_of": "2026-09-02"
+  },
+  "evaluated_as_of": "2026-09-02"
 }
