@@ -16,6 +16,20 @@ def _add(reg, id, status="REGISTERED", **over):
     f = dict(id=id, created="2026-07-06", hypothesis="h", mechanism="m", universe="u",
              window="w", metric="me", threshold="t", analysis_plan_sha="sha",
              interpretation_contract={"licenses": "l", "does_not_license": "d"}, status=status)
+    # Add default functional_equivalence_check for REGISTERED entries (B-16)
+    if status == "REGISTERED" and "functional_equivalence_check" not in over:
+        f["functional_equivalence_check"] = {
+            "fingerprint": {
+                "signal_family": "price_momentum",
+                "lookback_class": "medium",
+                "horizon_class": "months",
+                "universe_class": "us_large_cap",
+                "action_type": "long_short",
+                "conditioning": "unconditional",
+            },
+            "nearest_retired": [],
+            "justification": "This is a novel hypothesis testing a distinct mechanism.",
+        }
     f.update(over)
     return add_entry(f, path=reg)
 

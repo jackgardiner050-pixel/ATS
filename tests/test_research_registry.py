@@ -76,7 +76,19 @@ def test_duplicate_id_refused(tmp_path):
     reg = _tmp_registry(tmp_path)
     full = dict(id="001", created="2026-07-05", hypothesis="h", mechanism="m", universe="u",
                 window="w", metric="me", threshold="t", analysis_plan_sha="sha",
-                interpretation_contract={"licenses": "x", "does_not_license": "y"})
+                interpretation_contract={"licenses": "x", "does_not_license": "y"},
+                functional_equivalence_check={
+                    "fingerprint": {
+                        "signal_family": "price_momentum",
+                        "lookback_class": "medium",
+                        "horizon_class": "months",
+                        "universe_class": "us_large_cap",
+                        "action_type": "long_short",
+                        "conditioning": "unconditional",
+                    },
+                    "nearest_retired": [],
+                    "justification": "This is a novel hypothesis testing a distinct mechanism.",
+                })
     with pytest.raises(ValueError, match="already exists"):
         add_entry(full, path=reg)
     print("  ✓ duplicate id refused (append-only)")
@@ -87,6 +99,18 @@ def test_status_forward_only_and_chain_survives(tmp_path):
     add_entry(dict(id="T04", created="2026-07-05", hypothesis="h", mechanism="m", universe="u",
                    window="w", metric="me", threshold="t", analysis_plan_sha="sha",
                    interpretation_contract={"licenses": "x", "does_not_license": "y"},
+                   functional_equivalence_check={
+                       "fingerprint": {
+                           "signal_family": "price_momentum",
+                           "lookback_class": "medium",
+                           "horizon_class": "months",
+                           "universe_class": "us_large_cap",
+                           "action_type": "long_short",
+                           "conditioning": "unconditional",
+                       },
+                       "nearest_retired": [],
+                       "justification": "This is a novel hypothesis testing a distinct mechanism.",
+                   },
                    status="REGISTERED"), path=reg)
     advance_status("T04", "TESTING", path=reg)
     advance_status("T04", "PASSED", result_ref="runs/x.md", path=reg)

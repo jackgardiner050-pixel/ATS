@@ -1,0 +1,228 @@
+# NOTE: Several source values reference design/analysis notes that live in the operator's
+# adjacent working trees (~agent/, ~/trading/), not in this repo. These are recorded as
+# the falsification provenance: mercury_design_note.md, ecosystem_architecture.md,
+# lessons_learned.md, caerus_design_note.md, hades_design_note.md, metis_design_note.md,
+# epe_public_summary.md. R-004 and R-009 use "project notes" as their source (no better
+# provenance known).
+records:
+- id: R-001
+  name: RP / reversion (ATS QRE)
+  bet: US-equity price-pattern/reversion
+  verdict: FAILED
+  reason: honest win-rate 19.86% vs claimed 66.17%, discrepancy unresolved; all QRE
+    models closed
+  retired_on: '2026-05-07'
+  source: lessons_learned.md
+  fingerprint:
+    signal_family: mean_reversion
+    lookback_class: medium
+    horizon_class: days
+    universe_class: us_large_cap
+    action_type: long_short
+    conditioning: unconditional
+  prev_hash: '0000000000000000000000000000000000000000000000000000000000000000'
+  content_hash: 4ca4640234f4d44cdb9f3ceb6f953ed453e66df8b035bb94ba8449e75009fbb7
+- id: R-002
+  name: Mercury / Kairos
+  bet: post-earnings drift in liquid names
+  verdict: FAILED
+  reason: parked, ~null by design; drift lives in small/illiquid names, liquidity
+    filter removes exactly those; pre-registered prior confirmed
+  retired_on: '2026-07-05'
+  source: mercury_design_note.md
+  fingerprint:
+    signal_family: post_earnings_drift
+    lookback_class: short
+    horizon_class: days
+    universe_class: us_all_cap
+    action_type: long_only
+    conditioning: earnings_event
+  prev_hash: 4ca4640234f4d44cdb9f3ceb6f953ed453e66df8b035bb94ba8449e75009fbb7
+  content_hash: 0179b2f3af738b37e41930b68ca6d7b4dffac816d0efc4d62e2d4cc5918d5b61
+- id: R-003
+  name: Nike / MOM_TOP5
+  bet: long top-momentum US basket
+  verdict: OPEN/marginal
+  reason: marginal, regime-dependent, in-sample only; ~+6pp/yr in-sample, survivorship
+    ~10×, bull window; alpha vs QQQ suspect when picks are QQQ constituents
+  retired_on: '2026-06-30'
+  source: epe_public_summary.md
+  fingerprint:
+    signal_family: price_momentum
+    lookback_class: long
+    horizon_class: months
+    universe_class: us_large_cap
+    action_type: long_only
+    conditioning: unconditional
+  prev_hash: 0179b2f3af738b37e41930b68ca6d7b4dffac816d0efc4d62e2d4cc5918d5b61
+  content_hash: aa031c0442f3c6be82ad623bd8d09320a6da6199e91a1d7ecdc9ccdc520c7707
+- id: R-004
+  name: Iris / ESE
+  bet: STRONG-tier 8-K events
+  verdict: OPEN/marginal
+  reason: fair-weather; bull ≈ +14% vs passive, bear −10.0% vs −7.1%; survivorship-flattered;
+    two periods is not proof
+  retired_on: '2026-06-01'
+  source: project notes
+  fingerprint:
+    signal_family: event_8k
+    lookback_class: none
+    horizon_class: days
+    universe_class: us_large_cap
+    action_type: long_only
+    conditioning: 8k_event
+  prev_hash: aa031c0442f3c6be82ad623bd8d09320a6da6199e91a1d7ecdc9ccdc520c7707
+  content_hash: 819f8084f0d90449a1f4756c2de0c479a7ceb6118bdb9b9e6df1587b498fcf4e
+- id: R-005
+  name: Hades
+  bet: automated crash/regime de-risk overlay
+  verdict: FAILED
+  reason: FALSIFIED 2026-05-29; look-ahead was the whole win; under 1-day lag always-invested
+    wins; net-negative on all 8 crash episodes once recovery counted; −1.2 to −1.5pp/yr
+    in calm markets
+  retired_on: '2026-05-29'
+  source: hades_design_note.md
+  fingerprint:
+    signal_family: crash_derisk_overlay
+    lookback_class: short
+    horizon_class: weeks
+    universe_class: global_equity
+    action_type: overlay_derisk
+    conditioning: drawdown_trigger
+  prev_hash: 819f8084f0d90449a1f4756c2de0c479a7ceb6118bdb9b9e6df1587b498fcf4e
+  content_hash: 363987e5b85712a1bf80c36a0f1ff8dab151ae9078cdea2af785aa256f44955f
+- id: R-006
+  name: Caerus
+  bet: short-horizon catalyst-momentum (8-K + momentum/rel-vol/gap)
+  verdict: FAILED
+  reason: FALSIFIED 2026-06-02 on pre-registered kill-check; PIT 2024–26 45 trades
+    mean net −0.43%/trade; beat own buy-and-hold by only +0.30pp; lost to random liquid-mover
+    control by −1.59pp
+  retired_on: '2026-06-02'
+  source: caerus_design_note.md
+  fingerprint:
+    signal_family: catalyst_momentum
+    lookback_class: short
+    horizon_class: days
+    universe_class: us_large_cap
+    action_type: long_only
+    conditioning: catalyst
+  prev_hash: 363987e5b85712a1bf80c36a0f1ff8dab151ae9078cdea2af785aa256f44955f
+  content_hash: ac3fb9521a4f72a02eed69961d94b71f3184d193e7d0901c9d4e9db5f808c4c9
+- id: R-007
+  name: Nemesis
+  bet: short-horizon mean-reversion (market-neutral CFD + long-only ISA)
+  verdict: FAILED
+  reason: FALSIFIED 2026-06-02; signal real gross (~+17.5%/yr spread) but CFD overnight
+    financing (~6%/yr) crushed it to net +2.5%/yr with luck band straddling zero;
+    long-only lost to index
+  retired_on: '2026-06-02'
+  source: ecosystem_architecture.md
+  fingerprint:
+    signal_family: mean_reversion
+    lookback_class: short
+    horizon_class: intraday
+    universe_class: us_all_cap
+    action_type: market_neutral
+    conditioning: unconditional
+  prev_hash: ac3fb9521a4f72a02eed69961d94b71f3184d193e7d0901c9d4e9db5f808c4c9
+  content_hash: 79cbd8588286621bb6af86471b9428b91029d3fe8db1f8dd83ba3efb2da6e201
+- id: R-008
+  name: Plutus
+  bet: FX carry / trend / value, G10, CFD
+  verdict: FAILED
+  reason: FALSIFIED 2026-06-02 (all three, multiple-testing corrected); carry +2.4%/yr
+    and value +1.9%/yr real gross premia but ~2%/yr CFD swap markup ate them whole;
+    trend negative even gross
+  retired_on: '2026-06-02'
+  source: ecosystem_architecture.md
+  fingerprint:
+    signal_family: fx_carry
+    lookback_class: long
+    horizon_class: months
+    universe_class: g10_fx
+    action_type: long_short
+    conditioning: unconditional
+  prev_hash: 79cbd8588286621bb6af86471b9428b91029d3fe8db1f8dd83ba3efb2da6e201
+  content_hash: 0970fbbef135f0e4eb74d4759d4adf92353c9c24b70e9b8104b4eee3319cf8a1
+- id: R-009
+  name: Phobos
+  bet: volatility / variance premium
+  verdict: BLOCKED
+  reason: SHELVED, not buildable on free data; SPX-level short-vol ≈ long-risk (not
+    orthogonal, fat-tailed); single-stock vol blocked
+  source: project notes
+  fingerprint:
+    signal_family: volatility_premium
+    lookback_class: short
+    horizon_class: intraday
+    universe_class: single_stock_vol
+    action_type: long_short
+    conditioning: unconditional
+  prev_hash: 0970fbbef135f0e4eb74d4759d4adf92353c9c24b70e9b8104b4eee3319cf8a1
+  content_hash: 7876bb589c9839c3a9a52d32c52c0a367c55bbfe1628c3e1b2700feaa9bd33b2
+- id: R-010
+  name: swing-bot
+  bet: 8-K event bot, +10%/−5% brackets
+  verdict: FAILED
+  reason: NO_GO; same 8-K event family, M&A-concentrated, tight exits + costs
+  retired_on: '2026-06-02'
+  source: swing-bot/backtest/PEAD_RESULTS.md
+  fingerprint:
+    signal_family: event_8k
+    lookback_class: short
+    horizon_class: days
+    universe_class: us_all_cap
+    action_type: long_only
+    conditioning: 8k_event
+  prev_hash: 7876bb589c9839c3a9a52d32c52c0a367c55bbfe1628c3e1b2700feaa9bd33b2
+  content_hash: 1e7dcb9f2b07a8e05b4c596d7d83993dd91181a1f1a2e0365f8720bfa57b56e5
+- id: R-011
+  name: Metis
+  bet: once-daily LLM agent, leaderboard contestant
+  verdict: SUPERSEDED
+  reason: PARKED/cancelled 2026-06-02; evidence prior against LLM traders; superseded
+    by Phaethon
+  retired_on: '2026-06-02'
+  source: metis_design_note.md
+  fingerprint:
+    signal_family: llm_agent
+    lookback_class: short
+    horizon_class: days
+    universe_class: us_large_cap
+    action_type: basket_select
+    conditioning: unconditional
+  prev_hash: 1e7dcb9f2b07a8e05b4c596d7d83993dd91181a1f1a2e0365f8720bfa57b56e5
+  content_hash: 95e81cecfcdc7c49306a898e1b190af8ed632c17b8e8e2af4c19ce5389743fe6
+- id: R-012
+  name: registry-001 (12-1 momentum)
+  bet: 12-1 month cross-sectional momentum in large-cap US equities
+  verdict: FAILED
+  reason: pre-registered, from research/registry.yaml entry 001
+  retired_on: '2026-07-05'
+  source: research/registry.yaml#001
+  fingerprint:
+    signal_family: price_momentum
+    lookback_class: long
+    horizon_class: months
+    universe_class: us_large_cap
+    action_type: long_short
+    conditioning: unconditional
+  prev_hash: 95e81cecfcdc7c49306a898e1b190af8ed632c17b8e8e2af4c19ce5389743fe6
+  content_hash: 77c902cab79cd4a656e3f971d8d72a8c57a2379bb3cbb0438ab4c160d089ca6a
+- id: R-013
+  name: registry-002 (PEAD)
+  bet: post-earnings-announcement drift in large positive surprises
+  verdict: FAILED
+  reason: pre-registered, from research/registry.yaml entry 002
+  retired_on: '2026-07-05'
+  source: research/registry.yaml#002
+  fingerprint:
+    signal_family: post_earnings_drift
+    lookback_class: short
+    horizon_class: weeks
+    universe_class: us_all_cap
+    action_type: long_only
+    conditioning: earnings_event
+  prev_hash: 77c902cab79cd4a656e3f971d8d72a8c57a2379bb3cbb0438ab4c160d089ca6a
+  content_hash: ee4a4f83d3a10b369403918073583151c7965fb99765fc042e21afd737f1e259
