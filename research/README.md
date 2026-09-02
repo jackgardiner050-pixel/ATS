@@ -34,3 +34,32 @@ records — and content-hash chain — are never edited (append-only guarantee p
 `registry.py queue` ranks REGISTERED entries by `queue_priority` (stated `survival_prior` ×
 `strategic_fit` if given, else prior alone), descending. Informational only — advancing an
 entry to TESTING remains a human/operator act.
+
+## Mechanism retirement (B-16)
+
+`retired.yaml` is an append-only, hash-chained registry of falsified, superseded, or
+blocked mechanisms. Each retired record captures:
+
+- **Fingerprint**: six controlled-vocabulary fields (signal_family, lookback_class,
+  horizon_class, universe_class, action_type, conditioning) characterizing the mechanism
+  uniquely enough to detect functional equivalence to new proposals.
+- **Verdict**: outcome (FAILED, BLOCKED, SUPERSEDED, OPEN/marginal).
+- **Reason**: concise falsification or retirement cause.
+
+### Fingerprint matching & Stage-0 equivalence check
+
+New Stage-0 entries must include a `functional_equivalence_check` field (not hashed,
+like `interpretation_contract`). This declares:
+
+- `fingerprint`: the candidate's six-field fingerprint, validated against controlled vocab.
+  Each field must match one of the defined enumerations. Invalid or missing fields
+  cause entry registration to fail.
+- `nearest_retired`: computed and stored by `add_entry` from `fingerprint_match()`,
+  sorted ascending by distance. The registrant's input is overwritten with the
+  authoritative computed list.
+- `justification`: if the closest retired mechanism is at distance ≤ 2, a written argument
+  (≥20 chars) explaining why this proposal is functionally distinct despite the close
+  fingerprint (B-16 §E.6). Omit if no close match.
+
+See `src/research/fingerprints.py` for `fingerprint_match()`, `closest_retired()`,
+`validate_fingerprint()`, and the `MATCH_THRESHOLD = 2` constant.

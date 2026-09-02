@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from src.io_utils import append_jsonl
+from src.research.fingerprints import fingerprint_match, validate_fingerprint, MATCH_THRESHOLD
 
 GENESIS_HASH = "0" * 64
 _CHAIN_FIELDS = ("prev_hash", "hash")
@@ -190,9 +191,32 @@ def _validate_interpretation_contract(ic: object) -> None:
                              "language, what a PASS licenses and the nearest overclaim it does not")
 
 
-def add_entry(fields: dict, path: str | Path = DEFAULT_REGISTRY) -> dict:
+def _validate_functional_equivalence_check(fec: object) -> None:
+    """Validate functional_equivalence_check structure (B-16).
+
+    This performs basic type checking. The fingerprint itself will be validated and
+    distances computed in add_entry (which calls fingerprint_match).
+    """
+    if not isinstance(fec, dict):
+        raise ValueError("functional_equivalence_check must be a dict with "
+                         "'fingerprint' and 'justification'")
+    if not fec.get("fingerprint") or not isinstance(fec["fingerprint"], dict):
+        raise ValueError("functional_equivalence_check['fingerprint'] must be a non-empty dict")
+    # justification may be absent (treat as empty string) or a string
+    justification = fec.get("justification")
+    if justification is not None and not isinstance(justification, str):
+        raise ValueError("functional_equivalence_check['justification'] must be a string or absent")
+
+
+def add_entry(fields: dict, path: str | Path = DEFAULT_REGISTRY, retired_path: str | Path = None) -> dict:
     """Append a new hypothesis entry. Refuses if any immutable field OR the
-    interpretation_contract (F5) is missing."""
+    interpretation_contract (F5) or functional_equivalence_check (B-16) is missing.
+
+    Args:
+        fields: entry fields dict
+        path: registry path (default: production registry)
+        retired_path: path to retired.yaml for testing (default: production retired.yaml)
+    """
     missing = [f for f in IMMUTABLE_FIELDS if not fields.get(f)]
     if missing:
         raise ValueError(f"cannot register: missing required field(s) {missing} — "
@@ -203,7 +227,52 @@ def add_entry(fields: dict, path: str | Path = DEFAULT_REGISTRY) -> dict:
         raise ValueError("cannot register: missing required interpretation_contract "
                          "{licenses, does_not_license} (F5)")
     _validate_interpretation_contract(ic)
+
+    # B-16: functional_equivalence_check is required for Stage-0 (REGISTERED) entries only
     status = fields.get("status", "REGISTERED")
+    fec = fields.get("functional_equivalence_check")
+    if status == "REGISTERED":
+        if not fec:
+            raise ValueError("cannot register: missing required functional_equivalence_check "
+                             "{fingerprint, justification} (B-16)")
+
+    # B-16 Stage-0 validation: compute distance ourselves, validate fingerprint, check justification
+    if fec:
+        # FIX 1: validate immediately for any truthy fec, not just REGISTERED
+        _validate_functional_equivalence_check(fec)
+
+        # FIX 2: work on a copy to avoid mutating caller's dict
+        fec = dict(fec)
+        if "fingerprint" in fec:
+            fec["fingerprint"] = dict(fec["fingerprint"])
+
+        fp = fec.get("fingerprint")
+        if not isinstance(fp, dict):
+            raise ValueError("functional_equivalence_check['fingerprint'] must be a dict")
+
+        # Validate fingerprint (B1 fix: call validate_fingerprint ourselves)
+        try:
+            validate_fingerprint(fp)
+        except ValueError as e:
+            raise ValueError(f"functional_equivalence_check fingerprint validation failed: {e}")
+
+        # Compute distances (B2 fix: compute, don't trust input)
+        # FIX 3: pass retired_path through for testing
+        computed = fingerprint_match(fp, retired_path=retired_path)
+
+        # Overwrite nearest_retired with computed truth (as list of [id, distance] lists)
+        fec["nearest_retired"] = [[rec_id, dist] for rec_id, dist in computed]
+
+        # Check if best match requires justification
+        best = computed[0][1] if computed else 6
+        if best <= MATCH_THRESHOLD:
+            justification = (fec.get("justification") or "").strip()
+            if not justification or len(justification) < 20:
+                best_id = computed[0][0] if computed else "unknown"
+                raise ValueError(
+                    f"functional_equivalence_check: fingerprint matches retired {best_id!r} "
+                    f"at distance {best} (≤ threshold {MATCH_THRESHOLD}); "
+                    f"justification must be non-empty and ≥20 chars (B-16 §E.6)")
     if status not in VALID_STATUS:
         raise ValueError(f"invalid status {status!r}; expected one of {VALID_STATUS}")
     doc = _load_doc(path)
@@ -215,6 +284,8 @@ def add_entry(fields: dict, path: str | Path = DEFAULT_REGISTRY) -> dict:
     entry["status"] = status
     entry["result_ref"] = fields.get("result_ref")
     entry["interpretation_contract"] = ic               # inline, required (not hashed — see F5)
+    if fec:
+        entry["functional_equivalence_check"] = fec     # inline (not hashed — see B-16)
     for opt in ("survival_prior", "strategic_fit"):     # F7d — optional queue inputs
         if fields.get(opt) is not None:
             entry[opt] = fields[opt]
