@@ -15,8 +15,7 @@
 ## ESCALATION-CLAUSE CHECK — result: **NO DIVERGENCE, proceed**
 
 The escalation clause requires stopping if the two locations' HEADs suggest real divergence. Checked
-read-only over SSH (`root@161.35.166.77:8022`, the `ats-trading` droplet named in
-`INFRA_INVENTORY.md:8`):
+read-only over SSH to the `ats-trading` droplet (named in `INFRA_INVENTORY.md:8`):
 
 | Location | Repo path | Branch | HEAD |
 |---|---|---|---|
@@ -63,7 +62,7 @@ where a local-only document is the sole source for a fact used later, it is cite
 | `metis_design_note.md` | 23 lines, 2026-06-02. AI trading agent — **PARKED / build cancelled 2026-06-02**; superseded by Phaethon. | **RELEVANT** (§7 D-04). |
 | `NEXT_STEPS.md` | 47 lines, captured 2026-06-05, updated 2026-06-24. Work queue; records Phaethon Arm B build/isolation (2026-06-07), Gaia rebalancing/glidepath, dashboard panel, and the **v1.1 "broadened aperture" deploy 2026-06-24** with its 40–60-day verification obligation. | **RELEVANT** — contains dated decisions and one unmet verification (§8 Q-08). |
 | `OLYMPUS_STATUS_BRIEFING_2026-06-16.md` | 72 lines, 2026-06-16. Self-contained context handoff for a fresh advisory session. | **RELEVANT but SUPERSEDED** — `docs/OLYMPUS_SYSTEM_STATE.md §7 #2,#10` records that it predates the whole framework layer and cites a `safe_deploy.sh` that does not exist. |
-| `INFRA_INVENTORY.md` | 156 lines, 2026-06-08. Three-host cron/launchd/systemd inventory (Mac, `ats-trading` 161.35.166.77:8022, `ats-research` 209.97.184.179) with leftover flags and a **reversible decommission log**. | **RELEVANT** — infrastructure decisions (§7 D-07); also the source for where the live Olympus loop runs. |
+| `INFRA_INVENTORY.md` | 156 lines, 2026-06-08. Three-host cron/launchd/systemd inventory (Mac, `ats-trading`, `ats-research`) with leftover flags and a **reversible decommission log**. | **RELEVANT** — infrastructure decisions (§7 D-07); also the source for where the live Olympus loop runs. |
 | `NAME_MAP.md` | 24 lines, 2026-06-01. Pantheon display names — explicitly **label layer only**, no renames. | **RELEVANT** — clarifies that pantheon names are render-time labels (agrees with `OLYMPUS_SYSTEM_STATE.md §1.3`). |
 | `WORKING_STYLE.md` | 7 lines, set 2026-06-01. Response-style rule: concise, no jargon, plain terms, keep the rigour. | **RELEVANT** — a standing operator instruction (§7 D-13). |
 | `epe_public_summary.md` | 46 lines, 2026-06-01. Sanitized MOM_TOP5 / Experimental Pot Engine summary; paper-only; 15% satellite intent. | **RELEVANT** — external-facing research record. |
@@ -90,8 +89,8 @@ Checked: the repo root's parent `/Users/jackgardiner`, plus `notes/` and `scratc
 
 | Path | Content | Relevance |
 |---|---|---|
-| `~/droplet_ats-trading_inventory_20260512.md` | Full inventory of `ats-trading` (161.35.166.77:8022, DO id 563712595, lon1, s-2vcpu-4gb), 2026-05-12. | **RELEVANT (infra history).** |
-| `~/droplet_ats-research-simfin_inventory_20260512.md` | Inventory of `ats-research-simfin` (209.97.184.179, DO id 568342162, s-4vcpu-8gb), 2026-05-12. | **RELEVANT but SUPERSEDED** — `docs/CONSTITUTIONAL_EXCEPTIONS.md` records this host **no longer exists** as of 2026-07-05. |
+| `~/droplet_ats-trading_inventory_20260512.md` | Full inventory of `ats-trading` (DO id 563712595, lon1, s-2vcpu-4gb), 2026-05-12. | **RELEVANT (infra history).** |
+| `~/droplet_ats-research-simfin_inventory_20260512.md` | Inventory of `ats-research-simfin` (DO id 568342162, s-4vcpu-8gb), 2026-05-12. | **RELEVANT but SUPERSEDED** — `docs/CONSTITUTIONAL_EXCEPTIONS.md` records this host **no longer exists** as of 2026-07-05. |
 | `~/droplet_comparison_20260512.md` | Side-by-side comparison written for the consolidation decision, 2026-05-12. | **RELEVANT** — the input to the host-consolidation decision (§7 D-07). |
 | `~/Olympus memory build/` | **Empty directory**, created 2026-08-18. | Incidental; noted only because its name implies intent. |
 | `~/trading/ecosystem_architecture.md` (+ `hermes_*.md`) | The document `lessons_learned.md` repeatedly cites as source (§11, §12) for the RP/QRE closure and the Nike/Iris verdicts. **Outside the ATS repo entirely.** | **RELEVANT** — the citation target for several §4B verdicts is not in this repo at either location. |
