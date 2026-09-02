@@ -228,8 +228,7 @@ padding:.4rem 0;font-size:.72rem;text-align:center;color:#8b949e">
     var te=document.getElementById('ph'+P+'-trend');if(te){te.innerHTML=t;te.style.color=tc;}
     set('ph'+P+'-marks',(d.n_marks!=null?d.n_marks:'—'));
     var se=document.getElementById('ph'+P+'-status');
-    if(se){se.innerHTML=(d.status&&d.status.indexOf('NONCONFORMING')===0)?
-      '<div style="background:#5a1a1a;border:1px solid #f85149;color:#ff9b9b;padding:.35rem .5rem;border-radius:4px;font-size:.72rem;font-weight:600;margin-bottom:.4rem">⛔ '+d.status+'</div>':'';}
+    if(se){var statusHtml='';if(d.status&&d.status.indexOf('NONCONFORMING')===0){statusHtml+='<div style="background:#5a1a1a;border:1px solid #f85149;color:#ff9b9b;padding:.35rem .5rem;border-radius:4px;font-size:.72rem;font-weight:600;margin-bottom:.4rem">⛔ '+d.status+'</div>';}if(d.data_status==='STALE'){statusHtml+='<div style="background:#4a3a1a;border:1px solid #e3b341;color:#ffd580;padding:.35rem .5rem;border-radius:4px;font-size:.72rem;font-weight:600;margin-bottom:.4rem">⚠ STALE DATA — as of '+d.as_of+' ('+d.stale_days+' trading day'+(d.stale_days!==1?'s':'')+' old); figures below are not current.</div>';}se.innerHTML=statusHtml;}
     if(isB){
       var ks;
       if(d.halted){ks='<span style="color:#f85149;font-weight:600">⛔ KILL-SWITCH HALTED'+(d.drawdown_pct!=null?' (drawdown '+d.drawdown_pct+'%)':'')+' — no new buys</span>';}
