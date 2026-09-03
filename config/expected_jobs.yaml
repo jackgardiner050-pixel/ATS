@@ -1,0 +1,180 @@
+# B-07 — expected scheduled jobs registry (read by scripts/heartbeat.py check).
+#
+# One entry per line in the droplet's (root) crontab. `heartbeat.py check` runs
+# daily at 06:00 UTC and, for each job, finds the most recent time `schedule`
+# should have fired, then alerts if:
+#   * no heartbeat file exists and that fire is > grace_minutes in the past  (MISSING)
+#   * the last heartbeat predates that fire and it is > grace_minutes old    (STALE)
+#   * the last heartbeat's rc != 0                                           (FAILED)
+#
+# grace_minutes = worst-case run time + margin. It does NOT need to span the gap
+# from the fire to 06:00: a job that ran on time reads last_ran_at >= expected
+# and is OK regardless of grace.
+#
+# All schedules are UTC. The deploy plan (docs/B-07_WIRING_PLAN.md §6) has the
+# operator assert this with `timedatectl` before applying — if the box is not
+# UTC the schedule maths here needs adjusting. owner_user is who cron launches
+# the line as — currently every line is in root's crontab, so all are `root`
+# even where the Phaethon wrappers later `docker run --user 1000`.
+#
+# `defaults.host` is checked by `heartbeat.py check`: a WARN to stderr if the
+# running box's hostname does not match (catches deploying the config to the
+# wrong box). `tree:` per job is surfaced in the jobs-health table + JSON.
+
+defaults:
+  host: ats-trading
+  timezone: UTC
+
+jobs:
+  - name: epe_price_updater
+    entrypoint: /root/epe/scripts/price_updater.sh
+    schedule: "0 22 * * 1-5"
+    owner_user: root
+    grace_minutes: 90
+    tree: /root/epe
+
+  - name: epe_kill_flags
+    entrypoint: /root/epe/scripts/kill_flags.sh
+    schedule: "0 17 * * 1-5"
+    owner_user: root
+    grace_minutes: 45
+    tree: /root/epe
+
+  - name: epe_weekly_status
+    entrypoint: /root/epe/scripts/weekly_status.sh
+    schedule: "0 7 * * 1"
+    owner_user: root
+    grace_minutes: 45
+    tree: /root/epe
+
+  - name: epe_morning_check
+    entrypoint: /root/epe/scripts/morning_check.sh
+    schedule: "5 7 * * *"
+    owner_user: root
+    grace_minutes: 45
+    tree: /root/epe
+
+  - name: epe_universe_check
+    entrypoint: "cd /root/epe && venv/bin/python scripts/universe_check.py"
+    schedule: "0 8 * * 0"
+    owner_user: root
+    grace_minutes: 45
+    tree: /root/epe
+
+  - name: hermes_v3_daily
+    entrypoint: /root/trading/hermes_v3_lab/scripts/run_droplet_daily.sh
+    schedule: "30 21 * * 1-5"
+    owner_user: root
+    grace_minutes: 90
+    tree: /root/trading/hermes_v3_lab
+
+  - name: olympus_loop
+    entrypoint: /root/agent/olympus/scripts/run_olympus_loop.sh
+    schedule: "45 21 * * 1-5"
+    owner_user: root
+    grace_minutes: 120
+    tree: /root/agent/olympus
+
+  - name: phaethon_a_propose
+    entrypoint: /home/phaethon/phaethon/trader/run_phaethon.sh propose
+    schedule: "0 22 * * 1"
+    owner_user: root
+    grace_minutes: 90
+    tree: /home/phaethon/phaethon/trader
+
+  - name: phaethon_a_mark
+    entrypoint: /home/phaethon/phaethon/trader/run_phaethon.sh mark
+    schedule: "30 22 * * 1-5"
+    owner_user: root
+    grace_minutes: 90
+    tree: /home/phaethon/phaethon/trader
+
+  - name: phaethon_panel_publish
+    entrypoint: bash /root/phaethon-panel-repo/scripts/phaethon/publish.sh
+    schedule: "45 22 * * *"
+    owner_user: root
+    grace_minutes: 45
+    tree: /root/phaethon-panel-repo
+
+  - name: phaethon_b_propose
+    entrypoint: /home/phaethon/phaethon/trader_b/run_phaethon_b.sh propose
+    schedule: "0 23 * * 1"
+    owner_user: root
+    grace_minutes: 90
+    tree: /home/phaethon/phaethon/trader_b
+
+  - name: phaethon_b_mark
+    entrypoint: /home/phaethon/phaethon/trader_b/run_phaethon_b.sh mark
+    schedule: "30 23 * * 1-5"
+    owner_user: root
+    grace_minutes: 90
+    tree: /home/phaethon/phaethon/trader_b
+
+  - name: oracle_mark
+    entrypoint: /root/labs/oracle/run_oracle_mark.sh
+    schedule: "50 23 * * 1"
+    owner_user: root
+    grace_minutes: 45
+    tree: /root/labs/oracle
+
+  - name: phaethon_shadow_a
+    entrypoint: /home/phaethon/phaethon/shadow_ledger/run_shadow.sh /home/phaethon/phaethon/trader/state
+    schedule: "20 22 * * 1"
+    owner_user: root
+    grace_minutes: 45
+    tree: /home/phaethon/phaethon/shadow_ledger
+
+  - name: phaethon_shadow_b
+    entrypoint: /home/phaethon/phaethon/shadow_ledger/run_shadow.sh /home/phaethon/phaethon/trader_b/state
+    schedule: "20 23 * * 1"
+    owner_user: root
+    grace_minutes: 45
+    tree: /home/phaethon/phaethon/shadow_ledger
+
+  - name: backup
+    entrypoint: /root/backup/run_backup.sh
+    schedule: "30 3 * * *"
+    owner_user: root
+    grace_minutes: 240
+    tree: /root/backup
+
+  - name: mnemosyne_resolve
+    entrypoint: /root/agent/olympus/scripts/run_mnemosyne_resolve.sh
+    schedule: "30 4 * * *"
+    owner_user: root
+    grace_minutes: 60
+    tree: /root/agent/olympus
+
+  - name: phaethon_c_rebalance
+    entrypoint: /home/phaethon/phaethon/trader_c/run_phaethon_c.sh rebalance
+    schedule: "0 21 * * 1"
+    owner_user: root
+    grace_minutes: 60
+    tree: /home/phaethon/phaethon/trader_c
+
+  - name: phaethon_c_mark
+    entrypoint: /home/phaethon/phaethon/trader_c/run_phaethon_c.sh mark
+    schedule: "15 21 * * 1-5"
+    owner_user: root
+    grace_minutes: 60
+    tree: /home/phaethon/phaethon/trader_c
+
+  - name: ats_screen
+    entrypoint: /root/agent/run_ats_screen.sh
+    schedule: "0 9 * * 0"
+    owner_user: root
+    grace_minutes: 180
+    tree: /root/agent/ats-live
+
+  # The checker monitors its own liveness. `heartbeat.py check` evaluates THIS
+  # entry against a reference point 24h earlier (see _evaluate / SELF_JOB), so a
+  # checker that has recorded no run in ~24h trips STALE/MISSING and withholds
+  # the all-clear DMS ping, while a merely-late run does not self-flag. The large
+  # grace_minutes below is a secondary guard that also keeps the ordinary code
+  # path from false-flagging a late run if that special-case is ever removed.
+  - name: heartbeat_check
+    entrypoint: /usr/bin/python3 /root/ops/heartbeat.py check
+    schedule: "0 6 * * *"
+    owner_user: root
+    grace_minutes: 1500   # 25h — a normal-to-late daily run never self-flags
+    tree: /root/ops
