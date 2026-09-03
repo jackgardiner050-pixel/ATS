@@ -152,31 +152,13 @@ class TestHermesV3Isolation:
 # HTML element IDs — ATS dashboard
 # ---------------------------------------------------------------------------
 
+# Note: test_live_port_return_id_exists, test_live_spy_return_id_exists,
+# test_live_alpha_value_id_exists, test_pos_price_ids_exist,
+# test_pos_return_ids_exist, test_pos_today_ids_exist were removed (commit f4dc996)
+# — they tested ATS portfolio/position live-data HTML elements removed in the
+# "retire old Research Systems table" dashboard redesign.
+
 class TestAtsDashboardHtml:
-    def test_live_port_return_id_exists(self):
-        html = _html(DOCS / "index.html")
-        assert 'id="live-port-return"' in html
-
-    def test_live_spy_return_id_exists(self):
-        html = _html(DOCS / "index.html")
-        assert 'id="live-spy-return"' in html
-
-    def test_live_alpha_value_id_exists(self):
-        html = _html(DOCS / "index.html")
-        assert 'id="live-alpha-value"' in html
-
-    def test_pos_price_ids_exist(self):
-        html = _html(DOCS / "index.html")
-        assert 'id="pos-price-' in html, "No pos-price-TICKER elements found"
-
-    def test_pos_return_ids_exist(self):
-        html = _html(DOCS / "index.html")
-        assert 'id="pos-return-' in html
-
-    def test_pos_today_ids_exist(self):
-        html = _html(DOCS / "index.html")
-        assert 'id="pos-today-' in html
-
     def test_ats_live_json_fetch_url(self):
         html = _html(DOCS / "index.html")
         assert "data/ats_live.json" in html, "ATS JS does not fetch ats_live.json"
