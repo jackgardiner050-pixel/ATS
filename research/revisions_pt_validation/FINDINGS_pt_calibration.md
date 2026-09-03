@@ -51,3 +51,17 @@ This proxy result is **marginally interesting but not compelling** — enough of
 ---
 
 *Reproduce the summary numbers: `summarize_results()` in `pt_calibration_study.py` over `pt_calibration_results.csv`. Rank-IC/median figures above are computed directly on `implied_upside` vs `fwd_excess_net`; the script's own decile-binned rank IC (+0.13 / +0.10) agrees within noise. Proxy parameters: EV/EBITDA = 10, round-trip cost 40 bps.*
+
+---
+
+## Raw data (committed B-11)
+
+**Date pulled:** 2026-09-02
+
+- **`pt_calibration_results.csv`** — 1030 lines (including header), 52,939 bytes
+  - SHA-256: `00866c515f5812e4e18179f98b19e23cfc00e329cf6db2512faf338069a469f3`
+  - Source: ats-trading:/root/phaethon-panel-repo/research/revisions_pt_validation/pt_calibration_results.csv (previously uncommitted)
+
+- **`full_run.log`** — 21 lines, 1,663 bytes
+  - SHA-256: `fbf3ede801fadcc57699da2cc3bc5d387a72509e37c6f86bd4b739e3e461555e`
+  - Source: ats-trading:/root/phaethon-panel-repo/research/revisions_pt_validation/full_run.log (previously uncommitted)
