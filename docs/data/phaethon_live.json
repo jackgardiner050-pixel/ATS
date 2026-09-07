@@ -37,7 +37,7 @@
       "ticker": "AVGO",
       "cohort": "phaethon_a",
       "bought_at": 385.73,
-      "last": 357.89,
+      "last": 357.9,
       "weight_pct": 1.1
     },
     {
@@ -107,8 +107,8 @@
   "cash_pct": 66.6,
   "active_return_pct": 9.54,
   "vs_qqq_pp": 10.21,
-  "trend": "IMPROVING vs QQQ",
-  "n_marks": 79,
+  "trend": "FLAT vs QQQ",
+  "n_marks": 80,
   "halted": null,
   "drawdown_pct": null,
   "kill_switch": "n/a (disciplined arm)",
@@ -119,18 +119,18 @@
   "benchmark": "QQQ",
   "benchmark_primary": "QQQ",
   "benchmark_headline": "active return vs QQQ (primary)",
-  "as_of": "2026-09-04",
+  "as_of": "2026-09-07",
   "data_status": "FRESH",
   "stale_days": 0,
   "stale_days_effective": 0,
-  "restated": "restated 2026-09-04, cash-accounting bug fixed",
+  "restated": "restated 2026-09-07, cash-accounting bug fixed",
   "restated_rejected_over_cash": [],
   "status": "CONFORMING",
   "governance": {
     "conforming": true,
     "violations": [],
     "gross_exposure_pct": 33.4,
-    "evaluated_as_of": "2026-09-06"
+    "evaluated_as_of": "2026-09-07"
   },
-  "evaluated_as_of": "2026-09-06"
+  "evaluated_as_of": "2026-09-07"
 }
