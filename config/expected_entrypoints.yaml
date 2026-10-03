@@ -1,0 +1,56 @@
+# B-09 — every cron entrypoint permitted on the ats-trading droplet, and the tree it runs from.
+# scripts/verify_attestation.py fails if `crontab -l` contains an entrypoint not listed here, or
+# if a git tree's attested git_sha has drifted from its reference (unless covered by an unexpired
+# exemption). Non-git trees (no `sha_ref`) are presence-checked only.
+version: 1
+
+entrypoints:
+  - cmd: /root/epe/scripts/price_updater.sh
+    tree: /root/epe
+  - cmd: /root/epe/scripts/kill_flags.sh
+    tree: /root/epe
+  - cmd: /root/epe/scripts/weekly_status.sh
+    tree: /root/epe
+  - cmd: /root/epe/scripts/morning_check.sh
+    tree: /root/epe
+  - cmd: /root/epe/scripts/universe_check.py       # invoked as `cd /root/epe && venv/bin/python scripts/universe_check.py`
+    tree: /root/epe
+  - cmd: /root/trading/hermes_v3_lab/scripts/run_droplet_daily.sh
+    tree: /root/trading/hermes_v3_lab
+    sha_ref: origin/main
+  - cmd: /root/agent/olympus/scripts/run_olympus_loop.sh
+    tree: /root/agent/olympus
+    sha_ref: safe_deploy_log        # data/deploy_log.txt last "-> master @ <sha>"
+  - cmd: /root/agent/olympus/scripts/run_mnemosyne_resolve.sh
+    tree: /root/agent/olympus
+    sha_ref: safe_deploy_log
+  - cmd: /home/phaethon/phaethon/trader/run_phaethon.sh
+    tree: /home/phaethon/phaethon
+  - cmd: /home/phaethon/phaethon/trader_b/run_phaethon_b.sh
+    tree: /home/phaethon/phaethon
+  - cmd: /home/phaethon/phaethon/trader_c/run_phaethon_c.sh
+    tree: /home/phaethon/phaethon
+  - cmd: /home/phaethon/phaethon/shadow_ledger/run_shadow.sh
+    tree: /home/phaethon/phaethon
+  - cmd: /root/phaethon-panel-repo/scripts/phaethon/publish.sh
+    tree: /root/phaethon-panel-repo
+    # no sha_ref: this is a PUBLISHER tree — it commits its own dashboard-refresh data and
+    # rebases on push (guarded by tests/test_weekly_push_rebase.py). Strict origin/main
+    # equality does not apply. Publisher-tree SHA governance is a D-9 follow-up.
+  - cmd: /root/labs/oracle/run_oracle_mark.sh
+    tree: /root/labs/oracle
+  - cmd: /root/backup/run_backup.sh
+    tree: /root/backup
+  - cmd: /root/agent/run_ats_screen.sh             # cd's into /root/agent/ats-live
+    tree: /root/agent/ats-live
+    sha_ref: origin/main
+  - cmd: /root/ops/heartbeat.py                    # B-07 daily check
+    tree: /root/ops
+
+exemptions:
+  - tree: /root/agent/ats-live
+    reason: "deliberately held behind current main pending Q-D7 (§D-4) — the Cohort-1 screen tree predates the 2026-08 governance layer"
+    q_ref: Q-D7
+    q_resolved: false                # operator flips true when Q-D7 is decided
+    expires: "2026-12-31"            # operator-set. After this, if q_resolved is still false -> verifier FAILS
+    known_lagging_sha: null          # optional: pin the exact behind SHA that is tolerated
