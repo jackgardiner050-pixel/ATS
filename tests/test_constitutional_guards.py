@@ -11,6 +11,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import re
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -151,7 +152,7 @@ def test_phaethon_no_live_pnl_read_in_prompt_paths():
 # Human-side learning machinery — must be unreachable from any code that builds what
 # Phaethon actually sees. (journal is the human-side source these read.)
 LEARNING_MODULES = {"review_trigger", "lessons_ledger", "prediction_resolution",
-                    "learning_kill_switch", "journal"}
+                    "learning_kill_switch", "journal", "stage0_bridge"}
 # Phaethon-facing output / would-be context-builder modules.
 PHAETHON_FACING = {"publish", "scorecard", "governance", "schema", "ledger"}
 
@@ -181,6 +182,45 @@ def test_learning_modules_unreachable_from_phaethon_facing_code():
                 reachable.add(d); stack.append(d)
     breach = reachable & LEARNING_MODULES
     assert not breach, f"Phaethon-facing code can reach learning modules: {sorted(breach)}"
+
+
+def test_phaethon_facing_never_reads_registry_state():
+    """B-22 / §G-6 one-way bridge: the Phaethon → Stage-0 extractor writes registration
+    *candidates* out; NOTHING that builds what Phaethon sees may read registry state, a
+    Stage result, retired.yaml, or the candidates directory back in. Scanned on the
+    Phaethon-facing modules only (stage0_bridge itself legitimately writes candidates;
+    journal legitimately imports the hash-chain primitives)."""
+    readback_tokens = ("stage0_candidates", "registry.yaml", "retired.yaml",
+                       "load_registry", "load_registry_raw", "Stage1Result",
+                       "stage_result", "queue_priority", "correction_m")
+    offenders = []
+    for name in PHAETHON_FACING:
+        p = ROOT / "src" / "phaethon" / f"{name}.py"
+        if not p.exists():
+            continue
+        text = p.read_text()
+        for tok in readback_tokens:
+            if tok in text:
+                offenders.append(f"{name}.py references registry-state token {tok!r}")
+    assert not offenders, ("Phaethon-facing code reads registry state (breaks the one-way "
+                           "Stage-0 bridge):\n" + "\n".join(offenders))
+
+
+def test_stage0_bridge_is_one_way_and_not_phaethon_facing():
+    """stage0_bridge must not import anything Phaethon-facing (it is human-side output,
+    like journal), and must not import a registry-STATE reader."""
+    p = ROOT / "src" / "phaethon" / "stage0_bridge.py"
+    assert p.exists(), "src/phaethon/stage0_bridge.py missing (B-22)"
+    imported = set(_imported_names(p))
+    facing_hit = {m for m in imported
+                  if m.split(".")[:2] == ["src", "phaethon"]
+                  and m.split(".")[-1] in PHAETHON_FACING}
+    assert not facing_hit, f"stage0_bridge imports Phaethon-facing modules: {sorted(facing_hit)}"
+    state_readers = {"load_registry", "load_registry_raw", "load_registry_resolved",
+                     "queue", "registry_stats"}
+    text = p.read_text()
+    assert not (state_readers & set(re.findall(r"\b\w+\b", text))), \
+        "stage0_bridge references a registry-state reader — the bridge is write-only"
 
 
 def test_learning_modules_write_only_human_side():
